@@ -61,7 +61,7 @@ print(nomes_dos_artistas_ordenados_por_followers)
 
 
 csv_file_name = "artistas_topbrasil_ordem_popularidade.csv"
-csv_headers = ["name", "uri", "followers", "genres", "popularity"]
+csv_headers = ["name", "uri", "followers", "genres", "popularity", "top_tracks"]
 
 with open(csv_file_name, mode='w', newline='', encoding='utf-8') as file:
     writer = csv.DictWriter(file, fieldnames=csv_headers)
@@ -75,11 +75,8 @@ with open(csv_file_name, mode='w', newline='', encoding='utf-8') as file:
         # sem alterar o original.
         artista_info_for_csv = artista_info.copy()
 
-        # Convertemos a lista de gêneros para uma string.
+        # Convertemos a lista de gêneros e top_tracks para uma string.
         artista_info_for_csv["genres"] = "; ".join(artista_info_for_csv["genres"])
-
-        # Removemos a chave "top_tracks" antes de escrever no CSV.
-        if "top_tracks" in artista_info_for_csv:
-            del artista_info_for_csv["top_tracks"]
+        artista_info_for_csv["top_tracks"] = "; ".join(artista_info_for_csv["top_tracks"])
 
         writer.writerow(artista_info_for_csv)
