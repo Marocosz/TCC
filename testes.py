@@ -1,4 +1,4 @@
-from functions import curtir_todas_musicas_playlist, extract_spotify_playlist_id, verificar_status_curtidas_playlist
+from functions import *
 
 
-verificar_status_curtidas_playlist(extract_spotify_playlist_id("https://open.spotify.com/playlist/0LKBRxRuLiYpqBsfZ6jRJ2?si=5c846bcc3bdb46d6"))
+audit_playlist_liked_status(extract_spotify_playlist_id("https://open.spotify.com/playlist/16ShgHCBtcPuTRLOL4LgEA?si=08230e3cc9a6499a"))
