@@ -257,8 +257,8 @@ def unlike_all_saved_tracks() -> None:
     
     # Exibe o aviso de perigo e pede a confirmação.
     print("\n" + "="*60)
-    print("⚠️  AVISO: VOCÊ ESTÁ PRESTES A REMOVER TODAS AS SUAS MÚSICAS CURTIDAS! ⚠️")
-    print("                 ESTA AÇÃO É PERMANENTE E IRREVERSÍVEL.")
+    print("AVISO: VOCÊ ESTÁ PRESTES A REMOVER TODAS AS SUAS MÚSICAS CURTIDAS! ⚠️")
+    print("ESTA AÇÃO É PERMANENTE E IRREVERSÍVEL.")
     print("="*60)
     
     confirmation_phrase = "EU QUERO APAGAR TUDO"
@@ -588,3 +588,44 @@ def normalize_album_name(name: str) -> str:
         name = name.replace(term, '')
     # Remove espaços em branco extras no início ou no fim.
     return name.strip()
+
+def search_artists_by_genre(genre: str, limit: int = 20) -> list:
+    """
+    Busca no Spotify artistas de um determinado gênero, ordenados por relevância.
+    """
+    # Crio um cliente que não precisa de login, pois a busca por gênero é pública.
+    sp_app = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+    
+    print(f"Buscando os {limit} artistas mais relevantes para o gênero '{genre}'...")
+    
+    # Crio a 'query' de busca usando o filtro 'genre:' que a API do Spotify entende.
+    query = f'genre:"{genre}"'
+    
+    try:
+        # Executo a busca, especificando o tipo 'artist' e o limite desejado.
+        results = sp_app.search(q=query, type='artist', limit=limit, market='BR')
+        
+        # A API retorna um dicionário complexo. Eu extraio apenas a lista de artistas.
+        artists_found = results['artists']['items']
+        
+        if not artists_found:
+            print(f"Nenhum artista encontrado para o gênero '{genre}'.")
+            return []
+            
+        # Para cada artista encontrado, monto um dicionário mais limpo com as informações úteis.
+        processed_artists = []
+        for artist_data in artists_found:
+            processed_artists.append({
+                "name": artist_data['name'],
+                "uri": artist_data['uri'],
+                "followers": artist_data['followers']['total'],
+                "genres": artist_data['genres'],
+                "popularity": artist_data['popularity']
+            })
+        
+        print(f"Busca finalizada. Encontrados {len(processed_artists)} artistas.")
+        return processed_artists
+
+    except Exception as e:
+        print(f"Ocorreu um erro durante a busca por gênero: {e}")
+        return []
