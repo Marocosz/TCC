@@ -4,12 +4,10 @@ from functions import *
 # --- Início do Script Principal ---
 
 # 1. Criar a playlist
-# A função 'criar_playlist' agora se chama 'create_playlist'.
 playlist_id = create_playlist("Playlist da Bia")
 
 # 2. Definir os artistas (top 20 mais populares)
 # OBS: Dados da playlist Top Brasil captados no dia 08/08/2025
-# A função 'csv_para_lista' agora se chama 'load_artists_from_csv'.
 selected_artists = load_artists_from_csv("artistas_topbrasil_dados.csv", 20)
 
 # 3. Criar uma lista com as top músicas desses artistas

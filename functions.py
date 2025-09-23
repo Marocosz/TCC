@@ -21,7 +21,6 @@ load_dotenv()
 
 
 # --- 1. Gerenciamento de Playlists e Biblioteca (Requer Login do Usuário) ---
-
 def create_playlist(playlist_name: str, public: bool = True) -> str:
     """
     Cria uma nova playlist para o usuário autenticado.
@@ -350,7 +349,6 @@ def audit_playlist_liked_status(playlist_id: str) -> None:
 
 
 # --- 2. Extração de Dados do Catálogo (Não Requer Login do Usuário) ---
-
 def get_artists_from_playlist(playlist_id: str) -> dict:
     """Busca todas as músicas de uma playlist e retorna um dicionário de artistas únicos."""
     # Crio um cliente que não precisa de login, pois playlists públicas são dados gerais.
