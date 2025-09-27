@@ -1,4 +1,4 @@
-# gerar_relatorio_artistas.py
+# EXECUTADO NO DIA 27/09/2025
 
 """
 Script principal para gerar um relatório CSV com informações detalhadas
@@ -19,7 +19,7 @@ def main():
     """
     # --- Configurações ---
     # Defina aqui a URL da playlist que você quer analisar.
-    playlist_url = "https://open.spotify.com/playlist/5wguuPKXKvZr4AqIMt1nF0?si=b0c93450b3cd4bdc"
+    playlist_url = "https://open.spotify.com/playlist/75hnyqmFAZHYN1cRdJY4aT?si=4e9ffb455e86415b"
     
     # Defina o nome do arquivo que será salvo.
     output_csv_file = "artistas_topbrasil_dados.csv"

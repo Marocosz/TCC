@@ -15,6 +15,7 @@ import random
 import os
 import io
 import time
+import requests
 
 # Carrego as minhas credenciais secretas do arquivo .env para o ambiente.
 load_dotenv()
@@ -626,4 +627,46 @@ def search_artists_by_genre(genre: str, limit: int = 20) -> list:
 
     except Exception as e:
         print(f"Ocorreu um erro durante a busca por gênero: {e}")
+        return []
+
+
+def get_available_genres() -> list:
+    """
+    Busca na API do Spotify a lista oficial de "gêneros semente" disponíveis.
+    Esta versão FINAL E CORRIGIDA usa https, o protocolo correto para a API.
+
+    Returns:
+        list: Uma lista de strings com todos os gêneros, ou uma lista vazia em caso de erro.
+    """
+    print("Buscando a lista de todos os gêneros disponíveis (Método Direto Corrigido)...")
+    
+    try:
+        # Passo 1: Usar o Spotipy apenas para obter um token de acesso válido
+        auth_manager = SpotifyClientCredentials()
+        token = auth_manager.get_access_token(as_dict=False)
+
+        # Passo 2: Montar a requisição manualmente com o 'requests'
+        headers = {
+            'Authorization': f'Bearer {token}'
+        }
+        
+        # URL COMPLETA E CORRETA (com https) da API para este endpoint
+        url = 'https://api.spotify.com/recommendations/available-genre-seeds'
+
+        # Passo 3: Fazer a chamada GET
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        # Passo 4: Processar a resposta
+        data = response.json()
+        genre_list = data['genres']
+        
+        print(f"Sucesso! Encontrados {len(genre_list)} gêneros.")
+        return genre_list
+
+    except requests.exceptions.HTTPError as http_err:
+        print(f"ERRO HTTP: Não foi possível buscar a lista de gêneros. Status: {http_err.response.status_code}")
+        return []
+    except Exception as e:
+        print(f"Ocorreu um erro geral ao buscar a lista de gêneros: {e}")
         return []
