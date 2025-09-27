@@ -21,11 +21,13 @@ def main():
     # Coloque aqui a lista de URLs das playlists que você quer analisar.
     # Adicione quantas URLs quiser.
     playlist_urls = [
-        "https://open.spotify.com/playlist/75hnyqmFAZHYN1cRdJY4aT?si=4e9ffb455e86415b" # Top Brasil
+        "https://open.spotify.com/playlist/30i868DlcfieGBVL4Mrb91?si=8023222c13ef44bc", # Lofi Beats
+        "https://open.spotify.com/playlist/0S6kXHQLzzBEZjlB40ksXC?si=7b2ed3a17e734615", # Lofi Rain Lo-fi sleep
+        "https://open.spotify.com/playlist/2azWdvU6hhRcSjnAjO85RN?si=90f645a0282e47c3"  # Lofi Study 2025
     ]
     
     # Defina o nome do arquivo que será salvo com os dados combinados.
-    output_csv_file = "artistas_topbrasil_dados.csv"
+    output_csv_file = "artistas_lofi_dados.csv"
 
     print("--- Iniciando processo de geração de relatório de artistas de MÚLTIPLAS playlists ---")
 

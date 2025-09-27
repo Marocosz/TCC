@@ -21,11 +21,13 @@ def main():
     # Coloque aqui a lista de URLs das playlists que você quer analisar.
     # Adicione quantas URLs quiser.
     playlist_urls = [
-        "https://open.spotify.com/playlist/75hnyqmFAZHYN1cRdJY4aT?si=4e9ffb455e86415b" # Top Brasil
+        "https://open.spotify.com/playlist/5rehXNZUXxbia3eHmlcFz1?si=e1fa21a7534c4db4", # BRock 80
+        "https://open.spotify.com/playlist/4uWqwCSd1Gb45U7QDgEPwf?si=baee1efb2a524ff9", # MPB Antigas - As Melhores e Mais Tocadas - Anos 80, 90, 2000 e Lançamentos
+        "https://open.spotify.com/playlist/6hUvrs9p5b5pzQyYYbcTth?si=e9ab3e199edd4a88"  # Rock Classics
     ]
     
     # Defina o nome do arquivo que será salvo com os dados combinados.
-    output_csv_file = "artistas_topbrasil_dados.csv"
+    output_csv_file = "artistas_classicos_dados.csv"
 
     print("--- Iniciando processo de geração de relatório de artistas de MÚLTIPLAS playlists ---")
 

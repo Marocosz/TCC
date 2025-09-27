@@ -21,9 +21,9 @@ def main():
     # Coloque aqui a lista de URLs das playlists que você quer analisar.
     # Adicione quantas URLs quiser.
     playlist_urls = [
-        "https://open.spotify.com/playlist/2RxIuqmH1n5QCx0eUmmyCA?si=35f9751c7013485b", # Exemplo 1: Top Brasil
-        "https://open.spotify.com/playlist/6XLvNXM2WLHTFspl0KULxN?si=5c775ab067bd4aa2", # Exemplo 2: Indie Brasil
-        "https://open.spotify.com/playlist/3Q4tfVNqIE3HTxz21W9SLi?si=d0d5fbde896540f1"  # Exemplo 3: Pagodeira
+        "https://open.spotify.com/playlist/2RxIuqmH1n5QCx0eUmmyCA?si=35f9751c7013485b", # Indie Pop 2010s
+        "https://open.spotify.com/playlist/6XLvNXM2WLHTFspl0KULxN?si=5c775ab067bd4aa2", # Best of Indie 2014
+        "https://open.spotify.com/playlist/3Q4tfVNqIE3HTxz21W9SLi?si=d0d5fbde896540f1"  # Best of Indie 2022
     ]
     
     # Defina o nome do arquivo que será salvo com os dados combinados.
