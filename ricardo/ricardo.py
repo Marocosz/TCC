@@ -20,7 +20,7 @@ def distribuir_musicas_entre_artistas(total_musicas: int, num_artistas: int) -> 
 def main():
     """
     Função principal para criar a playlist da persona Ricardo com uma
-    lógica híbrida e garantia de 100 músicas no final.
+    lógica de sobre-amostragem para garantir 100 músicas no final.
     """
     # --- 1. PAINEL DE CONTROLE (CONFIGURAÇÕES) ---
     print("--- PASSO 1: Carregando configurações para o 'Ricardo Nostálgico' ---")
@@ -29,13 +29,21 @@ def main():
     PLAYLIST_NAME = "Rock & MPB 90s (Input Ricardo)"
     FINAL_PLAYLIST_SIZE = 100
 
+    # MUDANÇA: Definimos um alvo inicial maior para compensar as duplicatas
+    TARGET_INICIAL_DE_COLETA = 110
+
+    # --- Configs de Seleção de Artistas ---
     FATIAS_ARTISTAS_CSV = {'famosos': (0, 15), 'medianos': (15, 50), 'lado_b': (50, 100)}
     QTD_ARTISTAS_POR_TIER = {'famosos': 6, 'medianos': 4, 'lado_b': 3}
+
+    # --- Configs da Composição da Playlist (aplicado ao alvo inicial de 120) ---
     PROPORCAO_FINAL_PLAYLIST = {'famosos': 0.40, 'medianos': 0.35, 'lado_b': 0.25}
+
+    # --- Configs da Seleção de Músicas por Artista ---
     PROPORCAO_MUSICAS_POR_ARTISTA = {'famosas': 0.6, 'medianas': 0.4}
     FATIAS_TOP_TRACKS = {'famosas': (0, 4), 'medianas': (4, 10)}
 
-    print(f"Lógica: Montar playlist de {FINAL_PLAYLIST_SIZE} faixas a partir de {sum(QTD_ARTISTAS_POR_TIER.values())} artistas selecionados.")
+    print(f"Lógica: Sobre-amostragem. Coletar {TARGET_INICIAL_DE_COLETA} faixas para garantir {FINAL_PLAYLIST_SIZE} no final.")
     print("-" * 40)
 
     # --- 2. SELEÇÃO ESTRATIFICADA DE ARTISTAS ---
@@ -53,14 +61,16 @@ def main():
 
     print("-" * 40)
 
-    # --- 3. COLETA DE MÚSICAS COM LÓGICA HÍBRida ---
-    print(f"\n--- PASSO 3: Coletando músicas com a lógica híbrida ---")
+    # --- 3. COLETA DE MÚSICAS (SOBRE-AMOSTRAGEM) ---
+    print(f"\n--- PASSO 3: Coletando ~{TARGET_INICIAL_DE_COLETA} músicas com a lógica híbrida ---")
     
     track_names_pool = []
     
     for tier, artists_do_tier in selected_artists_por_tier.items():
         if not artists_do_tier: continue
-        total_musicas_do_tier = int(FINAL_PLAYLIST_SIZE * PROPORCAO_FINAL_PLAYLIST[tier])
+        
+        # A proporção agora é aplicada ao nosso alvo inicial maior (120)
+        total_musicas_do_tier = int(TARGET_INICIAL_DE_COLETA * PROPORCAO_FINAL_PLAYLIST[tier])
         distribuicao_por_artista = distribuir_musicas_entre_artistas(total_musicas_do_tier, len(artists_do_tier))
         
         print(f"\nDo nível '{tier}', coletando um total de {total_musicas_do_tier} músicas.")
@@ -82,39 +92,20 @@ def main():
             
             print(f"  De '{artist['name']}': coletadas {total_a_pegar} músicas ({qtd_famosas} famosas, {qtd_medianas} medianas).")
 
-    # --- 4. MONTAGEM DA PLAYLIST FINAL COM GARANTIA DE 100 MÚSICAS ---
+    # --- 4. MONTAGEM DA PLAYLIST FINAL (CORTE PARA 100) ---
     print("\n" + "-" * 40)
     print(f"\n--- PASSO 4: Montando a playlist final ---")
 
-    # Primeiro, removemos as duplicatas da coleta inicial
     unique_tracks = list(set(track_names_pool))
     print(f"Total de {len(unique_tracks)} músicas únicas selecionadas na coleta inicial.")
 
-    # Lógica de preenchimento para garantir 100 músicas
+    # MUDANÇA: A lógica agora é muito mais simples
     if len(unique_tracks) < FINAL_PLAYLIST_SIZE:
-        print(f"Faltam {FINAL_PLAYLIST_SIZE - len(unique_tracks)} músicas para atingir a meta de {FINAL_PLAYLIST_SIZE}.")
-        
-        # Cria um "pote de sobras" com todas as músicas de todos os artistas
-        sobras_pool = []
-        for artist in all_artists:
-            sobras_pool.extend(extract_top_tracks_from_data(artist))
-        
-        # Limpa o pote de sobras, removendo duplicatas e as músicas que já temos
-        sobras_limpas = list(set(sobras_pool) - set(unique_tracks))
-        
-        # Calcula quantas músicas ainda precisamos
-        musicas_necessarias = FINAL_PLAYLIST_SIZE - len(unique_tracks)
-        
-        # Pega o que falta do pote de sobras
-        preenchimento = get_random_sample(sobras_limpas, musicas_necessarias)
-        unique_tracks.extend(preenchimento)
-        print(f"Adicionadas {len(preenchimento)} músicas extras para completar a playlist.")
-
-    # Ajuste final para garantir o tamanho exato, caso a coleta tenha passado de 100
-    if len(unique_tracks) > FINAL_PLAYLIST_SIZE:
-        final_track_names = get_random_sample(unique_tracks, FINAL_PLAYLIST_SIZE)
-    else:
+        print(f"AVISO CRÍTICO: Mesmo com a sobre-amostragem, o total de músicas únicas ({len(unique_tracks)}) é menor que {FINAL_PLAYLIST_SIZE}. Usando todas as disponíveis.")
         final_track_names = unique_tracks
+    else:
+        # Sorteia 100 da nossa lista limpa e superdimensionada
+        final_track_names = get_random_sample(unique_tracks, FINAL_PLAYLIST_SIZE)
     
     print(f"Tamanho final da playlist: {len(final_track_names)} músicas.")
 
@@ -124,6 +115,7 @@ def main():
     playlist_id = create_playlist(PLAYLIST_NAME)
     if playlist_id:
         add_tracks_to_playlist(playlist_id, track_uris)
+        
         print("\n--- PASSO 5: Curtindo as músicas (uma por uma) ---")
         like_tracks_slowly(track_uris)
     
