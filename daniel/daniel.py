@@ -1,5 +1,3 @@
-# construir_playlist_daniel.py
-
 import random
 from functions import (
     load_artists_from_csv,

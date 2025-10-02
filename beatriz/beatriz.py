@@ -1,5 +1,3 @@
-# construir_playlist_beatriz.py
-
 from functions import (
     load_artists_from_csv,
     extract_top_tracks_from_data,

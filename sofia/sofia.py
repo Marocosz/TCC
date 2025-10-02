@@ -1,5 +1,3 @@
-# construir_playlist_sofia.py
-
 import random
 import math
 from functions import (
