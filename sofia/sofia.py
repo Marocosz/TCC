@@ -33,7 +33,7 @@ def main():
     # --- Configuração da Seleção de Músicas (ALEATÓRIA E PROPORCIONAL) ---
     # MUDANÇA: Aumentamos o teto do intervalo para ajudar a coletar mais músicas
     MUSICAS_POR_ARTISTA_RANGE = (5, 9)
-    PROPORCAO_MUSICAS = {'famosas': 0.20, 'medianos': 0.30}
+    PROPORCAO_MUSICAS = {'famosas': 0.20, 'medianas': 0.30}
     FATIAS_TOP_TRACKS = {'famosas': (0, 3), 'medianas': (3, 7), 'lado_b': (7, 10)}
     
     print(f"Lógica: Sobre-amostragem. Coletar ~{TARGET_INICIAL_DE_COLETA} faixas para garantir {FINAL_PLAYLIST_SIZE} no final.")

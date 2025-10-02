@@ -30,7 +30,7 @@ def main():
     FINAL_PLAYLIST_SIZE = 100
 
     # MUDANÇA: Definimos um alvo inicial maior para compensar as duplicatas
-    TARGET_INICIAL_DE_COLETA = 110
+    TARGET_INICIAL_DE_COLETA = 140
 
     # --- Configs de Seleção de Artistas ---
     FATIAS_ARTISTAS_CSV = {'famosos': (0, 15), 'medianos': (15, 50), 'lado_b': (50, 100)}
