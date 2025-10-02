@@ -27,7 +27,7 @@ def main():
     ]
     
     # Defina o nome do arquivo que será salvo com os dados combinados.
-    output_csv_file = "artistas_indies_dados.csv"
+    output_csv_file = "artistas_indie_dados.csv"
 
     print("--- Iniciando processo de geração de relatório de artistas de MÚLTIPLAS playlists ---")
 

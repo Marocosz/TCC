@@ -1,4 +1,4 @@
 from functions import *
 
 
-print(get_available_genres())
+unlike_all_saved_tracks()

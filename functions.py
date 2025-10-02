@@ -107,6 +107,46 @@ def like_tracks(track_uris: list) -> None:
     print(f"\n--- Processo finalizado! Total de {new_likes_count} novas músicas foram curtidas. ---")
 
 
+# Adicione esta função em functions.py
+
+def like_tracks_slowly(track_uris: list) -> None:
+    """
+    Salva (curte) uma lista de URIs de músicas na biblioteca do usuário, UMA POR UMA.
+    Este método é mais lento, mas muito robusto contra problemas de timing e rate limiting da API.
+    Requer os escopos 'user-library-read' e 'user-library-modify'.
+    """
+    if not track_uris:
+        print("Nenhuma URI de música fornecida para curtir.")
+        return
+        
+    scope = "user-library-read user-library-modify"
+    sp_user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+    
+    print(f"--- Iniciando processo para curtir {len(track_uris)} músicas (uma por uma)... ---")
+
+    new_likes_count = 0
+    for i, uri in enumerate(track_uris):
+        try:
+            # Verifica se a música JÁ está curtida antes de tentar adicionar
+            is_already_liked = sp_user.current_user_saved_tracks_contains(tracks=[uri])[0]
+            
+            if not is_already_liked:
+                # Manda o comando para curtir apenas ESTA música
+                sp_user.current_user_saved_tracks_add(tracks=[uri])
+                print(f"  ({i+1}/{len(track_uris)}) ✅ Curtido: {uri}")
+                new_likes_count += 1
+            else:
+                print(f"  ({i+1}/{len(track_uris)}) ⏭️ Já estava curtida: {uri}")
+
+            # Adiciona uma pequena pausa para ser respeitoso com a API
+            time.sleep(0.2) # Pausa de 200 milissegundos
+
+        except Exception as e:
+            print(f"  ({i+1}/{len(track_uris)}) ❌ Erro ao curtir a música {uri}: {e}")
+            
+    print(f"\n--- Processo finalizado! Total de {new_likes_count} novas músicas foram curtidas. ---")
+
+
 def like_all_tracks_in_playlist(playlist_id: str) -> None:
     """
     Curte todas as músicas de uma playlist que ainda não estão salvas na biblioteca.
