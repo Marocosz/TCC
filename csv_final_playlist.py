@@ -112,6 +112,6 @@ def analisar_e_salvar_playlist(playlist_url: str, output_csv_file: str):
 
 # --- SEÇÃO PRINCIPAL PARA EXECUTAR O SCRIPT ---
 if __name__ == '__main__':
-    URL_DA_PLAYLIST = "https://open.spotify.com/playlist/0fzfjdoy85FuRVR3YSfgGQ?si=MldfctNsTieT9sySIT5TsQ"
-    NOME_DO_ARQUIVO_CSV = "analise_Daniel_playlist.csv"
+    URL_DA_PLAYLIST = "https://open.spotify.com/playlist/6NqmSHvlyFImeWhvNu17bv?si=5b568112861f4338"
+    NOME_DO_ARQUIVO_CSV = "analise_Beatriz_playlist.csv"
     analisar_e_salvar_playlist(URL_DA_PLAYLIST, NOME_DO_ARQUIVO_CSV)
