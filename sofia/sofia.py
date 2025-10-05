@@ -1,117 +1,145 @@
 import random
 import math
-from functions import (
-    load_artists_from_csv,
-    extract_top_tracks_from_data,
-    get_random_sample,
-    fetch_track_uris,
-    create_playlist,
-    add_tracks_to_playlist,
-    like_tracks_slowly
-)
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from functions import * # Importa todas as nossas ferramentas
+
+def distribuir_musicas_entre_artistas(total_musicas: int, num_artistas: int) -> list:
+    """
+    Função auxiliar que distribui um número total de músicas de forma
+    aleatória entre um número de artistas.
+    """
+    if num_artistas == 0: return []
+    distribuicao = [0] * num_artistas
+    for _ in range(total_musicas):
+        indice_artista = random.randint(0, num_artistas - 1)
+        distribuicao[indice_artista] += 1
+    return distribuicao
 
 def main():
     """
-    Função principal para criar a playlist da persona Sofia com uma
-    lógica de sobre-amostragem para garantir 100 músicas no final.
+    Função principal que cria uma nova playlist de 100 músicas com base
+    na lógica de curadoria "50/50", com garantia de tamanho.
     """
-    # --- 1. PAINEL DE CONTROLE DA CURADORIA ---
-    print("--- PASSO 1: Carregando configurações para a 'Sofia Curadora' ---")
+    # --- 1. PAINEL DE CONTROLE (CONFIGURAÇÕES) ---
+    print("--- PASSO 1: Carregando configurações da 'Curadoria 50/50' ---")
     
-    CSV_FILE = "sofia/artistas_indie_dados.csv"
-    PLAYLIST_NAME = "Poetic Melancholy (Input Sofia)"
+    # IMPORTANTE: Cole aqui a URL da playlist que servirá como base
+    PLAYLIST_URL_SEMENTE = "https://open.spotify.com/playlist/5m7jvWtwE8OJ9DgzU6jhUu?si=f4d4bec3da7a4c58"
+    
+    NOVO_PLAYLIST_NAME = "playlist Indie Alternativa (Input Sofia)"
     FINAL_PLAYLIST_SIZE = 100
-    
-    # MUDANÇA: Definimos um alvo inicial maior para compensar as duplicatas
-    TARGET_INICIAL_DE_COLETA = 110
 
-    # --- Configuração da Seleção de Artistas (PROPORCIONAL) ---
-    TOTAL_ARTISTAS_SELECIONADOS = 20
-    PROPORCAO_ARTISTAS = {'famosos': 0.2, 'medianos': 0.3, 'nicho': 0.5}
-    FATIAS_ARTISTAS_CSV = {'famosos': (0, 10), 'medianos': (10, 40), 'nicho': (40, 100)}
-
-    # --- Configuração da Seleção de Músicas (ALEATÓRIA E PROPORCIONAL) ---
-    # MUDANÇA: Aumentamos o teto do intervalo para ajudar a coletar mais músicas
-    MUSICAS_POR_ARTISTA_RANGE = (5, 9)
-    PROPORCAO_MUSICAS = {'famosas': 0.20, 'medianas': 0.30}
-    FATIAS_TOP_TRACKS = {'famosas': (0, 3), 'medianas': (3, 7), 'lado_b': (7, 10)}
-    
-    print(f"Lógica: Sobre-amostragem. Coletar ~{TARGET_INICIAL_DE_COLETA} faixas para garantir {FINAL_PLAYLIST_SIZE} no final.")
+    print(f"Playlist base: {PLAYLIST_URL_SEMENTE}")
+    print(f"Nova playlist a ser criada: {NOVO_PLAYLIST_NAME}")
     print("-" * 40)
 
-    # --- 2. SELEÇÃO PROPORCIONAL DE ARTISTAS ---
-    print("\n--- PASSO 2: Sorteando artistas proporcionalmente por popularidade ---")
+    # --- 2. COLETAR E CLASSIFICAR OS ARTISTAS DA PLAYLIST BASE ---
+    print("\n--- PASSO 2: Coletando e classificando os artistas da playlist base ---")
     
-    all_artists = load_artists_from_csv(CSV_FILE, limit=120)
-    selected_artists = []
+    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope="playlist-read-private"))
+    
+    try:
+        artist_ids_map = get_artists_from_playlist(extract_spotify_playlist_id(PLAYLIST_URL_SEMENTE))
+        todos_os_artistas = get_full_artist_profiles(artist_ids_map)
+        todos_os_artistas.sort(key=lambda x: x['popularity'], reverse=True)
+        
+        ponto_de_corte = len(todos_os_artistas) // 2
+        artistas_populares = todos_os_artistas[:ponto_de_corte]
+        artistas_nicho = todos_os_artistas[ponto_de_corte:]
 
-    for tier, proportion in PROPORCAO_ARTISTAS.items():
-        qtd_a_selecionar = int(TOTAL_ARTISTAS_SELECIONADOS * proportion)
-        start, end = FATIAS_ARTISTAS_CSV[tier]
-        artist_pool_tier = all_artists[start:end]
-        sampled_artists = get_random_sample(artist_pool_tier, min(qtd_a_selecionar, len(artist_pool_tier)))
-        selected_artists.extend(sampled_artists)
-        print(f"Sorteados {len(sampled_artists)} artistas do nível '{tier}'.")
+        print(f"Encontrados {len(todos_os_artistas)} artistas. Divisão:")
+        print(f"  - {len(artistas_populares)} artistas na 'metade superior' (mais populares)")
+        print(f"  - {len(artistas_nicho)} artistas na 'metade inferior' (menos populares)")
+        print("-" * 40)
 
-    print(f"\nTotal de {len(selected_artists)} artistas selecionados para a curadoria.")
+    except Exception as e:
+        print(f"ERRO: Não foi possível ler ou processar os artistas da playlist base. Erro: {e}")
+        return
+
+    # --- 3. DISTRIBUIR O "ORÇAMENTO" DE 100 MÚSICAS ---
+    print("\n--- PASSO 3: Distribuindo aleatoriamente a quantidade de músicas por artista ---")
+    
+    orcamento_populares = FINAL_PLAYLIST_SIZE // 2
+    orcamento_nicho = FINAL_PLAYLIST_SIZE - orcamento_populares
+
+    distribuicao_populares = distribuir_musicas_entre_artistas(orcamento_populares, len(artistas_populares))
+    distribuicao_nicho = distribuir_musicas_entre_artistas(orcamento_nicho, len(artistas_nicho))
+
+    print(f"{orcamento_populares} músicas serão distribuídas entre os artistas populares.")
+    print(f"{orcamento_nicho} músicas serão distribuídas entre os artistas de nicho.")
     print("-" * 40)
-
-    # --- 3. CRIAÇÃO DO "UNIVERSO MUSICAL" COM COLETA PROPORCIONAL ---
-    print(f"\n--- PASSO 3: Criando 'pote' de músicas com coleta proporcional ---")
+    
+    # --- 4. COLETAR MÚSICAS COM A LÓGICA CONDICIONAL ---
+    print("\n--- PASSO 4: Coletando as músicas com a lógica condicional ---")
     
     track_names_pool = []
-    
-    for artist in selected_artists:
-        artist_top_tracks = extract_top_tracks_from_data(artist)
-        if len(artist_top_tracks) < 10:
-            print(f"  AVISO: '{artist['name']}' não tem 10 top tracks. Pulando.")
-            continue
-        
-        total_musicas_a_pegar = random.randint(MUSICAS_POR_ARTISTA_RANGE[0], MUSICAS_POR_ARTISTA_RANGE[1])
-        
-        qtd_famosas = math.ceil(total_musicas_a_pegar * PROPORCAO_MUSICAS['famosas'])
-        qtd_medianas = math.floor(total_musicas_a_pegar * PROPORCAO_MUSICAS['medianas'])
-        qtd_lado_b = total_musicas_a_pegar - qtd_famosas - qtd_medianas
 
-        pool_famosas = artist_top_tracks[FATIAS_TOP_TRACKS['famosas'][0] : FATIAS_TOP_TRACKS['famosas'][1]]
-        pool_medianas = artist_top_tracks[FATIAS_TOP_TRACKS['medianas'][0] : FATIAS_TOP_TRACKS['medianas'][1]]
-        pool_lado_b = artist_top_tracks[FATIAS_TOP_TRACKS['lado_b'][0] : FATIAS_TOP_TRACKS['lado_b'][1]]
+    print("\nProcessando artistas da 'metade superior'...")
+    for artist, total_a_pegar in zip(artistas_populares, distribuicao_populares):
+        if total_a_pegar == 0: continue
+        artist_top_tracks = artist.get('top_tracks', [])
+        if len(artist_top_tracks) < 3: continue
+        
+        pool_musicas = artist_top_tracks[3:]
+        selecao = get_random_sample(pool_musicas, total_a_pegar)
+        track_names_pool.extend(selecao)
+        print(f"  + {len(selecao)} músicas 'lado B' de '{artist['name']}'")
 
-        track_names_pool.extend(get_random_sample(pool_famosas, qtd_famosas))
-        track_names_pool.extend(get_random_sample(pool_medianas, qtd_medianas))
-        track_names_pool.extend(get_random_sample(pool_lado_b, qtd_lado_b))
+    print("\nProcessando artistas da 'metade inferior'...")
+    for artist, total_a_pegar in zip(artistas_nicho, distribuicao_nicho):
+        if total_a_pegar == 0: continue
+        artist_top_tracks = artist.get('top_tracks', [])
         
-        print(f"  De '{artist['name']}': coletadas {total_musicas_a_pegar} músicas ({qtd_famosas}f, {qtd_medianas}m, {qtd_lado_b}lb).")
-        
+        pool_musicas = artist_top_tracks
+        selecao = get_random_sample(pool_musicas, total_a_pegar)
+        track_names_pool.extend(selecao)
+        print(f"  + {len(selecao)} músicas aleatórias de '{artist['name']}'")
+
+    # --- 5. MONTAGEM FINAL COM GARANTIA DE 100 MÚSICAS ---
+    print("\n" + "-" * 40)
+    print(f"\n--- PASSO 5: Montando a playlist final ---")
+
     unique_tracks = list(set(track_names_pool))
-    print(f"\nO universo musical da Sofia contém {len(unique_tracks)} músicas ÚNICAS.")
-    print("-" * 40)
-    
-    # --- 4. MONTAGEM DA PLAYLIST FINAL (CORTE PARA 100) ---
-    print(f"\n--- PASSO 4: Montando a playlist final com {FINAL_PLAYLIST_SIZE} músicas ---")
+    print(f"Total de {len(unique_tracks)} músicas únicas selecionadas na coleta inicial.")
 
-    # MUDANÇA: Lógica de sobre-amostragem, mais simples que o preenchimento
+    # MUDANÇA: Lógica completa de preenchimento para garantir 100 músicas
     if len(unique_tracks) < FINAL_PLAYLIST_SIZE:
-        print(f"AVISO CRÍTICO: Mesmo com a sobre-amostragem, o total de músicas ({len(unique_tracks)}) é menor que {FINAL_PLAYLIST_SIZE}. Usando todas as disponíveis.")
-        final_track_names = unique_tracks
-    else:
-        # Sorteia 100 da nossa lista limpa e superdimensionada
-        final_track_names = get_random_sample(unique_tracks, FINAL_PLAYLIST_SIZE)
+        print(f"Faltam {FINAL_PLAYLIST_SIZE - len(unique_tracks)} músicas. Buscando preenchimento de contexto...")
+        
+        # O pote de sobras vem APENAS dos artistas já selecionados
+        sobras_pool = []
+        for artist in (artistas_populares + artistas_nicho):
+            sobras_pool.extend(artist.get('top_tracks', []))
+        
+        # Limpa o pote de sobras, removendo as músicas que já temos
+        sobras_limpas = list(set(sobras_pool) - set(unique_tracks))
+        
+        musicas_necessarias = FINAL_PLAYLIST_SIZE - len(unique_tracks)
+        
+        # Pega o que falta do pote de sobras contextualizado
+        preenchimento = get_random_sample(sobras_limpas, musicas_necessarias)
+        unique_tracks.extend(preenchimento)
+        print(f"Adicionadas {len(preenchimento)} músicas extras do mesmo contexto de artistas.")
 
-    print(f"Sorteadas {len(final_track_names)} músicas para a playlist final.")
+    # Ajuste final para garantir o tamanho exato
+    if len(unique_tracks) > FINAL_PLAYLIST_SIZE:
+        final_track_names = get_random_sample(unique_tracks, FINAL_PLAYLIST_SIZE)
+    else:
+        final_track_names = unique_tracks
+    
+    print(f"Tamanho final da playlist: {len(final_track_names)} músicas.")
 
     track_uris = fetch_track_uris(final_track_names)
     if not track_uris: return
 
-    playlist_id = create_playlist(PLAYLIST_NAME)
+    playlist_id = create_playlist(NOVO_PLAYLIST_NAME)
     if playlist_id:
         add_tracks_to_playlist(playlist_id, track_uris)
-        
-        print("\n--- PASSO 5: Curtindo as músicas (uma por uma) ---")
+        print("\n--- PASSO 6: Curtindo as músicas (uma por uma) ---")
         like_tracks_slowly(track_uris)
     
     print("\n--- PROCESSO FINALIZADO! ---")
-    print(f"Playlist '{PLAYLIST_NAME}' criada com {len(track_uris)} músicas e curtidas.")
 
 if __name__ == "__main__":
     main()
