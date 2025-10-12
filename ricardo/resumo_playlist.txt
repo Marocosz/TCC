@@ -1,0 +1,67 @@
+ =============== RESUMO DA PLAYLIST: RICARDO ===============
+
+--- MÉTRICAS GERAIS ---
+Total de Músicas: 100
+Total de Artistas Únicos: 17
+
+--- MÉTRICAS DE POPULARIDADE ---
+Popularidade Média das Músicas: 72.08 / 100
+Popularidade Média dos Artistas: 77.08 / 100
+
+--- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
+Ano Médio de Lançamento: 1993
+Música Mais Antiga (ano): 1970
+Música Mais Nova (ano): 2021
+
+--- MÉTRICAS ESTRUTURAIS ---
+Duração Média das Músicas: N/A
+
+--- LISTA COMPLETA DE GÊNEROS (por frequência) ---
+  1. rock (49 ocorrências)
+  2. alternative rock (30 ocorrências)
+  3. classic rock (22 ocorrências)
+  4. hard rock (12 ocorrências)
+  5. punk (10 ocorrências)
+  6. pop punk (10 ocorrências)
+  7. garage rock (10 ocorrências)
+  8. blues rock (10 ocorrências)
+  9. metal (8 ocorrências)
+  10. thrash metal (8 ocorrências)
+  11. heavy metal (8 ocorrências)
+  12. brazilian rock (7 ocorrências)
+  13. mpb (7 ocorrências)
+  14. brazilian pop (7 ocorrências)
+  15. pop rock (7 ocorrências)
+  16. progressive rock (6 ocorrências)
+  17. psychedelic rock (6 ocorrências)
+  18. art rock (6 ocorrências)
+  19. grunge (6 ocorrências)
+  20. funk rock (6 ocorrências)
+  21. glam metal (4 ocorrências)
+  22. glam rock (3 ocorrências)
+  23. axé (2 ocorrências)
+  24. soundtrack (1 ocorrência)
+  25. folk rock (1 ocorrência)
+  26. folk (1 ocorrência)
+  27. singer-songwriter (1 ocorrência)
+  28. roots rock (1 ocorrência)
+  29. country rock (1 ocorrência)
+
+--- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
+  - Green Day: 10 música(s)
+  - The White Stripes: 10 música(s)
+  - Dire Straits: 9 música(s)
+  - The Police: 8 música(s)
+  - Weezer: 8 música(s)
+  - Metallica: 8 música(s)
+  - Engenheiros Do Hawaii: 7 música(s)
+  - Muse: 6 música(s)
+  - Pink Floyd: 6 música(s)
+  - Red Hot Chili Peppers: 6 música(s)
+  - Nirvana: 6 música(s)
+  - George Harrison: 5 música(s)
+  - Guns N' Roses: 4 música(s)
+  - Queen: 3 música(s)
+  - Luiz Caldas: 2 música(s)
+  - CHA NI (SF9): 1 música(s)
+  - Bob Dylan: 1 música(s)

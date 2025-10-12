@@ -1,0 +1,101 @@
+=============== RESUMO DA PLAYLIST: BEATRIZ ===============
+
+--- MÉTRICAS GERAIS ---
+Total de Músicas: 100
+Total de Artistas Únicos: 54
+
+--- MÉTRICAS DE POPULARIDADE ---
+Popularidade Média das Músicas: 76.50 / 100
+Popularidade Média dos Artistas: 76.63 / 100
+
+--- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
+Ano Médio de Lançamento: 2023
+Música Mais Antiga (ano): 2011
+Música Mais Nova (ano): 2025
+
+--- MÉTRICAS ESTRUTURAIS ---
+Duração Média das Músicas: N/A
+
+--- LISTA COMPLETA DE GÊNEROS (por frequência) ---
+  1. sertanejo (62 ocorrências)
+  2. agronejo (54 ocorrências)
+  3. arrocha (54 ocorrências)
+  4. sertanejo universitário (53 ocorrências)
+  5. piseiro (23 ocorrências)
+  6. brazilian funk (20 ocorrências)
+  7. pagode (15 ocorrências)
+  8. forró (14 ocorrências)
+  9. samba (12 ocorrências)
+  10. trap funk (12 ocorrências)
+  11. funk consciente (6 ocorrências)
+  12. brega (5 ocorrências)
+  13. brazilian trap (5 ocorrências)
+  14. trap (5 ocorrências)
+  15. seresta (4 ocorrências)
+  16. brazilian hip hop (4 ocorrências)
+  17. phonk (2 ocorrências)
+  18. brazilian phonk (2 ocorrências)
+  19. funk carioca (2 ocorrências)
+  20. brazilian pop (2 ocorrências)
+  21. brega funk (2 ocorrências)
+  22. funk de bh (1 ocorrência)
+  23. funk pop (1 ocorrência)
+  24. funk (1 ocorrência)
+  25. pagode baiano (1 ocorrência)
+  26. axé (1 ocorrência)
+
+--- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
+  - Henrique & Juliano: 10 música(s)
+  - Grupo Menos É Mais: 8 música(s)
+  - Zé Neto & Cristiano: 7 música(s)
+  - Matheus & Kauan: 7 música(s)
+  - Diego & Victor Hugo: 5 música(s)
+  - Felipe Amorim: 3 música(s)
+  - Murilo Huff: 3 música(s)
+  - Gusttavo Lima: 3 música(s)
+  - Léo Foguete: 2 música(s)
+  - Veigh: 2 música(s)
+  - Jorge & Mateus: 2 música(s)
+  - Panda: 2 música(s)
+  - Simone Mendes: 2 música(s)
+  - Danilo e Davi: 2 música(s)
+  - Ferrugem: 2 música(s)
+  - Clayton & Romário: 2 música(s)
+  - Rafa e Junior: 1 música(s)
+  - Repsaj: 1 música(s)
+  - Guilherme & Benuto: 1 música(s)
+  - Vitinho Imperador: 1 música(s)
+  - Dj Caio Vieira: 1 música(s)
+  - PEDRO SAMPAIO: 1 música(s)
+  - Dj Guuga: 1 música(s)
+  - Ana Castela: 1 música(s)
+  - Jmilton: 1 música(s)
+  - Mc Negão Original: 1 música(s)
+  - Mc Pedrinho: 1 música(s)
+  - Luccas & Rodrigo: 1 música(s)
+  - Turma do Pagode: 1 música(s)
+  - BLOW RECORDS: 1 música(s)
+  - Lauana Prado: 1 música(s)
+  - Hugo & Guilherme: 1 música(s)
+  - MC Jvila: 1 música(s)
+  - MC Willian: 1 música(s)
+  - DJ TOPO: 1 música(s)
+  - Nilo: 1 música(s)
+  - Léo Santana: 1 música(s)
+  - Mc IG: 1 música(s)
+  - Dj Guuh: 1 música(s)
+  - MC LUUKY: 1 música(s)
+  - Oruam: 1 música(s)
+  - DJ NATAN 22: 1 música(s)
+  - MC Ryan SP: 1 música(s)
+  - DJ CZ: 1 música(s)
+  - Matuê: 1 música(s)
+  - Fernando & Sorocaba: 1 música(s)
+  - Yan: 1 música(s)
+  - Kew: 1 música(s)
+  - Orochi: 1 música(s)
+  - Talita Mel: 1 música(s)
+  - Bruno Rosa: 1 música(s)
+  - DJ BRIZY: 1 música(s)
+  - DJ Gouveia: 1 música(s)
+  - Wesley Safadão: 1 música(s)

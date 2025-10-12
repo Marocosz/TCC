@@ -1,0 +1,37 @@
+=============== RESUMO DA PLAYLIST: SOFIA ===============
+
+--- MÉTRICAS GERAIS ---
+Total de Músicas: 100
+Total de Artistas Únicos: 13
+
+--- MÉTRICAS DE POPULARIDADE ---
+Popularidade Média das Músicas: 17.66 / 100
+Popularidade Média dos Artistas: 44.10 / 100
+
+--- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
+Ano Médio de Lançamento: 2022
+Música Mais Antiga (ano): 2014
+Música Mais Nova (ano): 2025
+
+--- MÉTRICAS ESTRUTURAIS ---
+Duração Média das Músicas: N/A
+
+--- LISTA COMPLETA DE GÊNEROS (por frequência) ---
+  1. bedroom pop (12 ocorrências)
+  2. vocaloid (9 ocorrências)
+  3. dream pop (8 ocorrências)
+
+--- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
+  - Palotree: 15 música(s)
+  - Frank: 15 música(s)
+  - awfultune: 13 música(s)
+  - Frankie Cosmos: 10 música(s)
+  - Corbon Amodio: 9 música(s)
+  - Beach House: 8 música(s)
+  - Cults: 8 música(s)
+  - Dream, Ivory: 7 música(s)
+  - NAKISO: 5 música(s)
+  - FLAVOR FOLEY: 4 música(s)
+  - Trillian: 3 música(s)
+  - Oscar Lang: 2 música(s)
+  - Dominurmom: 1 música(s)
