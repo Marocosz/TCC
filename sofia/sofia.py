@@ -54,28 +54,37 @@ def get_artist_album_tracks_pure(sp_client, artist_id: str, limit_albums=5) -> l
                 continue
     return full_track_objects
 
+def distribuir_musicas_entre_artistas(total_musicas: int, num_artistas: int) -> list:
+    if num_artistas == 0: return []
+    distribuicao = [0] * num_artistas
+    for _ in range(total_musicas):
+        distribuicao[random.randint(0, num_artistas - 1)] += 1
+    return distribuicao
+
 def main():
     # --- 1. PAINEL DE CONTROLE ---
-    print("--- PASSO 1: Carregando configurações da 'Curadoria Pura' ---")
+    print("--- PASSO 1: Carregando configurações da 'Curadoria Ponderada' ---")
     
-    PLAYLIST_URL_SEMENTE = "https://open.spotify.com/playlist/5m7jvWtwE8OJ9DgzU6jhUu?si=c5ac24ba302f4e49"
+    PLAYLIST_URL_SEMENTE = "https://open.spotify.com/playlist/5m7jvWtwE8OJ9DgzU6jhUu?si=d7c7e756ee9c4331"
     NOVO_PLAYLIST_NAME = "Alternativa Pura (Input Sofia)"
     FINAL_PLAYLIST_SIZE = 100
+    TARGET_INICIAL_DE_COLETA = 130 # Sobre-amostragem
 
-    # --- 2. COLETAR E CLASSIFICAR OS ARTISTAS (APENAS PRIMÁRIOS) ---
+    # MUDANÇA: Proporção PONDERADA do "orçamento" de músicas
+    PROPORCAO_PLAYLIST_POR_TIER = {
+        'populares': 0.3, # 30% da playlist virá dos artistas mais populares
+        'nicho': 0.7      # 70% virá dos artistas de nicho
+    }
+    print("-" * 40)
+
+    # --- 2. COLETAR E CLASSIFICAR ARTISTAS ---
     print("\n--- PASSO 2: Coletando e classificando os artistas da playlist base ---")
     
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope="playlist-read-private"))
     
     try:
-        # Pega os artistas simplificados (só nome e ID)
         artistas_simplificados_map = get_primary_artists_from_playlist_pure(sp, PLAYLIST_URL_SEMENTE.split('/')[-1].split('?')[0])
-        
-        # MUDANÇA: Agora "enriquecemos" os dados para obter a popularidade
-        print("Buscando perfis completos para obter a popularidade de cada artista...")
         todos_os_artistas_com_pop = get_full_artist_profiles(artistas_simplificados_map)
-        
-        # Agora podemos ordenar com segurança
         todos_os_artistas_com_pop.sort(key=lambda x: int(x['popularity']), reverse=True)
         
         ponto_de_corte = len(todos_os_artistas_com_pop) // 2
@@ -89,25 +98,37 @@ def main():
         print(f"ERRO: Não foi possível processar a playlist base. Erro: {e}")
         return
 
-    # --- 3. COLETAR UM UNIVERSO DE URIs (NÃO NOMES) ---
-    print("\n--- PASSO 3: Coletando um universo de URIs com lógica condicional ---")
+    # --- 3. COLETAR MÚSICAS COM LÓGICA PONDERADA ---
+    print("\n--- PASSO 3: Coletando músicas com a lógica Ponderada ---")
     
     track_uris_pool = []
     
-    print("\nProcessando artistas da 'metade superior' (pegando Lado B)...")
-    for artist in artistas_populares:
+    # Processando artistas da 'metade superior' (com orçamento MENOR)
+    orcamento_populares = int(TARGET_INICIAL_DE_COLETA * PROPORCAO_PLAYLIST_POR_TIER['populares'])
+    distribuicao_populares = distribuir_musicas_entre_artistas(orcamento_populares, len(artistas_populares))
+    print(f"\nProcessando artistas 'populares' (Orçamento: {orcamento_populares} músicas)...")
+    for artist, total_a_pegar in zip(artistas_populares, distribuicao_populares):
+        if total_a_pegar == 0: continue
         todas_as_faixas_obj = get_artist_album_tracks_pure(sp, artist['uri'].split(':')[-1])
         todas_as_faixas_obj.sort(key=lambda x: x.get('popularity', 0), reverse=True)
         
-        faixas_lado_b = todas_as_faixas_obj[5:]
-        track_uris_pool.extend([track['uri'] for track in faixas_lado_b])
-        print(f"  + {len(faixas_lado_b)} URIs 'lado B' de '{artist['name']}' adicionadas ao pote.")
+        pool_musicas = todas_as_faixas_obj[5:] # Pega só "Lado B"
+        selecao_uris = get_random_sample([track['uri'] for track in pool_musicas], total_a_pegar)
+        track_uris_pool.extend(selecao_uris)
+        print(f"  + {len(selecao_uris)} URIs 'lado B' de '{artist['name']}'")
 
-    print("\nProcessando artistas da 'metade inferior' (pegando aleatório)...")
-    for artist in artistas_nicho:
+    # Processando artistas da 'metade inferior' (com orçamento MAIOR)
+    orcamento_nicho = TARGET_INICIAL_DE_COLETA - orcamento_populares
+    distribuicao_nicho = distribuir_musicas_entre_artistas(orcamento_nicho, len(artistas_nicho))
+    print(f"\nProcessando artistas de 'nicho' (Orçamento: {orcamento_nicho} músicas)...")
+    for artist, total_a_pegar in zip(artistas_nicho, distribuicao_nicho):
+        if total_a_pegar == 0: continue
         todas_as_faixas_obj = get_artist_album_tracks_pure(sp, artist['uri'].split(':')[-1])
-        track_uris_pool.extend([track['uri'] for track in todas_as_faixas_obj])
-        print(f"  + {len(todas_as_faixas_obj)} URIs de '{artist['name']}' adicionadas ao pote.")
+        
+        pool_musicas = todas_as_faixas_obj # Pega do catálogo inteiro
+        selecao_uris = get_random_sample([track['uri'] for track in pool_musicas], total_a_pegar)
+        track_uris_pool.extend(selecao_uris)
+        print(f"  + {len(selecao_uris)} URIs aleatórias de '{artist['name']}'")
 
     # --- 4. MONTAGEM FINAL COM 100 MÚSICAS GARANTIDAS ---
     print("\n" + "-" * 40)
@@ -122,9 +143,6 @@ def main():
         final_track_uris = get_random_sample(unique_uris, FINAL_PLAYLIST_SIZE)
     
     print(f"Tamanho final da playlist: {len(final_track_uris)} músicas.")
-
-    # A função fetch_track_uris não é mais necessária, pois já temos as URIs
-    # track_uris = fetch_track_uris(final_track_names)
 
     playlist_id = create_playlist(NOVO_PLAYLIST_NAME)
     if playlist_id:
