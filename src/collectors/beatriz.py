@@ -1,6 +1,6 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-from functions import (
+from src.functions import (
     load_artists_from_csv,
     get_random_sample,
     fetch_track_uris,
