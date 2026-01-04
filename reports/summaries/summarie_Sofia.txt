@@ -1,0 +1,47 @@
+=============== RESUMO DA PLAYLIST: SOFIA ===============
+
+--- MÉTRICAS GERAIS ---
+Total de Músicas: 100
+Total de Artistas Únicos: 19
+
+--- MÉTRICAS DE POPULARIDADE ---
+Popularidade Média das Músicas: 20.43 / 100
+Popularidade Média dos Artistas: 37.61 / 100
+
+--- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
+Ano Médio de Lançamento: 2022
+Música Mais Antiga (ano): 1999
+Música Mais Nova (ano): 2025
+
+--- MÉTRICAS ESTRUTURAIS ---
+Duração Média das Músicas: N/A
+
+--- LISTA COMPLETA DE GÊNEROS (por frequência) ---
+  1. shoegaze (22 ocorrências)
+  2. plunderphonics (9 ocorrências)
+  3. cloud rap (7 ocorrências)
+  4. experimental hip hop (7 ocorrências)
+  5. lo-fi indie (7 ocorrências)
+  6. art pop (6 ocorrências)
+  7. experimental (1 ocorrência)
+
+--- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
+  - Camille Keller: 15 música(s)
+  - Double Virgo: 11 música(s)
+  - untitled (halo): 9 música(s)
+  - S.Maharba: 9 música(s)
+  - Lee Ikari: 7 música(s)
+  - mark william lewis: 7 música(s)
+  - Ydegirl: 7 música(s)
+  - Dean Blunt: 6 música(s)
+  - bar italia: 5 música(s)
+  - Eterna: 5 música(s)
+  - Joanne Robertson: 5 música(s)
+  - Samba Jean-Baptiste: 4 música(s)
+  - Michael Angelo: 4 música(s)
+  - X & Yde: 1 música(s)
+  - Chanel Beads: 1 música(s)
+  - Sokora Violetov: 1 música(s)
+  - RIP Swirl: 1 música(s)
+  - voyeur: 1 música(s)
+  - spirit blue: 1 música(s)

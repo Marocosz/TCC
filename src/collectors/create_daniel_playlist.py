@@ -1,4 +1,4 @@
-# create_daniel_playlist.py
+# src/collectors/create_daniel_playlist.py
 
 """
 ================================================================================
@@ -27,12 +27,19 @@ COMUNICAÇÃO:
 """
 
 import random
+import sys
+import os
+
+# Ajuste de path para garantir importação correta
+diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+diretorio_src = os.path.dirname(diretorio_atual)
+sys.path.append(diretorio_src)
+
 from functions import (
     load_artists_from_csv,
     extract_top_tracks_from_data,
     get_random_sample,
-    fetch_track_uris,
-    create_playlist,
+    create_playlist,        # Fetch removido pois usamos URIs diretas agora
     add_tracks_to_playlist,
     like_tracks_slowly
 )
@@ -50,7 +57,8 @@ def main():
     # --- 1. PAINEL DE CONTROLE (CONFIGURAÇÕES) ---
     print("--- PASSO 1: Carregando configurações para o 'Daniel - Caos Controlado' ---")
     
-    CSV_FILE = "daniel/artistas_lofi_dados.csv"
+    # Caminho absoluto para garantir leitura
+    CSV_FILE = r"C:\Users\marco\OneDrive\Documentos\projetos\TCC\data\raw\artistas_lofi_dados.csv"
     PLAYLIST_NAME = "Lofi Flow (Input Daniel)"
     FINAL_PLAYLIST_SIZE = 100 # Meta final de faixas na playlist
 
@@ -61,7 +69,6 @@ def main():
 
     # Configuração de Amostragem de Músicas:
     # Define o intervalo aleatório de faixas a serem extraídas de cada artista.
-    # Ex: Um artista pode contribuir com 4 músicas, outro com 7, outro com 5.
     MUSICAS_POR_ARTISTA_RANGE = (4, 8)
 
     print(f"Lógica: Sobre-amostragem aleatória. Sortear {ARTISTAS_A_SELECIONAR} artistas para garantir {FINAL_PLAYLIST_SIZE} músicas únicas.")
@@ -73,8 +80,11 @@ def main():
     
     all_artists_pool = load_artists_from_csv(CSV_FILE, limit=ARTIST_SOURCE_POOL_SIZE)
     
+    if not all_artists_pool:
+        print("ERRO CRÍTICO: Nenhum artista encontrado no CSV.")
+        return
+
     # Validação de segurança:
-    # Garante que o script não quebre se o CSV tiver menos artistas que o solicitado.
     if len(all_artists_pool) < ARTISTAS_A_SELECIONAR:
         print("AVISO: O pool de artistas é menor que o número desejado. Usando todos os artistas disponíveis.")
         ARTISTAS_A_SELECIONAR = len(all_artists_pool)
@@ -88,60 +98,71 @@ def main():
     # Coleta as músicas dos artistas selecionados aplicando aleatoriedade na quantidade.
     print(f"\n--- PASSO 3: Criando 'pote' de músicas com coleta duplamente aleatória ---")
     
-    track_names_pool = []
+    track_uris_pool = [] # Alterado para guardar URIs (Links) em vez de Nomes
     
     for artist in selected_artists:
-        # Extrai a lista de faixas disponíveis nos dados do artista
-        artist_top_tracks = extract_top_tracks_from_data(artist)
+        # Extrai a lista de objetos de faixa (agora retorna objetos completos com URI)
+        raw_tracks = extract_top_tracks_from_data(artist)
         
-        # Define aleatoriamente quantas faixas esse artista específico vai contribuir (entre 4 e 8)
+        # Filtra apenas as URIs válidas
+        artist_uris = []
+        for t in raw_tracks:
+            if isinstance(t, dict) and 'uri' in t:
+                artist_uris.append(t['uri'])
+        
+        # Se não tiver músicas, pula
+        if not artist_uris:
+            continue
+
+        # Define aleatoriamente quantas faixas esse artista específico vai contribuir
+        # Proteção: Se tiver menos músicas que o sorteado, ajusta o teto
         num_musicas_a_pegar = random.randint(MUSICAS_POR_ARTISTA_RANGE[0], MUSICAS_POR_ARTISTA_RANGE[1])
+        num_musicas_a_pegar = min(num_musicas_a_pegar, len(artist_uris))
         
         # Seleciona as faixas aleatoriamente dentro do repertório do artista
-        musicas_selecionadas = get_random_sample(artist_top_tracks, num_musicas_a_pegar)
+        musicas_selecionadas = get_random_sample(artist_uris, num_musicas_a_pegar)
         
-        track_names_pool.extend(musicas_selecionadas)
+        track_uris_pool.extend(musicas_selecionadas)
         print(f"  + Coletadas {len(musicas_selecionadas)} músicas aleatórias de '{artist['name']}'.")
         
-    # Deduplicação: Remove músicas repetidas (caso artistas diferentes tenham a mesma faixa)
-    unique_tracks = list(set(track_names_pool))
+    # Deduplicação: Remove URIs repetidas
+    # AGORA FUNCIONA: Strings (URIs) são hashables, dicionários não eram.
+    unique_uris = list(set(track_uris_pool))
     
-    print(f"\nO universo musical contém {len(unique_tracks)} músicas ÚNICAS para o sorteio final.")
+    print(f"\nO universo musical contém {len(unique_uris)} músicas ÚNICAS para o sorteio final.")
     print("-" * 40)
     
     # --- 4. SELEÇÃO FINAL (CORTE PARA 100) ---
     # Ajusta a lista para o tamanho exato da playlist (FINAL_PLAYLIST_SIZE).
     print(f"\n--- PASSO 4: Montando a playlist final com {FINAL_PLAYLIST_SIZE} músicas ---")
 
-    if len(unique_tracks) < FINAL_PLAYLIST_SIZE:
+    if len(unique_uris) < FINAL_PLAYLIST_SIZE:
         # Caso de exceção: Se a coleta aleatória não gerou faixas suficientes.
-        print(f"AVISO CRÍTICO: Mesmo com a sobre-amostragem, o total de músicas únicas ({len(unique_tracks)}) é menor que {FINAL_PLAYLIST_SIZE}. Usando todas as disponíveis.")
-        final_track_names = unique_tracks
+        print(f"AVISO CRÍTICO: Mesmo com a sobre-amostragem, o total ({len(unique_uris)}) é menor que {FINAL_PLAYLIST_SIZE}. Usando todas.")
+        final_track_uris = unique_uris
     else:
         # Caminho feliz: Temos mais músicas que o necessário.
         # Sorteamos exatamente 100 faixas do pool limpo para garantir variedade máxima.
-        final_track_names = get_random_sample(unique_tracks, FINAL_PLAYLIST_SIZE)
+        final_track_uris = get_random_sample(unique_uris, FINAL_PLAYLIST_SIZE)
 
-    print(f"Sorteadas {len(final_track_names)} músicas para a playlist final.")
+    print(f"Sorteadas {len(final_track_uris)} músicas para a playlist final.")
 
     # --- 5. PERSISTÊNCIA NA API DO SPOTIFY ---
-    # Converte nomes em URIs e efetiva a criação na plataforma.
-    
-    # Busca os identificadores (URIs) das faixas selecionadas
-    track_uris = fetch_track_uris(final_track_names)
-    if not track_uris: return
+    if not final_track_uris: 
+        print("ERRO: Nenhuma música selecionada.")
+        return
 
     # Cria a playlist vazia na conta do usuário
     playlist_id = create_playlist(PLAYLIST_NAME)
     
     if playlist_id:
         # Adiciona as faixas à playlist criada
-        add_tracks_to_playlist(playlist_id, track_uris)
+        # Nota: Passamos URIs direto, sem precisar de fetch_track_uris
+        add_tracks_to_playlist(playlist_id, final_track_uris)
         
         # Simula o comportamento do usuário "curtindo" as músicas
-        # 'slowly' indica um delay artificial para evitar bloqueios da API
         print("\n--- PASSO 5: Curtindo as músicas (uma por uma) ---")
-        like_tracks_slowly(track_uris)
+        like_tracks_slowly(final_track_uris)
     
     print("\n--- PROCESSO FINALIZADO! ---")
     print(f"Playlist '{PLAYLIST_NAME}' criada com sucesso.")

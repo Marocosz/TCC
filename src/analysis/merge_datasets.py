@@ -116,7 +116,7 @@ if __name__ == '__main__':
     
     # Arquivo de Saída:
     # O arquivo consolidado é salvo na mesma pasta dos processados.
-    ARQUIVO_FINAL = "../../data/processed/analise_consolidada_input.csv"
+    ARQUIVO_FINAL = "../../data/processed/dataset_consolidada_input.csv"
     
     # Execução
     consolidar_csvs_de_personas(ARQUIVOS_DAS_PERSONAS, ARQUIVO_FINAL)

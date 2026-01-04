@@ -1,4 +1,4 @@
-# create_beatriz_playlist.py
+# src/collectors/create_beatriz_playlist.py
 
 """
 ================================================================================
@@ -14,7 +14,7 @@ RESPONSABILIDADES:
     1. Carregar artistas semente de um dataset CSV.
     2. Consultar a API do Spotify para obter as faixas mais populares desses artistas.
     3. Aplicar algoritmo de ordenação global por popularidade (Score 0-100).
-    4. Filtrar duplicatas e selecionar o Top N.
+    4. Filtrar duplicatas (por URI) e selecionar o Top 100.
     5. Criar a playlist na conta do usuário e salvar as músicas (Like).
 
 COMUNICAÇÃO:
@@ -24,131 +24,109 @@ COMUNICAÇÃO:
 ================================================================================
 """
 
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+import sys
+import os
+
+# Ajuste de path para garantir importação correta
+diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+diretorio_src = os.path.dirname(diretorio_atual)
+sys.path.append(diretorio_src)
+
 from functions import (
     load_artists_from_csv,
-    get_random_sample,
-    fetch_track_uris,
-    create_playlist,
+    extract_top_tracks_from_data,
+    create_playlist,        
     add_tracks_to_playlist,
-    like_tracks_slowly 
+    like_tracks_slowly
 )
 
 def main():
     """
-    Controlador principal do fluxo de geração da playlist.
-    
-    Lógica de Negócio (Perfil Beatriz):
-        Diferente de outros perfis que podem usar aleatoriedade, este fluxo
-        coleta TODAS as músicas populares dos artistas listados, junta tudo em
-        um único "pool" e ordena decrescentemente pelo índice de popularidade
-        do Spotify. O resultado são as 100 músicas mais "Mainstream" possíveis
-        dentro do universo de artistas fornecido.
+    Controlador principal do fluxo da Beatriz.
     """
     
-    # --- 1. CONFIGURAÇÕES ---
-    # Definição de constantes para controle de escopo e limites da API
+    # --- 1. PAINEL DE CONTROLE ---
     print("--- PASSO 1: Carregando configurações para a 'Beatriz Mainstream' ---")
     
-    CSV_FILE = "beatriz/artistas_topbrasil_dados.csv"
+    CSV_FILE = r"C:\Users\marco\OneDrive\Documentos\projetos\TCC\data\raw\artistas_topbrasil_dados.csv"
     PLAYLIST_NAME = "Top Hits Brasil (Input Beatriz)"
-    FINAL_PLAYLIST_SIZE = 100 # Tamanho alvo da playlist final
-    ARTIST_SOURCE_LIMIT = 100 # Limite de leitura do CSV para evitar timeouts
-    
+    FINAL_PLAYLIST_SIZE = 100
+
     print(f"Lógica: Criar um ranking de músicas por popularidade da FAIXA e selecionar o Top {FINAL_PLAYLIST_SIZE}.")
     print("-" * 40)
 
-    # --- 2. CRIAÇÃO DO "UNIVERSO MUSICAL" ---
-    # Etapa de ETL (Extract): Carrega dados brutos e enriquece via API
+    # --- 2. COLETA DE MÚSICAS (RANKING GLOBAL) ---
     print("\n--- PASSO 2: Coletando todas as top músicas de todos os artistas do CSV ---")
     
-    all_artists = load_artists_from_csv(CSV_FILE, limit=ARTIST_SOURCE_LIMIT)
+    all_artists = load_artists_from_csv(CSV_FILE, limit=100)
     
-    # Validação crítica: Sem artistas, o processo não pode continuar
     if not all_artists:
-        print(f"ERRO: Não foi possível carregar artistas do arquivo '{CSV_FILE}'.")
+        print("ERRO: Nenhum artista encontrado.")
         return
 
-    # Inicialização do Cliente Spotify
-    # Requer variáveis de ambiente configuradas (SPOTIPY_CLIENT_ID, etc.)
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth())
-    
-    # Repositório temporário para os objetos completos de música (Metadados + Popularidade)
-    all_tracks_pool = []
-    
+    # Lista para armazenar TODAS as músicas encontradas (Objeto completo)
+    # Formato: [{'name': '...', 'uri': '...', 'popularity': 80}, ...]
+    global_track_pool = []
+
     for artist in all_artists:
-        try:
-            # Extração do ID necessário para o endpoint 'artist_top_tracks'
-            artist_id = artist['uri'].split(':')[-1]
-            
-            # Integração Spotify:
-            # Busca as 10 faixas mais populares do artista no mercado 'BR'.
-            # Retorna uma lista de objetos 'track' contendo o campo 'popularity'.
-            top_tracks_objects = sp.artist_top_tracks(artist_id, country="BR")['tracks']
-            
-            all_tracks_pool.extend(top_tracks_objects)
-            print(f"  + Coletadas {len(top_tracks_objects)} músicas de '{artist['name']}'")
-            
-        except Exception as e:
-            # Tolerância a falhas: Se um artista falhar, o script segue para o próximo
-            print(f"  AVISO: Não foi possível buscar músicas de '{artist['name']}'. Erro: {e}")
-            
-    print(f"\nColetadas {len(all_tracks_pool)} músicas no total para o ranking.")
-    
-    # --- 3. RANKING POR POPULARIDADE DA MÚSICA ---
-    # Lógica Central da Persona Beatriz:
-    # Ordena o pool inteiro baseando-se no atributo 'popularity' (0 a 100) do objeto track.
-    # reverse=True garante que as músicas com maior score fiquem no topo.
-    print("\n--- PASSO 3: Ordenando todas as músicas por sua popularidade individual ---")
+        # Pega as top tracks (retorna objetos completos com URI e Popularity via functions.py)
+        tracks = extract_top_tracks_from_data(artist)
+        
+        # Filtra apenas dados válidos
+        valid_tracks = []
+        for t in tracks:
+            # Garante que tem URI e Popularidade
+            if isinstance(t, dict) and 'uri' in t and 'popularity' in t:
+                valid_tracks.append(t)
+        
+        global_track_pool.extend(valid_tracks)
+        print(f"  + Coletadas {len(valid_tracks)} músicas de '{artist['name']}'")
 
-    all_tracks_pool.sort(key=lambda track: track['popularity'], reverse=True)
-    
-    print("Ranking de músicas criado com sucesso.")
+    print(f"\nColetadas {len(global_track_pool)} músicas no total para o ranking.")
     print("-" * 40)
 
-    # --- 4. SELEÇÃO E DEDUPLICAÇÃO ---
-    # Transforma o Ranking em uma lista final de nomes, removendo duplicatas.
-    # Necessário pois artistas diferentes podem ter feats na mesma música, 
-    # ou a mesma música pode aparecer em álbuns diferentes.
-    print(f"\n--- PASSO 4: Selecionando as {FINAL_PLAYLIST_SIZE} músicas mais populares do ranking ---")
+    # --- 3. ORDENAÇÃO E DEDUPLICAÇÃO (CRÍTICO) ---
+    print("\n--- PASSO 3: Ordenando e limpando duplicatas ---")
     
-    final_track_names = []
-    seen_tracks = set() # Set para busca O(1) na verificação de duplicidade
+    # 1. Ordena pelo campo 'popularity' da música (do maior para o menor)
+    global_track_pool.sort(key=lambda x: x['popularity'], reverse=True)
     
-    for track in all_tracks_pool:
-        track_name = track['name']
-        
-        if track_name not in seen_tracks:
-            final_track_names.append(track_name)
-            seen_tracks.add(track_name)
-        
-        # Interrompe o loop assim que atingir o tamanho desejado da playlist
-        if len(final_track_names) >= FINAL_PLAYLIST_SIZE:
-            break
+    # 2. Deduplicação por URI (O Segredo para resolver o problema de repetição)
+    # Usamos um set para controle rápido e uma lista para manter a ordem do ranking
+    unique_uris = []
+    seen_uris = set()
+    
+    for track in global_track_pool:
+        if track['uri'] not in seen_uris:
+            unique_uris.append(track['uri'])
+            seen_uris.add(track['uri'])
             
-    print(f"Selecionadas {len(final_track_names)} músicas únicas para a playlist.")
+    print(f"Ranking limpo contém {len(unique_uris)} músicas únicas.")
     print("-" * 40)
+
+    # --- 4. CORTE FINAL (TOP 100) ---
+    print(f"\n--- PASSO 4: Selecionando as {FINAL_PLAYLIST_SIZE} músicas mais populares ---")
     
-    # --- 5. PERSISTÊNCIA (PLAYLIST & LIKES) ---
-    # Converte os nomes escolhidos em URIs e realiza as ações de escrita na conta.
-    print(f"\n--- PASSO 5: Montando a playlist final ---")
+    if len(unique_uris) < FINAL_PLAYLIST_SIZE:
+        final_track_uris = unique_uris
+        print(f"AVISO: Apenas {len(final_track_uris)} músicas disponíveis no total (Meta era {FINAL_PLAYLIST_SIZE}).")
+    else:
+        # Pega exatamente as Top 100
+        final_track_uris = unique_uris[:FINAL_PLAYLIST_SIZE]
+        
+    print(f"Playlist final pronta com {len(final_track_uris)} músicas.")
 
-    # Busca as URIs finais para os nomes selecionados
-    track_uris = fetch_track_uris(final_track_names)
-    if not track_uris: return
+    # --- 5. PERSISTÊNCIA ---
+    if not final_track_uris:
+        print("ERRO: Lista vazia.")
+        return
 
-    # Criação da Playlist vazia
     playlist_id = create_playlist(PLAYLIST_NAME)
-    
     if playlist_id:
-        # Povoamento da Playlist
-        add_tracks_to_playlist(playlist_id, track_uris)
+        add_tracks_to_playlist(playlist_id, final_track_uris)
         
-        # Ação de "Like" (Salvar na biblioteca)
-        # Executado com delay (slowly) para evitar Rate Limit da API
         print("\n--- PASSO 6: Curtindo as músicas (uma por uma) ---")
-        like_tracks_slowly(track_uris)
+        like_tracks_slowly(final_track_uris)
     
     print("\n--- PROCESSO FINALIZADO! ---")
     print(f"Playlist '{PLAYLIST_NAME}' criada com sucesso.")

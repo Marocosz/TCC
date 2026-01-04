@@ -50,11 +50,11 @@ load_dotenv()
 # ==============================================================================
 CONFIG_DATASETS = {
     "beatriz": {
-        "url": "INSIRA_A_URL_DA_PLAYLIST_BEATRIZ_AQUI", 
+        "url": "https://open.spotify.com/playlist/43t30aNQ4w9JWGWNJZBycx?si=e02f6e26d2574b6e", 
         "output": "../../data/processed/dataset_Beatriz_playlist.csv"
     },
     "daniel": {
-        "url": "INSIRA_A_URL_DA_PLAYLIST_DANIEL_AQUI",
+        "url": "https://open.spotify.com/playlist/6bOpB9LfJ5iu8Lert0mVv1?si=55ad0ed7dcb44b43",
         "output": "../../data/processed/dataset_Daniel_playlist.csv"
     },
     "ricardo": {
@@ -62,7 +62,7 @@ CONFIG_DATASETS = {
         "output": "../../data/processed/dataset_Ricardo_playlist.csv"
     },
     "sofia": {
-        "url": "INSIRA_A_URL_DA_PLAYLIST_SOFIA_AQUI",
+        "url": "https://open.spotify.com/playlist/1DnT0FX5aHNtjw3OzU2LG6?si=893eb9d2df19405d",
         "output": "../../data/processed/dataset_Sofia_playlist.csv"
     }
 }

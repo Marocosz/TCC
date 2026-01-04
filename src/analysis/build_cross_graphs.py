@@ -22,7 +22,7 @@ RESPONSABILIDADES:
 
 COMUNICAÇÃO:
     - Entrada: Lê 'analise_consolidada_input.csv' (gerado por consolidar_dados.py).
-    - Saída: Salva arquivos .png na pasta raiz ou diretório de relatórios.
+    - Saída: Salva arquivos .png na pasta reports/figures/cross.
 
 ================================================================================
 """
@@ -31,6 +31,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import Counter
+import os
 
 def calcular_top_generos(series_generos, top_n=10):
     """
@@ -70,7 +71,11 @@ def main():
     print("--- PASSO 1: Carregando e preparando os dados do CSV consolidado ---")
     
     # Arquivo gerado pela etapa de consolidação anterior
-    CSV_FILE = 'analise_consolidada_input.csv'
+    CSV_FILE = r'C:\Users\marco\OneDrive\Documentos\projetos\TCC\data\processed\dataset_consolidada_input.csv'
+    OUTPUT_DIR = '../../reports/figures/cross/'
+
+    # Garante a criação da pasta de saída
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     
     try:
         df = pd.read_csv(CSV_FILE)
@@ -117,8 +122,8 @@ def main():
     plt.title('Distribuição da Popularidade das Músicas por Persona', fontsize=16)
     plt.xlabel('Persona', fontsize=12)
     plt.ylabel('Índice de Popularidade da Música (0-100)', fontsize=12)
-    plt.savefig('grafico_popularidade.png')
-    print("Gráfico 'grafico_popularidade.png' salvo com sucesso.")
+    plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_popularidade.png'))
+    print(f"Gráfico 'grafico_popularidade.png' salvo em {OUTPUT_DIR}")
     
     # ==========================================================================
     # GRÁFICO 2: ANÁLISE DE DIVERSIDADE DE GÊNEROS
@@ -155,8 +160,8 @@ def main():
             ax.set_title(f'Top 10 Gêneros - {persona_name.capitalize()} (Sem Dados)', fontsize=14)
 
     plt.tight_layout(pad=3.0)
-    plt.savefig('grafico_generos.png')
-    print("Gráfico 'grafico_generos.png' salvo com sucesso.")
+    plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_generos.png'))
+    print(f"Gráfico 'grafico_generos.png' salvo em {OUTPUT_DIR}")
 
     # ==========================================================================
     # GRÁFICO 3: ANÁLISE TEMPORAL (Viés de Recência vs Nostalgia)
@@ -172,8 +177,8 @@ def main():
     plt.title('Distribuição do Ano de Lançamento das Músicas por Persona', fontsize=16)
     plt.xlabel('Persona', fontsize=12)
     plt.ylabel('Ano de Lançamento', fontsize=12)
-    plt.savefig('grafico_era_musical.png')
-    print("Gráfico 'grafico_era_musical.png' salvo com sucesso.")
+    plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_era_musical.png'))
+    print(f"Gráfico 'grafico_era_musical.png' salvo em {OUTPUT_DIR}")
 
     # ==========================================================================
     # GRÁFICO 4: CONCENTRAÇÃO DE ARTISTAS (Bolha de Filtro)
@@ -199,8 +204,8 @@ def main():
             ax.set_title(f'Top 10 Artistas - {persona_name.capitalize()} (Sem Dados)', fontsize=14)
 
     plt.tight_layout(pad=3.0)
-    plt.savefig('grafico_concentracao_artistas.png')
-    print("Gráfico 'grafico_concentracao_artistas.png' salvo com sucesso.")
+    plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_concentracao_artistas.png'))
+    print(f"Gráfico 'grafico_concentracao_artistas.png' salvo em {OUTPUT_DIR}")
 
     # ==========================================================================
     # GRÁFICO 5: ANÁLISE DE CAUDA LONGA (Pop vs Followers)
@@ -219,31 +224,8 @@ def main():
     plt.xlabel('Popularidade do Artista (Relevância Atual)', fontsize=12)
     plt.ylabel('Seguidores do Artista (Base de Fãs) - Escala Log', fontsize=12)
     plt.legend(title='Persona')
-    plt.savefig('grafico_pop_vs_followers.png')
-    print("Gráfico 'grafico_pop_vs_followers.png' salvo com sucesso.")
-
-    # ==========================================================================
-    # GRÁFICO 6: DURAÇÃO DAS MÚSICAS (Economia da Atenção)
-    # --------------------------------------------------------------------------
-    # Insight Buscado:
-    # Verificar se o algoritmo privilegia músicas curtas (otimizadas para streaming).
-    # - Músicas mais curtas geram mais plays e royalties.
-    # ==========================================================================
-    print("\n--- Gerando Gráfico 6: Duração das Músicas ---")
-    plt.figure(figsize=(12, 8))
-
-    # Filtragem preventiva: Remove linhas sem duração válida para não quebrar o plot
-    df_duration = df.dropna(subset=['duration_sec'])
-
-    sns.boxplot(data=df_duration, x='persona', y='duration_sec', hue='persona', palette=palette, legend=False, order=order)
-    
-    plt.title('Distribuição da Duração das Músicas por Persona', fontsize=16)
-    plt.xlabel('Persona', fontsize=12)
-    plt.ylabel('Duração da Música (em segundos)', fontsize=12)
-    plt.savefig('grafico_duracao_musicas.png')
-    print("Gráfico 'grafico_duracao_musicas.png' salvo com sucesso.")
-
-    print("\n--- Processo finalizado! Todos os 6 gráficos foram gerados. ---")
+    plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_pop_vs_followers.png'))
+    print(f"Gráfico 'grafico_pop_vs_followers.png' salvo em {OUTPUT_DIR}")
     
 if __name__ == "__main__":
     main()

@@ -1,0 +1,61 @@
+=============== RESUMO DA PLAYLIST: DANIEL ===============
+
+--- MÉTRICAS GERAIS ---
+Total de Músicas: 100
+Total de Artistas Únicos: 33
+
+--- MÉTRICAS DE POPULARIDADE ---
+Popularidade Média das Músicas: 42.18 / 100
+Popularidade Média dos Artistas: 49.65 / 100
+
+--- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
+Ano Médio de Lançamento: 2024
+Música Mais Antiga (ano): 2017
+Música Mais Nova (ano): 2025
+
+--- MÉTRICAS ESTRUTURAIS ---
+Duração Média das Músicas: N/A
+
+--- LISTA COMPLETA DE GÊNEROS (por frequência) ---
+  1. lo-fi (92 ocorrências)
+  2. lo-fi beats (56 ocorrências)
+  3. lo-fi hip hop (19 ocorrências)
+  4. jazz beats (15 ocorrências)
+  5. medieval (5 ocorrências)
+  6. chillstep (4 ocorrências)
+  7. dark ambient (3 ocorrências)
+
+--- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
+  - Brxvs: 6 música(s)
+  - Slowday: 6 música(s)
+  - Theo Aabel: 6 música(s)
+  - mellow fox: 6 música(s)
+  - butterfli: 6 música(s)
+  - Cloudroom: 6 música(s)
+  - Vincent Rayn: 5 música(s)
+  - sad notes: 5 música(s)
+  - Fugee: 5 música(s)
+  - G Sounds: 4 música(s)
+  - lorleaf: 4 música(s)
+  - jaackson: 4 música(s)
+  - Ptr.: 4 música(s)
+  - amies: 3 música(s)
+  - lilibu: 3 música(s)
+  - nate2timez: 3 música(s)
+  - mommy: 2 música(s)
+  - Philanthrope: 2 música(s)
+  - Analogue Alf: 2 música(s)
+  - cxlt.: 2 música(s)
+  - Towerz: 2 música(s)
+  - ourchase: 2 música(s)
+  - Erwin Do: 2 música(s)
+  - vimef: 1 música(s)
+  - saint rumi: 1 música(s)
+  - Tatami Construct: 1 música(s)
+  - terrarium.: 1 música(s)
+  - Toti Cisneros: 1 música(s)
+  - Mellow Melt: 1 música(s)
+  - Jonny Wolf: 1 música(s)
+  - Flitz&Suppe: 1 música(s)
+  - Project AER: 1 música(s)
+  - Kainbeats: 1 música(s)
