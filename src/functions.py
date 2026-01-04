@@ -1,9 +1,28 @@
 # functions.py
 
 """
-Uma coleção de funções utilitárias autossuficientes para interagir com a API do Spotify.
-Cada função inicializa sua própria conexão com a API, simplificando sua chamada
-em scripts externos.
+================================================================================
+MÓDULO DE UTILITÁRIOS E INTEGRAÇÃO COM SPOTIFY API
+================================================================================
+
+OBJETIVO DO ARQUIVO:
+    Atuar como a camada de infraestrutura e serviço do projeto. Este arquivo
+    centraliza todas as comunicações com a API do Spotify, abstraindo a
+    complexidade de autenticação, paginação e tratamento de erros.
+
+RESPONSABILIDADES:
+    1. Autenticação (OAuth 2.0 e Client Credentials).
+    2. Manipulação de Playlists (Criar, Adicionar, Ler).
+    3. Gestão de Biblioteca do Usuário (Curtir/Descurtir músicas).
+    4. Mineração de Dados (Extrair artistas, discografias e metadados).
+    5. Persistência (Salvar e carregar dados em CSV).
+
+INTEGRAÇÕES:
+    - Utiliza a biblioteca `spotipy` como wrapper da Web API do Spotify.
+    - É consumido pelos scripts "Collectors" (ex: gerador_playlists_mestre.py)
+      e pelos scripts de Análise (ex: build_persona_raw_data.py).
+
+================================================================================
 """
 
 import spotipy
@@ -17,46 +36,73 @@ import io
 import time
 import requests
 
-# Carrego as minhas credenciais secretas do arquivo .env para o ambiente.
+# Inicialização de variáveis de ambiente (carrega CLIENT_ID e CLIENT_SECRET)
 load_dotenv()
 
 
-# --- 1. Gerenciamento de Playlists e Biblioteca (Requer Login do Usuário) ---
+# ==============================================================================
+# SEÇÃO 1: GERENCIAMENTO DE PLAYLISTS E BIBLIOTECA (Escopo de Usuário)
+# ------------------------------------------------------------------------------
+# Estas funções exigem interação com o navegador para login do usuário, pois
+# modificam dados privados (criar playlists, dar like em músicas).
+# ==============================================================================
+
 def create_playlist(playlist_name: str, public: bool = True) -> str:
     """
-    Cria uma nova playlist para o usuário autenticado.
+    Cria uma playlist vazia na conta do usuário logado.
+
+    Contexto:
+        Chamada no início do processo de geração de playlists para as Personas.
+        Necessita do escopo de modificação de playlist.
+
+    Args:
+        playlist_name (str): Nome de exibição da playlist.
+        public (bool): Se a playlist será visível no perfil (Default: True).
+
+    Returns:
+        str: O 'Spotify ID' da nova playlist (usado para adicionar músicas depois).
     """
-    # Defino aqui as 'permissões' (escopos) que meu script vai pedir ao usuário.
-    # Neste caso, permissão para criar/modificar playlists públicas e privadas.
+    # Define escopos para permitir escrita em playlists públicas e privadas
     scope = "playlist-modify-public playlist-modify-private"
     
-    # Crio o meu 'controle remoto' do Spotify, que age em nome do usuário que fizer o login.
+    # Inicializa o cliente autenticado (dispara o fluxo OAuth no browser se necessário)
     sp_user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
     
-    # Pego o ID do usuário que está logado para dizer ao Spotify em qual conta criar a playlist.
+    # Obtém o ID do usuário atual para vincular a playlist a ele
     user_id = sp_user.current_user()["id"]
     
-    # Aqui eu efetivamente mando o comando para criar a playlist com o nome que escolhi.
+    # Executa a criação na API
     playlist = sp_user.user_playlist_create(user=user_id, name=playlist_name, public=public)
     
     print(f"Playlist '{playlist_name}' criada com sucesso.")
     
-    # A API me devolve várias informações da playlist criada, mas eu só preciso do ID dela.
+    # Retorna apenas o ID, que é o dado essencial para os próximos passos
     return playlist["id"]
 
 
 def add_tracks_to_playlist(playlist_id: str, track_uris: list) -> None:
     """
-    Adiciona uma lista de músicas a uma playlist específica, em lotes de 100.
+    Adiciona faixas a uma playlist existente, respeitando os limites da API.
+
+    Regra de Negócio / Limitação da API:
+        O endpoint de adicionar faixas do Spotify aceita no MÁXIMO 100 URIs
+        por requisição. Esta função implementa a lógica de lote (batching)
+        para contornar essa limitação.
+
+    Args:
+        playlist_id (str): ID da playlist alvo.
+        track_uris (list): Lista de strings contendo URIs do Spotify (ex: 'spotify:track:xyz').
     """
     scope = "playlist-modify-public playlist-modify-private"
     sp_user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
-    # A API só aceita adicionar 100 músicas por vez, então crio um loop que avança de 100 em 100.
+    # Loop de processamento em lotes (Batch Processing)
+    # Itera sobre a lista de 100 em 100 itens
     for i in range(0, len(track_uris), 100):
-        # Em cada passo do loop, eu 'fatio' a minha lista grande para pegar um pedaço de até 100 URIs.
+        # Fatia a lista principal para criar o sub-lote atual
         batch = track_uris[i:i + 100]
-        # Mando o comando para adicionar o lote de músicas de uma vez.
+        
+        # Envia o lote atual para a API
         sp_user.playlist_add_items(playlist_id, batch)
         print(f"Adicionado um lote de {len(batch)} músicas à playlist.")
     
@@ -65,37 +111,41 @@ def add_tracks_to_playlist(playlist_id: str, track_uris: list) -> None:
 
 def like_tracks(track_uris: list) -> None:
     """
-    Salva (curte) uma lista de URIs de músicas na biblioteca do usuário.
-    É uma ferramenta fundamental e flexível. Ela verifica antes de curtir para ser eficiente.
-    Requer os escopos 'user-library-read' e 'user-library-modify'.
+    Salva músicas na biblioteca do usuário ("Músicas Curtidas") de forma otimizada.
+
+    Estratégia de Otimização:
+        Antes de tentar salvar, a função verifica quais músicas JÁ estão salvas.
+        Isso evita chamadas de escrita redundantes e mantém o processo mais limpo.
+
+    Args:
+        track_uris (list): Lista de URIs para curtir.
     """
-    # Se a lista de URIs estiver vazia, não há nada a fazer, então eu aviso e saio da função.
     if not track_uris:
         print("Nenhuma URI de música fornecida para curtir.")
         return
         
-    # Defino as permissões para ler a biblioteca (verificar) e modificá-la (curtir).
+    # Escopos necessários: Ler biblioteca (verificar) e Modificar biblioteca (curtir)
     scope = "user-library-read user-library-modify"
-    # Crio meu 'controle remoto' do Spotify que age em nome do usuário.
     sp_user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
     
     print(f"--- Processando {len(track_uris)} músicas para curtir... ---")
 
     new_likes_count = 0
-    # A API só aceita 50 músicas por vez, então crio um loop para processar em lotes.
+    
+    # Batching: A API de 'User Library' limita operações a 50 itens por vez
     for i in range(0, len(track_uris), 50):
-        # Pego um 'lote' de até 50 músicas da minha lista.
         batch = track_uris[i:i + 50]
         try:
-            # Pergunto à API: "destas músicas, quais eu já curti antes?".
+            # Passo 1: Verificação (Read)
+            # Retorna uma lista de booleanos [True, False, True...] correspondente ao lote
             is_already_liked = sp_user.current_user_saved_tracks_contains(tracks=batch)
             
-            # Crio uma lista apenas com as músicas que eu ainda não curti.
+            # Passo 2: Filtragem
+            # Mantém apenas as URIs que retornaram False (não curtidas)
             tracks_to_like = [uri for uri, liked in zip(batch, is_already_liked) if not liked]
             
-            # Se houver de fato músicas novas para curtir neste lote...
+            # Passo 3: Ação (Write) - Apenas se houver itens novos
             if tracks_to_like:
-                # ...mando o comando para curti-las.
                 sp_user.current_user_saved_tracks_add(tracks=tracks_to_like)
                 new_likes_count += len(tracks_to_like)
                 print(f"Adicionado 'like' a {len(tracks_to_like)} novas músicas neste lote.")
@@ -107,13 +157,18 @@ def like_tracks(track_uris: list) -> None:
     print(f"\n--- Processo finalizado! Total de {new_likes_count} novas músicas foram curtidas. ---")
 
 
-# Adicione esta função em functions.py
-
 def like_tracks_slowly(track_uris: list) -> None:
     """
-    Salva (curte) uma lista de URIs de músicas na biblioteca do usuário, UMA POR UMA.
-    Este método é mais lento, mas muito robusto contra problemas de timing e rate limiting da API.
-    Requer os escopos 'user-library-read' e 'user-library-modify'.
+    Salva músicas uma por uma com atraso intencional (Throttling).
+
+    Por que essa função existe?
+        Em scripts que rodam por muito tempo ou processam muitas músicas,
+        o método em lote (batch) pode sofrer com Rate Limiting (Erro 429)
+        ou timeouts. Esta abordagem é mais lenta, mas extremamente robusta
+        para garantir que todas as músicas sejam processadas sem erros.
+
+    Args:
+        track_uris (list): Lista de URIs.
     """
     if not track_uris:
         print("Nenhuma URI de música fornecida para curtir.")
@@ -127,21 +182,21 @@ def like_tracks_slowly(track_uris: list) -> None:
     new_likes_count = 0
     for i, uri in enumerate(track_uris):
         try:
-            # Verifica se a música JÁ está curtida antes de tentar adicionar
+            # Verifica individualmente
             is_already_liked = sp_user.current_user_saved_tracks_contains(tracks=[uri])[0]
             
             if not is_already_liked:
-                # Manda o comando para curtir apenas ESTA música
                 sp_user.current_user_saved_tracks_add(tracks=[uri])
                 print(f"  ({i+1}/{len(track_uris)}) ✅ Curtido: {uri}")
                 new_likes_count += 1
             else:
                 print(f"  ({i+1}/{len(track_uris)}) ⏭️ Já estava curtida: {uri}")
 
-            # Adiciona uma pequena pausa para ser respeitoso com a API
-            time.sleep(0.2) # Pausa de 200 milissegundos
+            # Throttling: Pausa de 200ms para evitar sobrecarregar a API
+            time.sleep(0.2)
 
         except Exception as e:
+            # Em caso de erro em uma música, o script não para, apenas loga e continua
             print(f"  ({i+1}/{len(track_uris)}) ❌ Erro ao curtir a música {uri}: {e}")
             
     print(f"\n--- Processo finalizado! Total de {new_likes_count} novas músicas foram curtidas. ---")
@@ -149,52 +204,50 @@ def like_tracks_slowly(track_uris: list) -> None:
 
 def like_all_tracks_in_playlist(playlist_id: str) -> None:
     """
-    Curte todas as músicas de uma playlist que ainda não estão salvas na biblioteca.
+    Transfere todas as músicas de uma Playlist específica para a Biblioteca do Usuário.
+
+    Uso no Projeto:
+        Pode ser usada para analisar playlists automáticas do Spotify (ex: Descobertas da Semana)
+        e salvar as recomendações para análise posterior de permanência na biblioteca.
     """
-    # Peço permissão para ler playlists e a biblioteca, e também para modificar a biblioteca (curtir).
     scope = "user-library-read user-library-modify playlist-read-private"
     sp_user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
     print(f"--- Iniciando processo para curtir músicas da playlist ID: {playlist_id} ---")
 
-    # Começo com uma lista vazia para guardar as URIs das músicas da playlist.
+    # --- FASE 1: Coleta Completa (Paginação) ---
     track_uris = []
-    # Peço a primeira página de músicas da playlist.
     results = sp_user.playlist_tracks(playlist_id)
     
-    # Crio um loop para garantir que pego as músicas de TODAS as páginas da playlist.
+    # Itera sobre todas as páginas de resultados da playlist
     while results:
-        # Para cada música encontrada na página atual...
         for item in results['items']:
-            # ...verifico se é uma música de verdade e se tem uma URI...
+            # Validação: Garante que o item é uma faixa válida e tem URI
             if item.get('track') and item['track'].get('uri'):
-                # ...e adiciono a URI na minha lista.
                 track_uris.append(item['track']['uri'])
-        # Peço ao Spotipy para buscar a próxima página de resultados. Se não houver, o loop para.
+        
+        # Avança para a próxima página, se existir
         results = sp_user.next(results) if results['next'] else None
 
     if not track_uris:
         print("Nenhuma música encontrada na playlist.")
         return
 
+    # --- FASE 2: Processamento de Likes (Lógica de Lote) ---
     print(f"Encontradas {len(track_uris)} músicas. Verificando e curtindo em lotes...")
     new_likes_count = 0
     
-    # Loop para processar as músicas em lotes de 50 (limite da API para curtir/verificar).
+    # Processa em blocos de 50 (limite da API)
     for i in range(0, len(track_uris), 50):
         batch = track_uris[i:i + 50]
         try:
-            # Pergunto à API: "destas 50 músicas, quais eu já curti antes?".
-            # A resposta vem como uma lista de True/False.
+            # Verifica estado atual
             is_already_liked = sp_user.current_user_saved_tracks_contains(tracks=batch)
             
-            # Crio uma nova lista apenas com as músicas que retornaram 'False' na verificação anterior.
+            # Filtra apenas não curtidas
             tracks_to_like = [uri for uri, liked in zip(batch, is_already_liked) if not liked]
             
-            # Se de fato houver músicas novas para curtir neste lote...
             if tracks_to_like:
-                # ...mando o comando para curti-las...
                 sp_user.current_user_saved_tracks_add(tracks=tracks_to_like)
-                # ...e atualizo minha contagem de novas curtidas.
                 new_likes_count += len(tracks_to_like)
                 print(f"Adicionado 'like' a {len(tracks_to_like)} novas músicas neste lote.")
             else:
@@ -207,13 +260,14 @@ def like_all_tracks_in_playlist(playlist_id: str) -> None:
 
 def unlike_all_tracks_in_playlist(playlist_id: str) -> None:
     """
-    Remove o "like" de todas as músicas de uma playlist que estão na biblioteca do usuário.
+    Remove da biblioteca do usuário as músicas que pertencem a uma playlist específica.
+    Funciona como o inverso de 'like_all_tracks_in_playlist'.
     """
     scope = "user-library-read user-library-modify playlist-read-private"
     sp_user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
     print(f"--- Iniciando processo para remover likes da playlist ID: {playlist_id} ---")
 
-    # A lógica para pegar todas as URIs da playlist é idêntica à da função de curtir.
+    # --- FASE 1: Coleta (Igual à função de Like) ---
     track_uris = []
     results = sp_user.playlist_tracks(playlist_id)
     while results:
@@ -226,21 +280,20 @@ def unlike_all_tracks_in_playlist(playlist_id: str) -> None:
         print("Nenhuma música encontrada na playlist.")
         return
 
+    # --- FASE 2: Remoção (Lógica Inversa) ---
     print(f"Encontradas {len(track_uris)} músicas. Verificando e removendo 'likes' em lotes...")
     unliked_count = 0
     
-    # Loop para processar em lotes de 50.
     for i in range(0, len(track_uris), 50):
         batch = track_uris[i:i + 50]
         try:
-            # Pergunto à API: "destas 50, quais estão atualmente curtidas?".
+            # Verifica se ESTÁ curtida (True)
             is_currently_liked = sp_user.current_user_saved_tracks_contains(tracks=batch)
-            # Crio uma lista apenas com as músicas que retornaram 'True'.
+            
+            # Filtra para remover apenas as que ESTÃO curtidas
             tracks_to_unlike = [uri for uri, liked in zip(batch, is_currently_liked) if liked]
 
-            # Se houver músicas para descurtir neste lote...
             if tracks_to_unlike:
-                # ...mando o comando para remover o like delas.
                 sp_user.current_user_saved_tracks_delete(tracks=tracks_to_unlike)
                 unliked_count += len(tracks_to_unlike)
                 print(f"Removido o 'like' de {len(tracks_to_unlike)} músicas neste lote.")
@@ -254,48 +307,41 @@ def unlike_all_tracks_in_playlist(playlist_id: str) -> None:
     
 def unlike_all_saved_tracks() -> None:
     """
-    Remove o "like" de TODAS as músicas salvas na biblioteca do usuário.
+    Limpa completamente a biblioteca de "Músicas Curtidas" do usuário.
 
-    Esta é uma operação destrutiva e irreversível. Uma confirmação explícita
-    do usuário é necessária antes que a exclusão seja executada.
-
-    Requer os escopos 'user-library-read' (para buscar todas as músicas) e
-    'user-library-modify' (para remover os likes).
+    ALERTA DE SEGURANÇA:
+        Esta é uma função destrutiva. Inclui um mecanismo de confirmação manual
+        (input) para impedir execução acidental, já que a ação não pode ser desfeita.
     """
-    # Define os escopos necessários para ler e modificar a biblioteca de músicas.
     scope = "user-library-read user-library-modify"
     sp_user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
-    # --- PASSO 1: BUSCAR TODAS AS MÚSICAS CURTIDAS ---
+    # --- PASSO 1: Coleta de TODO o acervo (Pode ser demorado) ---
     print("Iniciando busca de todas as suas Músicas Curtidas. Isso pode demorar se a sua biblioteca for grande...")
     
     all_track_uris = []
-    # Pede a primeira página (lote de 50) das músicas salvas.
+    # Busca inicial com limite de 50
     results = sp_user.current_user_saved_tracks(limit=50)
     
-    # Loop de paginação para garantir que pegamos TODAS as músicas, não apenas as primeiras 50.
+    # Paginação para varrer a biblioteca inteira
     while results:
-        # Para cada música encontrada na página atual...
         for item in results['items']:
-            # ...adiciono a URI dela na minha lista.
             if item.get('track') and item['track'].get('uri'):
                 all_track_uris.append(item['track']['uri'])
         
-        # Informo o progresso para o usuário não achar que o script travou.
+        # Feedback visual de progresso
         print(f"Progresso: {len(all_track_uris)} músicas encontradas...")
         
-        # Peço ao Spotipy para buscar a próxima página de resultados. Se não houver, o loop para.
         results = sp_user.next(results) if results['next'] else None
 
     if not all_track_uris:
         print("\nVocê não tem nenhuma música curtida na sua biblioteca.")
         return
 
-    # --- PASSO 2: TRAVA DE SEGURANÇA E CONFIRMAÇÃO ---
+    # --- PASSO 2: Mecanismo de Segurança (Confirmação) ---
     total_songs = len(all_track_uris)
     print(f"\nBusca finalizada. Total de {total_songs} músicas encontradas na sua biblioteca.")
     
-    # Exibe o aviso de perigo e pede a confirmação.
     print("\n" + "="*60)
     print("AVISO: VOCÊ ESTÁ PRESTES A REMOVER TODAS AS SUAS MÚSICAS CURTIDAS! ⚠️")
     print("ESTA AÇÃO É PERMANENTE E IRREVERSÍVEL.")
@@ -304,22 +350,22 @@ def unlike_all_saved_tracks() -> None:
     confirmation_phrase = "EU QUERO APAGAR TUDO"
     user_input = input(f"Para confirmar, digite a frase exata '{confirmation_phrase}': ")
 
-    # Se a confirmação não for exata, o script é abortado com segurança.
+    # Aborta se a frase não for exata
     if user_input != confirmation_phrase:
         print("\nConfirmação incorreta. Operação cancelada. Nenhum like foi removido.")
         return
 
-    # --- PASSO 3: EXCLUSÃO EM LOTES ---
+    # --- PASSO 3: Exclusão em Massa (Lotes) ---
     print("\nConfirmação recebida. Iniciando a remoção dos likes em lotes...")
     
-    total_batches = (total_songs + 49) // 50  # Calcula quantos lotes serão necessários
+    total_batches = (total_songs + 49) // 50
     
     for i in range(0, total_songs, 50):
         batch = all_track_uris[i:i + 50]
         try:
             sp_user.current_user_saved_tracks_delete(tracks=batch)
             print(f"Lote {i//50 + 1}/{total_batches}: Like de {len(batch)} músicas foi removido.")
-            # Adicionamos uma pequena pausa para sermos respeitosos com a API.
+            # Pausa de segurança para não saturar a API durante deleção massiva
             time.sleep(0.5) 
         except Exception as e:
             print(f"Ocorreu um erro ao processar o lote {i//50 + 1}: {e}")
@@ -330,26 +376,25 @@ def unlike_all_saved_tracks() -> None:
     
 def audit_playlist_liked_status(playlist_id: str) -> None:
     """
-    Função de diagnóstico: Apenas lê e verifica o status de "curtida" de cada
-    música em uma playlist, sem tentar modificar nada.
-    Requer os escopos 'user-library-read' e 'playlist-read-private'.
+    Ferramenta de Diagnóstico (Read-Only).
+    Verifica quais músicas de uma playlist o usuário NÃO curtiu ainda.
+
+    Útil para:
+        Validar se os scripts de sincronização (like_tracks) funcionaram corretamente
+        sem alterar nenhum dado.
     """
-    # Defino permissões apenas para LER a playlist e a biblioteca do usuário.
     scope = "user-library-read playlist-read-private"
     sp_user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
-    # Começo uma lista vazia para guardar os detalhes das músicas da playlist.
+    # Coleta todas as músicas da playlist
     playlist_tracks = []
-    # Peço a primeira página de músicas.
     results = sp_user.playlist_tracks(playlist_id)
     
-    # Faço um loop para garantir que pego todas as músicas, mesmo que a playlist tenha mais de 100.
     while results:
         for item in results['items']:
             if item.get('track') and item['track'].get('uri'):
-                # Guardo o nome e a URI de cada música.
+                # Armazena nome para relatório legível e URI para verificação
                 playlist_tracks.append({'name': item['track']['name'], 'uri': item['track']['uri']})
-        # Peço a próxima página de resultados. O loop para quando não houver mais páginas.
         results = sp_user.next(results) if results['next'] else None
 
     if not playlist_tracks:
@@ -359,27 +404,22 @@ def audit_playlist_liked_status(playlist_id: str) -> None:
     print(f"--- Auditando {len(playlist_tracks)} músicas da playlist ---")
     
     not_liked_tracks = []
-    # Processo a verificação em lotes de 50.
+    # Verifica status em lotes de 50
     for i in range(0, len(playlist_tracks), 50):
-        # Pego um lote de até 50 músicas para verificar.
         batch = playlist_tracks[i:i + 50]
-        # Extraio apenas as URIs deste lote.
         batch_uris = [track['uri'] for track in batch]
         
         try:
-            # Envio o lote de URIs e pergunto à API quais delas estão curtidas.
+            # Consulta API: Retorna lista de booleanos
             liked_status_list = sp_user.current_user_saved_tracks_contains(tracks=batch_uris)
             
-            # Comparo a resposta (True/False) com a minha lista de músicas.
+            # Cruzamento de dados: Se False, adiciona à lista de discrepâncias
             for track_info, is_liked in zip(batch, liked_status_list):
-                # Se uma música não está curtida (status é False)...
                 if not is_liked:
-                    # ...adiciono o nome dela na minha lista de "não curtidas".
                     not_liked_tracks.append(track_info['name'])
         except Exception as e:
             print(f"Ocorreu um erro ao auditar um lote: {e}")
     
-    # No final, apresento o relatório.
     print("\n--- Relatório Final da Auditoria ---")
     if not not_liked_tracks:
         print("✅ CONFIRMADO: A API do Spotify reporta que TODAS as músicas desta playlist estão salvas.")
@@ -389,27 +429,43 @@ def audit_playlist_liked_status(playlist_id: str) -> None:
             print(f"  - {name}")
 
 
-# --- 2. Extração de Dados do Catálogo (Não Requer Login do Usuário) ---
+# ==============================================================================
+# SEÇÃO 2: EXTRAÇÃO DE DADOS DO CATÁLOGO (Client Credentials)
+# ------------------------------------------------------------------------------
+# Estas funções NÃO exigem login de usuário. Elas acessam dados públicos do
+# Spotify (artistas, álbuns, metadados) usando apenas Credenciais de Cliente.
+# São ideais para mineração de dados em larga escala.
+# ==============================================================================
+
 def get_artists_from_playlist(playlist_id: str) -> dict:
-    """Busca todas as músicas de uma playlist e retorna um dicionário de artistas únicos."""
-    # Crio um cliente que não precisa de login, pois playlists públicas são dados gerais.
+    """
+    Extrai todos os artistas únicos presentes em uma playlist.
+
+    Estratégia:
+        Varre todas as faixas da playlist e compila um dicionário de artistas.
+        Usa dicionário (hash map) para garantir unicidade automaticamente.
+
+    Returns:
+        dict: { 'artist_id': 'artist_name', ... }
+    """
+    # Inicializa cliente "App" (apenas leitura pública)
     sp_app = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
     print("Buscando músicas da playlist para extrair artistas...")
-    # Uso um dicionário para garantir que cada artista seja adicionado apenas uma vez.
+    
     unique_artists = {}
     
+    # Coleta paginada de itens da playlist
     results = sp_app.playlist_items(playlist_id)
     playlist_items = results['items']
-    # Garanto que vou pegar os artistas de todas as músicas, não apenas das 50 primeiras.
     while results['next']:
         results = sp_app.next(results)
         playlist_items.extend(results['items'])
 
+    # Processamento dos itens para extração
     for item in playlist_items:
         if item.get("track") and item['track'].get('artists'):
             for artist in item["track"]["artists"]:
-                # A chave do dicionário é o ID do artista (único), e o valor é o nome.
-                # Se o ID já existir, nada acontece. Se for novo, ele é adicionado.
+                # Adiciona ao dicionário se o ID ainda não existe
                 if artist['id'] not in unique_artists:
                     unique_artists[artist['id']] = artist['name']
     
@@ -418,27 +474,51 @@ def get_artists_from_playlist(playlist_id: str) -> dict:
 
 
 def get_full_artist_profiles(artists_dict: dict) -> list:
-    """Recebe um dicionário de artistas e busca seus perfis completos na API."""
+    """
+    Enriquece uma lista simples de artistas com metadados profundos.
+
+    Dados coletados:
+        - Popularidade (0-100)
+        - Gêneros musicais associados
+        - Número de seguidores
+        - Top Tracks (Músicas mais famosas no Brasil)
+
+    Performance:
+        - Busca detalhes de artistas em lotes de 50 (Rápido).
+        - Busca Top Tracks individualmente por artista (Lento - Limitação da API).
+
+    Args:
+        artists_dict (dict): Dicionário {id: nome} vindo de get_artists_from_playlist.
+
+    Returns:
+        list: Lista de dicionários com perfil completo dos artistas.
+    """
     sp_app = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
     print("Buscando detalhes dos perfis dos artistas...")
+    
     artist_ids = list(artists_dict.keys())
     artist_profiles = []
     
-    # Otimização: faço a busca dos perfis em lotes de 50 para ser mais rápido.
+    # Loop em lotes de 50 para o endpoint 'artists' (detalhes gerais)
     for i in range(0, len(artist_ids), 50):
         batch_ids = artist_ids[i:i + 50]
         try:
-            # Esta única chamada me retorna os detalhes de até 50 artistas de uma vez.
+            # Chamada em lote otimizada
             artists_details = sp_app.artists(batch_ids)
-            # Para cada perfil detalhado que recebi...
+            
+            # Para cada artista detalhado, busca suas Top Tracks
             for artist_data in artists_details['artists']:
-                # ...eu ainda preciso fazer uma chamada individual para pegar as top 10 músicas no Brasil.
+                # Chamada individual (Gargalo de performance aceitável para o escopo)
                 top_tracks_result = sp_app.artist_top_tracks(artist_data['id'], country="BR")
-                # Monto meu dicionário final com todas as informações que coletei.
+                
+                # Compilação do objeto final
                 artist_profiles.append({
-                    "name": artist_data['name'], "uri": artist_data['uri'],
-                    "followers": artist_data['followers']['total'], "genres": artist_data['genres'],
+                    "name": artist_data['name'], 
+                    "uri": artist_data['uri'],
+                    "followers": artist_data['followers']['total'], 
+                    "genres": artist_data['genres'],
                     "popularity": artist_data['popularity'],
+                    # Extrai apenas os nomes das faixas top
                     "top_tracks": [track['name'] for track in top_tracks_result["tracks"]]
                 })
                 print(f"  - Perfil de '{artist_data['name']}' obtido com sucesso.")
@@ -452,11 +532,19 @@ def get_full_artist_profiles(artists_dict: dict) -> list:
 
 def fetch_artist_discography(artist_name: str) -> dict:
     """
-    Busca a discografia de álbuns de estúdio de um artista, removendo duplicatas.
+    Busca todos os álbuns de estúdio de um artista e lista suas faixas.
+
+    Funcionalidades:
+        - Busca o ID do artista pelo nome.
+        - Filtra apenas lançamentos do tipo 'album' (ignora singles/compilações).
+        - Normaliza nomes para remover duplicatas (ex: remove versões Deluxe repetidas).
+
+    Returns:
+        dict: { 'Nome do Álbum': ['Faixa 1', 'Faixa 2', ...], ... }
     """
     sp_app = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
     
-    # Primeiro, busco o artista pelo nome para encontrar seu ID único.
+    # Passo 1: Resolver nome -> ID
     search_result = sp_app.search(q=f'artist:{artist_name}', type='artist', limit=1)
     if not search_result['artists']['items']:
         print(f"Artista '{artist_name}' não encontrado.")
@@ -466,7 +554,7 @@ def fetch_artist_discography(artist_name: str) -> dict:
     artist_id = artist['id']
     print(f"Artista encontrado: '{artist['name']}' (ID: {artist_id})")
 
-    # Peço à API apenas os lançamentos do tipo 'album'.
+    # Passo 2: Buscar Álbuns (Paginado)
     all_album_releases = []
     results = sp_app.artist_albums(artist_id, album_type='album', limit=50)
     all_album_releases.extend(results['items'])
@@ -474,10 +562,11 @@ def fetch_artist_discography(artist_name: str) -> dict:
         results = sp_app.next(results)
         all_album_releases.extend(results['items'])
     
+    # Passo 3: Filtragem de Duplicatas (Lógica de Normalização)
     unique_albums = []
-    seen_album_names = set() # Uso um 'set' para controlar os nomes de álbuns que já vi.
+    seen_album_names = set()
     for album in all_album_releases:
-        # Normalizo o nome do álbum para tratar "Meu Album" e "Meu Album (Deluxe)" como iguais.
+        # Usa função auxiliar para limpar "Deluxe", "Remaster", etc.
         normalized_name = normalize_album_name(album['name'])
         if normalized_name not in seen_album_names:
             seen_album_names.add(normalized_name)
@@ -485,17 +574,17 @@ def fetch_artist_discography(artist_name: str) -> dict:
     
     print(f"\nEncontrados {len(unique_albums)} álbuns de estúdio únicos para processar.")
 
+    # Passo 4: Buscar Faixas de cada álbum
     artist_discography = {}
     for i, album in enumerate(unique_albums):
         print(f"Buscando faixas de '{album['name']}' ({i+1}/{len(unique_albums)})...")
         try:
-            # Para cada álbum, pego a lista de suas faixas.
             track_results = sp_app.album_tracks(album['id'], limit=50)
             tracks = track_results['items']
             while track_results['next']:
                 track_results = sp_app.next(track_results)
                 tracks.extend(track_results['items'])
-            # Armazeno as faixas em um dicionário, usando o nome do álbum como chave.
+            
             artist_discography[album['name']] = [track['name'] for track in tracks]
         except Exception as e:
             print(f"Não foi possível buscar faixas do álbum {album['id']}. Motivo: {e}")
@@ -505,78 +594,114 @@ def fetch_artist_discography(artist_name: str) -> dict:
 
 
 def fetch_track_uris(track_names: list) -> list:
-    """Busca no Spotify uma lista de nomes de músicas e retorna suas URIs."""
+    """
+    Converte uma lista de Nomes de Músicas em URIs do Spotify.
+    
+    Mecanismo:
+        Realiza uma busca (Search) para cada nome e pega o primeiro resultado.
+        
+    Limitação:
+        Pode haver imprecisão se existirem muitas músicas com o mesmo nome.
+        Depende da relevância da busca do Spotify.
+
+    Args:
+        track_names (list): Lista de strings com nomes das faixas.
+
+    Returns:
+        list: Lista de URIs encontradas.
+    """
     sp_app = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
     found_uris = []
     print(f"Buscando URIs para {len(track_names)} músicas...")
+    
     for name in track_names:
         if not name.strip(): continue
         try:
-            # Faço uma busca geral pela música e pego o primeiro resultado, que tem mais chance de ser o correto.
+            # Busca simples pelo nome da faixa
             results = sp_app.search(q=name, type='track', limit=1)
             if results and results['tracks']['items']:
                 found_uris.append(results['tracks']['items'][0]['uri'])
         except spotipy.exceptions.SpotifyException:
-            # Se uma música não for encontrada, eu simplesmente ignoro e continuo para a próxima.
             pass 
-        # Faço uma pequena pausa para não sobrecarregar a API do Spotify.
+        
+        # Pausa leve para evitar sobrecarga (Rate Limit) na API de busca
         time.sleep(0.05)
             
     print(f"Encontradas {len(found_uris)} URIs.")
     return found_uris
 
 
-# --- 3. Salvamento de Dados ---
+# ==============================================================================
+# SEÇÃO 3: PERSISTÊNCIA E DADOS (CSV)
+# ------------------------------------------------------------------------------
+# Funções auxiliares para salvar e carregar dados estruturados, permitindo
+# que o projeto funcione em etapas sem perder o estado.
+# ==============================================================================
 
 def save_artists_to_csv(artists_data: list, filename: str, sort_by: str = 'popularity'):
-    """Ordena os dados dos artistas e os salva em um arquivo CSV."""
+    """
+    Salva a lista de dicionários de artistas em um arquivo CSV.
+    
+    Transformações:
+        Converte listas internas (como 'genres' e 'top_tracks') em strings
+        separadas por ponto-e-vírgula para caberem em uma célula do CSV.
+
+    Args:
+        artists_data (list): Dados completos dos artistas.
+        filename (str): Caminho do arquivo de saída.
+        sort_by (str): Chave do dicionário usada para ordenar antes de salvar.
+    """
     if not artists_data:
         print("Nenhum dado de artista para salvar.")
         return
 
     print(f"Ordenando artistas por '{sort_by}' e preparando para salvar...")
-    # Uso a função 'sorted' do Python para ordenar minha lista de dicionários.
-    # O 'key=lambda...' diz a ela para olhar o valor da chave 'popularity' ou 'followers' para ordenar.
-    # 'reverse=True' garante que será do maior para o menor.
+    
+    # Ordenação decrescente (do maior para o menor) baseada no campo escolhido
     sorted_artists = sorted(artists_data, key=lambda item: item.get(sort_by, 0), reverse=True)
     
-    # Defino na mão quais colunas eu quero no meu CSV e em qual ordem.
     csv_headers = ["name", "uri", "followers", "genres", "popularity", "top_tracks"]
     try:
-        # Abro o arquivo no modo de escrita ('w'). 'newline' e 'encoding' são boas práticas.
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
-            # Crio um "escritor" que sabe como lidar com dicionários.
             writer = csv.DictWriter(file, fieldnames=csv_headers)
-            # Escrevo a primeira linha do arquivo, o cabeçalho.
             writer.writeheader()
-            # Para cada artista na minha lista ordenada...
+            
             for artist_info in sorted_artists:
-                # ...crio uma cópia para não alterar meus dados originais...
+                # Cria cópia para não modificar o objeto original na memória
                 row_data = artist_info.copy()
-                # ...transformo as listas de 'genres' e 'top_tracks' em texto, separado por "; "...
+                
+                # Serialização de listas para string (CSV friendly)
                 row_data["genres"] = "; ".join(row_data["genres"])
                 row_data["top_tracks"] = "; ".join(row_data["top_tracks"])
-                # ...e escrevo a linha no arquivo.
+                
                 writer.writerow(row_data)
         print(f"Arquivo '{filename}' salvo com sucesso!")
     except Exception as e:
         print(f"Ocorreu um erro ao salvar o arquivo CSV: {e}")
 
 
-# --- 4. Funções Utilitárias Gerais ---
+# ==============================================================================
+# SEÇÃO 4: FUNÇÕES UTILITÁRIAS GERAIS
+# ------------------------------------------------------------------------------
+# Helpers para manipulação de strings, listas e leitura de arquivos.
+# ==============================================================================
 
 def load_artists_from_csv(file_path: str, limit: int) -> list:
-    """Lê dados de artistas a partir de um arquivo CSV."""
+    """
+    Lê o CSV gerado por 'save_artists_to_csv' e reconstrói as estruturas de dados.
+    Faz o processo inverso (String -> Lista) para gêneros e faixas.
+    """
     selected_artists = []
     try:
         with io.open(file_path, 'r', encoding='utf-8') as csvfile:
-            # Crio um "leitor" que entende que cada linha é um dicionário.
             reader = csv.DictReader(csvfile)
             for i, row in enumerate(reader):
                 if i >= limit: break
-                # Faço o processo inverso do salvamento: transformo o texto de volta em listas.
+                
+                # Deserialização: String "rock; pop" -> Lista ["rock", "pop"]
                 row['top_tracks'] = [track.strip() for track in row.get('top_tracks', '').split(';') if track.strip()]
                 row['genres'] = [genre.strip() for genre in row.get('genres', '').split(';') if genre.strip()]
+                
                 selected_artists.append(row)
     except FileNotFoundError:
         print(f"Erro: O arquivo no caminho {file_path} não foi encontrado.")
@@ -586,72 +711,79 @@ def load_artists_from_csv(file_path: str, limit: int) -> list:
 
 def extract_top_tracks_from_data(artist_data: dict) -> list:
     """
-    Extrai a lista 'top_tracks' do dicionário de dados de um artista,
-    que foi carregado de um arquivo CSV.
+    Helper simples para acessar a chave 'top_tracks' de um dicionário de artista com segurança.
     """
     return artist_data.get('top_tracks', [])
 
 
 def flatten_list_of_lists(list_of_lists: list) -> list:
-    """Transforma uma lista de listas em uma lista única."""
-    # Esta é uma forma pythônica e eficiente de fazer um loop duplo.
+    """
+    Utilitário para transformar matrizes (lista de listas) em uma lista plana.
+    Ex: [[1, 2], [3, 4]] -> [1, 2, 3, 4]
+    """
     return [item for sublist in list_of_lists for item in sublist]
 
 
 def get_random_sample(items: list, count: int) -> list:
-    """Retorna uma amostra aleatória de uma lista."""
-    # Pego o menor valor entre o que eu quero e o que eu tenho, para não dar erro.
+    """
+    Retorna uma amostragem aleatória segura.
+    
+    Proteção:
+        Se 'count' for maior que o tamanho da lista, retorna a lista inteira
+        em vez de gerar erro.
+    """
     sample_size = min(len(items), count)
-    # A função 'random.sample' já faz o trabalho de escolher aleatoriamente sem repetição.
     return random.sample(items, sample_size)
 
 
 def extract_spotify_playlist_id(url: str) -> str:
-    """Extrai o ID da playlist a partir de uma URL do Spotify."""
-    # Pego só a parte da URL antes do "?", para remover parâmetros.
+    """
+    Limpa e extrai o ID de uma URL de playlist do Spotify.
+    Remove parâmetros de query (como '?si=...') e barras extras.
+    """
     clean_url = url.split('?', 1)[0]
-    # Pego a última parte do endereço, que é o ID.
     return clean_url.rstrip('/').split('/')[-1]
 
 
 def normalize_album_name(name: str) -> str:
     """
-    Função auxiliar para limpar nomes de álbuns para comparações mais precisas.
+    Padroniza nomes de álbuns para detecção de duplicatas.
+    
+    Lógica:
+        - Remove acentos (NFKD).
+        - Converte para minúsculas.
+        - Remove termos comuns de edições especiais que não alteram a obra principal
+          (ex: Deluxe Edition, Remastered).
     """
-    # Decompõe caracteres como 'á' em 'a' + ´. O encode/decode remove o acento.
     name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('utf-8')
     name = name.lower()
     common_terms = ['(deluxe edition)', '(remastered)', '(remaster)', '(special edition)', '(ao vivo)', '(live)']
-    # Remove textos comuns de edições especiais para que o nome base do álbum seja o mesmo.
+    
     for term in common_terms:
         name = name.replace(term, '')
-    # Remove espaços em branco extras no início ou no fim.
+    
     return name.strip()
 
 def search_artists_by_genre(genre: str, limit: int = 20) -> list:
     """
-    Busca no Spotify artistas de um determinado gênero, ordenados por relevância.
+    Busca artistas baseados em tags de gênero (ex: "indie pop").
+    Útil para descobrir novos artistas fora das playlists semente.
     """
-    # Crio um cliente que não precisa de login, pois a busca por gênero é pública.
     sp_app = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
     
     print(f"Buscando os {limit} artistas mais relevantes para o gênero '{genre}'...")
     
-    # Crio a 'query' de busca usando o filtro 'genre:' que a API do Spotify entende.
+    # Sintaxe de busca específica do Spotify para gêneros
     query = f'genre:"{genre}"'
     
     try:
-        # Executo a busca, especificando o tipo 'artist' e o limite desejado.
         results = sp_app.search(q=query, type='artist', limit=limit, market='BR')
-        
-        # A API retorna um dicionário complexo. Eu extraio apenas a lista de artistas.
         artists_found = results['artists']['items']
         
         if not artists_found:
             print(f"Nenhum artista encontrado para o gênero '{genre}'.")
             return []
             
-        # Para cada artista encontrado, monto um dicionário mais limpo com as informações úteis.
         processed_artists = []
         for artist_data in artists_found:
             processed_artists.append({
@@ -667,46 +799,4 @@ def search_artists_by_genre(genre: str, limit: int = 20) -> list:
 
     except Exception as e:
         print(f"Ocorreu um erro durante a busca por gênero: {e}")
-        return []
-
-
-def get_available_genres() -> list:
-    """
-    Busca na API do Spotify a lista oficial de "gêneros semente" disponíveis.
-    Esta versão FINAL E CORRIGIDA usa https, o protocolo correto para a API.
-
-    Returns:
-        list: Uma lista de strings com todos os gêneros, ou uma lista vazia em caso de erro.
-    """
-    print("Buscando a lista de todos os gêneros disponíveis (Método Direto Corrigido)...")
-    
-    try:
-        # Passo 1: Usar o Spotipy apenas para obter um token de acesso válido
-        auth_manager = SpotifyClientCredentials()
-        token = auth_manager.get_access_token(as_dict=False)
-
-        # Passo 2: Montar a requisição manualmente com o 'requests'
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
-        
-        # URL COMPLETA E CORRETA (com https) da API para este endpoint
-        url = 'https://api.spotify.com/recommendations/available-genre-seeds'
-
-        # Passo 3: Fazer a chamada GET
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        # Passo 4: Processar a resposta
-        data = response.json()
-        genre_list = data['genres']
-        
-        print(f"Sucesso! Encontrados {len(genre_list)} gêneros.")
-        return genre_list
-
-    except requests.exceptions.HTTPError as http_err:
-        print(f"ERRO HTTP: Não foi possível buscar a lista de gêneros. Status: {http_err.response.status_code}")
-        return []
-    except Exception as e:
-        print(f"Ocorreu um erro geral ao buscar a lista de gêneros: {e}")
         return []
