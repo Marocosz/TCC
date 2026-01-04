@@ -24,18 +24,25 @@ RESPONSABILIDADES:
 COMUNICAÇÃO:
     - Entrada: Lê 'ricardo/artistas_classicos_dados.csv'.
     - Saída: Criação de playlist e likes na conta Spotify.
-    - Dependências: Usa 'src.functions' para I/O e API.
+    - Dependências: Usa 'functions' para I/O e API.
 ================================================================================
 """
 
 import random
 import math
-from src.functions import (
+import sys
+import os
+
+# Ajuste de path para garantir importação correta caso rodado de subpasta
+diretorio_atual = os.path.dirname(os.path.abspath(__file__))
+diretorio_src = os.path.dirname(diretorio_atual)
+sys.path.append(diretorio_src)
+
+from functions import (
     load_artists_from_csv,
     extract_top_tracks_from_data,
     get_random_sample,
-    fetch_track_uris,
-    create_playlist,
+    create_playlist,        # Fetch removido/não usado pois já pegamos a URI na origem
     add_tracks_to_playlist,
     like_tracks_slowly
 )
@@ -52,6 +59,7 @@ def distribuir_musicas_entre_artistas(total_musicas: int, num_artistas: int) -> 
     Retorno:
         list: Lista de inteiros indicando quantas músicas cada artista deve contribuir.
     """
+    if num_artistas == 0: return []
     distribuicao = [0] * num_artistas
     for _ in range(total_musicas):
         # Sorteia qual artista ganha +1 música no slot até atingir o total
@@ -65,7 +73,7 @@ def main():
     
     Lógica de Negócio (Estratificação Dupla):
         1. Estratificação de Artistas: O sistema não pega artistas aleatórios. Ele garante
-           uma mistura de Superstars, Artistas Médios e Desconhecidos.
+           uma mistura de Superstars, Artistas Médios e Desconhecidos usando % do total.
         2. Estratificação de Músicas: Dentro de cada artista, ele não pega apenas as Top 10.
            Ele força a inclusão de faixas menos conhecidas (índices 4 a 10) para gerar
            sensação de profundidade no catálogo.
@@ -74,7 +82,8 @@ def main():
     # --- 1. PAINEL DE CONTROLE (CONFIGURAÇÕES) ---
     print("--- PASSO 1: Carregando configurações para o 'Ricardo Nostálgico' ---")
     
-    CSV_FILE = "ricardo/artistas_classicos_dados.csv"
+    # Usando caminho absoluto conforme sua configuração anterior
+    CSV_FILE = r"C:\Users\marco\OneDrive\Documentos\projetos\TCC\data\raw\artistas_classicos_dados.csv"
     PLAYLIST_NAME = "Rock & MPB 90s (Input Ricardo)"
     FINAL_PLAYLIST_SIZE = 100
 
@@ -83,12 +92,36 @@ def main():
     # duplicatas é alta. Coletamos 40% a mais (140) para ter margem de corte depois.
     TARGET_INICIAL_DE_COLETA = 140
 
-    # Definição dos Tiers de Artistas (Baseado na linha do CSV):
-    # O CSV é ordenado por popularidade. 
-    # Linhas 0-15 são "Famosos", 15-50 "Medianos", 50-100 "Lado B".
-    FATIAS_ARTISTAS_CSV = {'famosos': (0, 15), 'medianos': (15, 50), 'lado_b': (50, 100)}
+    # --- CARREGAMENTO INICIAL PARA CÁLCULO DE TIERS ---
+    # Carregamos até 200 artistas para garantir que temos o dataset completo
+    all_artists = load_artists_from_csv(CSV_FILE, limit=200)
+    total_artistas = len(all_artists)
     
+    print(f"Total de artistas disponíveis no CSV: {total_artistas}")
+
+    if total_artistas == 0:
+        print("ERRO CRÍTICO: Nenhum artista encontrado no CSV.")
+        return
+
+    # --- DEFINIÇÃO DINÂMICA DE TIERS (BASEADA EM %) ---
+    # Em vez de números fixos (0-15), usamos porcentagens para adaptar a datasets pequenos.
+    # Tier 1 (Famosos): Top 15%
+    # Tier 2 (Medianos): Próximos 35%
+    # Tier 3 (Lado B): Restante 50%
+    
+    idx_famosos = max(1, int(total_artistas * 0.15)) # Pelo menos 1 famoso
+    idx_medianos = max(idx_famosos + 1, int(total_artistas * 0.50)) # Até 50% da lista
+
+    FATIAS_ARTISTAS_CSV = {
+        'famosos': (0, idx_famosos),
+        'medianos': (idx_famosos, idx_medianos),
+        'lado_b': (idx_medianos, total_artistas)
+    }
+    
+    print(f"Distribuição de Tiers calculada: Famosos({0}-{idx_famosos}), Medianos({idx_famosos}-{idx_medianos}), Lado B({idx_medianos}-{total_artistas})")
+
     # Quantos artistas sorteamos de cada fatia para compor a curadoria
+    # Ajustamos dinamicamente se o tier for muito pequeno (pega todos se tiver menos que a meta)
     QTD_ARTISTAS_POR_TIER = {'famosos': 6, 'medianos': 4, 'lado_b': 3}
 
     # Definição da Composição da Playlist (Peso por Tier):
@@ -108,19 +141,24 @@ def main():
     print("-" * 40)
 
     # --- 2. SELEÇÃO ESTRATIFICADA DE ARTISTAS ---
-    # Seleciona os artistas respeitando as fatias do CSV definidas na configuração.
+    # Seleciona os artistas respeitando as fatias calculadas acima.
     print("\n--- PASSO 2: Sorteando um grupo seleto de artistas ---")
     
-    all_artists = load_artists_from_csv(CSV_FILE, limit=120)
     selected_artists_por_tier = {'famosos': [], 'medianos': [], 'lado_b': []}
 
     for tier, (start, end) in FATIAS_ARTISTAS_CSV.items():
         # Recorte do CSV específico para o tier atual
         artist_pool_tier = all_artists[start:end]
-        num_to_sample = QTD_ARTISTAS_POR_TIER[tier]
         
-        # Sorteio aleatório dentro do tier
+        # Se o tier estiver vazio (ex: dataset muito pequeno), avisa e continua
+        if not artist_pool_tier:
+            print(f"AVISO: Tier '{tier}' está vazio. Pulando.")
+            continue
+
+        # Tenta pegar a quantidade alvo, mas se não tiver o suficiente, pega todos do tier
+        num_to_sample = QTD_ARTISTAS_POR_TIER[tier]
         sampled = get_random_sample(artist_pool_tier, min(num_to_sample, len(artist_pool_tier)))
+        
         selected_artists_por_tier[tier] = sampled
         print(f"Sorteados {len(sampled)} artistas do nível '{tier}'.")
 
@@ -129,9 +167,9 @@ def main():
     # --- 3. COLETA DE MÚSICAS (LÓGICA HÍBRIDA) ---
     # Itera sobre os artistas sorteados e coleta as músicas respeitando as proporções
     # de "Hits" vs "Lado B".
-    print(f"\n--- PASSO 3: Coletando ~{TARGET_INICIAL_DE_COLETA} músicas com a lógica híbrida ---")
+    print(f"\n--- PASSO 3: Coletando ~{TARGET_INICIAL_DE_COLETA} músicas (Via URI) com a lógica híbrida ---")
     
-    track_names_pool = []
+    track_uris_pool = [] # Renomeado para refletir que guardamos URIs
     
     for tier, artists_do_tier in selected_artists_por_tier.items():
         if not artists_do_tier: continue
@@ -147,17 +185,25 @@ def main():
         print(f"\nDo nível '{tier}', coletando um total de {total_musicas_do_tier} músicas.")
 
         for artist, total_a_pegar in zip(artists_do_tier, distribuicao_por_artista):
-            # Obtém as 10 músicas mais populares do artista
-            artist_top_tracks = extract_top_tracks_from_data(artist)
+            # Obtém os objetos completos das músicas
+            raw_tracks = extract_top_tracks_from_data(artist)
+            
+            # --- CORREÇÃO ARTISTA ERRADO ---
+            # Extrai diretamente as URIs para evitar busca por nome depois.
+            artist_track_uris = []
+            for t in raw_tracks:
+                if isinstance(t, dict) and 'uri' in t:
+                    artist_track_uris.append(t['uri'])
             
             # Validação: Fallback para artistas com poucos dados.
-            # Se o artista tiver menos de 10 faixas, a lógica de separação Famosas/Medianas falha.
-            # Nesse caso, pegamos uma amostra simples do que estiver disponível.
-            if len(artist_top_tracks) < 10:
-                print(f"  AVISO: '{artist['name']}' tem apenas {len(artist_top_tracks)} tracks. Usando fallback.")
+            # Se o artista tiver menos de 10 faixas (quebra lógica de fatiamento)
+            # OU se tiver menos músicas do que a quantidade solicitada (total_a_pegar).
+            if len(artist_track_uris) < 10 or len(artist_track_uris) < total_a_pegar:
+                print(f"  AVISO: '{artist['name']}' tem apenas {len(artist_track_uris)} tracks. Usando fallback.")
                 # Coleta o máximo possível até atingir a cota, sem distinção de tier
-                amostra = get_random_sample(artist_top_tracks, min(total_a_pegar, len(artist_top_tracks)))
-                track_names_pool.extend(amostra)
+                # OBS: Aqui já estamos adicionando URIs
+                amostra = get_random_sample(artist_track_uris, min(total_a_pegar, len(artist_track_uris)))
+                track_uris_pool.extend(amostra)
                 continue # Pula a lógica complexa abaixo
 
             # Cálculo interno por Artista:
@@ -165,13 +211,13 @@ def main():
             qtd_famosas = math.ceil(total_a_pegar * PROPORCAO_MUSICAS_POR_ARTISTA['famosas'])
             qtd_medianas = total_a_pegar - qtd_famosas
 
-            # Fatiamento das listas de músicas
-            pool_famosas = artist_top_tracks[FATIAS_TOP_TRACKS['famosas'][0]:FATIAS_TOP_TRACKS['famosas'][1]]
-            pool_medianas = artist_top_tracks[FATIAS_TOP_TRACKS['medianas'][0]:FATIAS_TOP_TRACKS['medianas'][1]]
+            # Fatiamento das listas de músicas (Usando a lista de URIs)
+            pool_famosas = artist_track_uris[FATIAS_TOP_TRACKS['famosas'][0]:FATIAS_TOP_TRACKS['famosas'][1]]
+            pool_medianas = artist_track_uris[FATIAS_TOP_TRACKS['medianas'][0]:FATIAS_TOP_TRACKS['medianas'][1]]
 
             # Coleta final para o pool geral
-            track_names_pool.extend(get_random_sample(pool_famosas, qtd_famosas))
-            track_names_pool.extend(get_random_sample(pool_medianas, qtd_medianas))
+            track_uris_pool.extend(get_random_sample(pool_famosas, qtd_famosas))
+            track_uris_pool.extend(get_random_sample(pool_medianas, qtd_medianas))
             
             print(f"  De '{artist['name']}': coletadas {total_a_pegar} músicas ({qtd_famosas} famosas, {qtd_medianas} medianas).")
 
@@ -180,30 +226,32 @@ def main():
     print("\n" + "-" * 40)
     print(f"\n--- PASSO 4: Montando a playlist final ---")
 
-    unique_tracks = list(set(track_names_pool))
-    print(f"Total de {len(unique_tracks)} músicas únicas selecionadas na coleta inicial.")
+    unique_uris = list(set(track_uris_pool))
+    print(f"Total de {len(unique_uris)} músicas únicas selecionadas na coleta inicial.")
 
-    if len(unique_tracks) < FINAL_PLAYLIST_SIZE:
+    if len(unique_uris) < FINAL_PLAYLIST_SIZE:
         # Fallback: Se mesmo coletando 140, as duplicatas reduziram para menos de 100.
-        print(f"AVISO CRÍTICO: Mesmo com a sobre-amostragem, o total de músicas únicas ({len(unique_tracks)}) é menor que {FINAL_PLAYLIST_SIZE}. Usando todas as disponíveis.")
-        final_track_names = unique_tracks
+        print(f"AVISO CRÍTICO: Mesmo com a sobre-amostragem, o total de músicas únicas ({len(unique_uris)}) é menor que {FINAL_PLAYLIST_SIZE}. Usando todas as disponíveis.")
+        final_track_uris = unique_uris
     else:
         # Caminho Feliz: Temos >100 músicas únicas.
         # Sorteamos aleatoriamente 100 para remover o excedente da sobre-amostragem.
-        final_track_names = get_random_sample(unique_tracks, FINAL_PLAYLIST_SIZE)
+        final_track_uris = get_random_sample(unique_uris, FINAL_PLAYLIST_SIZE)
     
-    print(f"Tamanho final da playlist: {len(final_track_names)} músicas.")
+    print(f"Tamanho final da playlist: {len(final_track_uris)} músicas.")
 
     # --- 5. PERSISTÊNCIA NA API DO SPOTIFY ---
-    track_uris = fetch_track_uris(final_track_names)
-    if not track_uris: return
+    # CORREÇÃO: Não chamamos mais fetch_track_uris pois já temos URIs.
+    # Verificamos apenas se a lista não está vazia.
+    if not final_track_uris: 
+        return
 
     playlist_id = create_playlist(PLAYLIST_NAME)
     if playlist_id:
-        add_tracks_to_playlist(playlist_id, track_uris)
+        add_tracks_to_playlist(playlist_id, final_track_uris)
         
         print("\n--- PASSO 5: Curtindo as músicas (uma por uma) ---")
-        like_tracks_slowly(track_uris)
+        like_tracks_slowly(final_track_uris)
     
     print("\n--- PROCESSO FINALIZADO! ---")
 

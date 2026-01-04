@@ -1,4 +1,4 @@
-# functions.py
+# src/functions.py
 
 """
 ================================================================================
@@ -184,7 +184,7 @@ def like_tracks_slowly(track_uris: list) -> None:
         try:
             # Verifica individualmente
             is_already_liked = sp_user.current_user_saved_tracks_contains(tracks=[uri])[0]
-            
+
             if not is_already_liked:
                 sp_user.current_user_saved_tracks_add(tracks=[uri])
                 print(f"  ({i+1}/{len(track_uris)}) ✅ Curtido: {uri}")
@@ -513,6 +513,7 @@ def get_full_artist_profiles(artists_dict: dict) -> list:
                 
                 # Compilação do objeto final
                 artist_profiles.append({
+                    "id": artist_data['id'], # GARANTE QUE O ID SEJA SALVO NO CSV
                     "name": artist_data['name'], 
                     "uri": artist_data['uri'],
                     "followers": artist_data['followers']['total'], 
@@ -641,15 +642,7 @@ def fetch_track_uris(track_names: list) -> list:
 def save_artists_to_csv(artists_data: list, filename: str, sort_by: str = 'popularity'):
     """
     Salva a lista de dicionários de artistas em um arquivo CSV.
-    
-    Transformações:
-        Converte listas internas (como 'genres' e 'top_tracks') em strings
-        separadas por ponto-e-vírgula para caberem em uma célula do CSV.
-
-    Args:
-        artists_data (list): Dados completos dos artistas.
-        filename (str): Caminho do arquivo de saída.
-        sort_by (str): Chave do dicionário usada para ordenar antes de salvar.
+    Inclui o campo 'id' para garantir compatibilidade futura.
     """
     if not artists_data:
         print("Nenhum dado de artista para salvar.")
@@ -660,8 +653,13 @@ def save_artists_to_csv(artists_data: list, filename: str, sort_by: str = 'popul
     # Ordenação decrescente (do maior para o menor) baseada no campo escolhido
     sorted_artists = sorted(artists_data, key=lambda item: item.get(sort_by, 0), reverse=True)
     
-    csv_headers = ["name", "uri", "followers", "genres", "popularity", "top_tracks"]
+    # ADICIONADO 'id' AOS HEADERS
+    csv_headers = ["name", "id", "uri", "followers", "genres", "popularity", "top_tracks"]
+    
     try:
+        # Garante que a pasta existe antes de salvar
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.DictWriter(file, fieldnames=csv_headers)
             writer.writeheader()
@@ -671,8 +669,10 @@ def save_artists_to_csv(artists_data: list, filename: str, sort_by: str = 'popul
                 row_data = artist_info.copy()
                 
                 # Serialização de listas para string (CSV friendly)
-                row_data["genres"] = "; ".join(row_data["genres"])
-                row_data["top_tracks"] = "; ".join(row_data["top_tracks"])
+                if isinstance(row_data.get("genres"), list):
+                    row_data["genres"] = "; ".join(row_data["genres"])
+                if isinstance(row_data.get("top_tracks"), list):
+                    row_data["top_tracks"] = "; ".join(row_data["top_tracks"])
                 
                 writer.writerow(row_data)
         print(f"Arquivo '{filename}' salvo com sucesso!")
@@ -711,9 +711,37 @@ def load_artists_from_csv(file_path: str, limit: int) -> list:
 
 def extract_top_tracks_from_data(artist_data: dict) -> list:
     """
-    Helper simples para acessar a chave 'top_tracks' de um dicionário de artista com segurança.
+    Busca as Top Tracks reais na API do Spotify usando o ID do artista.
+    
+    CORREÇÃO DE SEGURANÇA:
+    Se o CSV for antigo e não tiver a coluna 'id', esta função tenta extrair
+    o ID diretamente da coluna 'uri' (ex: 'spotify:artist:12345' -> '12345').
     """
-    return artist_data.get('top_tracks', [])
+    # Tenta pegar ID normal
+    artist_id = artist_data.get('id')
+    artist_name = artist_data.get('name', 'Desconhecido')
+    
+    # Se não tiver ID mas tiver URI, extrai o ID da URI
+    if not artist_id and 'uri' in artist_data:
+        try:
+            # Ex: spotify:artist:4Z8W4fKeB5YxbusRsdQVPb -> split(':') -> pega o último
+            artist_id = artist_data['uri'].split(':')[-1]
+        except:
+            pass # Falha silenciosa, retornará lista vazia abaixo
+    
+    if not artist_id:
+        return []
+    
+    sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+    
+    try:
+        # Busca as top tracks (Market='BR' garante músicas disponíveis aqui)
+        results = sp.artist_top_tracks(artist_id, country='BR')
+        # Retorna a lista completa de objetos (com URI, Name, Popularity, etc)
+        return results.get('tracks', [])
+    except Exception as e:
+        print(f"Erro em functions.py ao buscar tracks de '{artist_name}': {e}")
+        return []
 
 
 def flatten_list_of_lists(list_of_lists: list) -> list:

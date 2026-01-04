@@ -39,7 +39,7 @@ diretorio_atual = os.path.dirname(os.path.abspath(__file__))
 diretorio_pai = os.path.dirname(diretorio_atual)
 sys.path.append(diretorio_pai)
 
-from src.functions import *
+from functions import *
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 

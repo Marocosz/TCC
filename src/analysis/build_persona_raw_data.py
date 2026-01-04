@@ -14,8 +14,8 @@ O script:
    posteriormente pelos scripts de criação de playlists (collectors).
 
 Uso:
-    python build_persona_raw_data.py [nome_da_persona]
-    python build_persona_raw_data.py todas
+    python src/analysis/build_persona_raw_data.py [nome_da_persona]
+    python src/analysis/build_persona_raw_data.py all
 ================================================================================
 """
 
@@ -35,31 +35,19 @@ from functions import (
 # Os caminhos de output agora apontam corretamente para 'data/raw/'
 PERSONAS = {
     "beatriz": {
-        "urls": ["https://open.spotify.com/playlist/37i9dQZF1DX4YSJy4vUr9R"], # Ex: Top Brasil
+        "urls": ["https://open.spotify.com/playlist/0vC6NXijQbkL5e46xp931p?si=3b1fe282ed8145fb"], # Ex: Top Brasil
         "output": "../../data/raw/artistas_topbrasil_dados.csv"
     },
     "daniel": {
-        "urls": [
-            "https://open.spotify.com/playlist/37i9dQZF1DX8Uebic0v7S6", # Lofi Beats
-            "https://open.spotify.com/playlist/37i9dQZF1DXdbX4ghqPb9u", # Lofi Rain
-            "https://open.spotify.com/playlist/37i9dQZF1DWWQRvui9Df7x"  # Lofi Sleep
-        ],
+        "urls": ["https://open.spotify.com/playlist/1cVlDgSCIXIAOWFqWwEew2?si=0a229a6c9da84975"],
         "output": "../../data/raw/artistas_lofi_dados.csv"
     },
     "ricardo": {
-        "urls": [
-            "https://open.spotify.com/playlist/37i9dQZF1DX1clS6T8O89S", # BRock 80
-            "https://open.spotify.com/playlist/37i9dQZF1DXbSbmS0pX79a", # MPB Antigas
-            "https://open.spotify.com/playlist/37i9dQZF1DX2Nc3B70Yv1t"  # Rock Classics
-        ],
+        "urls": ["https://open.spotify.com/playlist/0W9QIdeE0rS9mkOiPY9tSa?si=4924da6010bb4853"],
         "output": "../../data/raw/artistas_classicos_dados.csv"
     },
     "sofia": {
-        "urls": [
-            "https://open.spotify.com/playlist/37i9dQZF1DX26fS49p5pY6", # Indie Pop
-            "https://open.spotify.com/playlist/37i9dQZF1DXa9is9v8mY9R", # Best of Indie 2024
-            "https://open.spotify.com/playlist/37i9dQZF1DX4S8XfUpS5z8"  # Indie Chill
-        ],
+        "urls": ["https://open.spotify.com/playlist/1q1mMCNcPx7uEWa5hwLvgv?si=1ec6fa3365684000"],
         "output": "../../data/raw/artistas_indie_dados.csv"
     }
 }

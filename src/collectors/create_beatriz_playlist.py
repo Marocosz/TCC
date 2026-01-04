@@ -20,13 +20,13 @@ RESPONSABILIDADES:
 COMUNICAÇÃO:
     - Entrada: Lê 'beatriz/artistas_topbrasil_dados.csv'.
     - Saída: Criação de playlist e likes na conta Spotify autenticada.
-    - Dependências: Utiliza funções auxiliares de 'src.functions'.
+    - Dependências: Utiliza funções auxiliares de 'functions'.
 ================================================================================
 """
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-from src.functions import (
+from functions import (
     load_artists_from_csv,
     get_random_sample,
     fetch_track_uris,

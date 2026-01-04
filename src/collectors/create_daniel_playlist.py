@@ -22,12 +22,12 @@ RESPONSABILIDADES:
 COMUNICAÇÃO:
     - Entrada: Lê 'daniel/artistas_lofi_dados.csv'.
     - Saída: Criação de playlist e likes na conta Spotify.
-    - Dependências: Usa 'src.functions' para operações de I/O e API.
+    - Dependências: Usa 'functions' para operações de I/O e API.
 ================================================================================
 """
 
 import random
-from src.functions import (
+from functions import (
     load_artists_from_csv,
     extract_top_tracks_from_data,
     get_random_sample,

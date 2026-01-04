@@ -58,7 +58,7 @@ CONFIG_DATASETS = {
         "output": "../../data/processed/dataset_Daniel_playlist.csv"
     },
     "ricardo": {
-        "url": "INSIRA_A_URL_DA_PLAYLIST_RICARDO_AQUI",
+        "url": "https://open.spotify.com/playlist/4aHPLH7rqeJqQsgGrAlzw8?si=533c1fbe8aa24b7f",
         "output": "../../data/processed/dataset_Ricardo_playlist.csv"
     },
     "sofia": {
@@ -248,7 +248,7 @@ def main():
     argumento = sys.argv[1].lower()
 
     # Lógica de decisão: Todas vs Individual
-    if argumento == "todas" or argumento == "all":
+    if argumento == "all":
         print(">>> INICIANDO EXTRAÇÃO EM LOTE (TODAS AS PERSONAS)")
         for persona, config in CONFIG_DATASETS.items():
             extrair_e_salvar_dados(config["url"], config["output"])
