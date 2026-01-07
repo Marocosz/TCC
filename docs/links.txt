@@ -1,0 +1,11 @@
+https://research.atspotify.com/2025/9/generalized-user-representations-for-large-scale-recommendations
+
+https://research.atspotify.com/2024/10/bridging-search-and-recommendation-with-generative-retrieval
+
+https://hackernoon.com/spotifys-discover-weekly-how-machine-learning-finds-your-new-music-19a41ab76efe
+
+https://research.atspotify.com/2021/4/contextual-and-sequential-user-embeddings-for-music-recommendation
+
+https://qz.com/571007/the-magic-that-makes-spotifys-discover-weekly-playlists-so-damn-good
+
+https://research.atspotify.com/2020/12/algorithmic-effects-on-the-diversity-of-consumption-on-spotify
