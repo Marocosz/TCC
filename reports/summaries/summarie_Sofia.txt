@@ -3,20 +3,27 @@
 --- MÉTRICAS GERAIS ---
 Total de Músicas: 200
 Total de Artistas Únicos: 27
+Média de Músicas por Artista: 7.41
 
---- MÉTRICAS DE POPULARIDADE ---
-Popularidade Média das Músicas: 10.19 / 100
-Popularidade Média dos Artistas: 36.37 / 100
+--- MÉTRICAS DE POPULARIDADE & ALCANCE ---
+Popularidade Média das Faixas: 10.19 (Mediana: 6)
+Consistência (Desvio Padrão): +/- 10.19 pontos
+Popularidade Média dos Artistas: 36.37
+Média de Seguidores dos Artistas: 40,666
+Alcance Acumulado (Soma Seguidores): 8,133,167
 
 --- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
 Ano Médio de Lançamento: 2021
-Música Mais Antiga (ano): 1999
-Música Mais Nova (ano): 2026
+Faixa Etária: 1999 a 2026
+Décadas Dominantes:
+  - Anos 2020s: 77.0%
+  - Anos 2010s: 20.9%
+  - Anos 1990s: 2.0%
 
 --- MÉTRICAS ESTRUTURAIS ---
 Duração Média das Músicas: N/A
 
---- LISTA COMPLETA DE GÊNEROS (por frequência) ---
+--- LISTA COMPLETA DE GÊNEROS (Top 20 por frequência) ---
   1. lo-fi indie (20 ocorrências)
   2. shoegaze (18 ocorrências)
   3. plunderphonics (16 ocorrências)
@@ -27,7 +34,7 @@ Duração Média das Músicas: N/A
   8. emo rap (1 ocorrência)
   9. neofolk (1 ocorrência)
 
---- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
+--- CONCENTRAÇÃO DE ARTISTAS (Top 20 por volume) ---
   - S.Maharba: 16 música(s)
   - Eterna: 15 música(s)
   - Patch +: 15 música(s)
@@ -48,10 +55,3 @@ Duração Média das Músicas: N/A
   - Joanne Robertson: 6 música(s)
   - X & Yde: 5 música(s)
   - spirit blue: 3 música(s)
-  - Pedro Vian: 2 música(s)
-  - Tom Greenwood: 2 música(s)
-  - Sokora Violetov: 1 música(s)
-  - Ngahere Wafer: 1 música(s)
-  - voyeur: 1 música(s)
-  - Sam Fenton: 1 música(s)
-  - LEYA: 1 música(s)

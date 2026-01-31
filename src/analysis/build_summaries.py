@@ -27,8 +27,9 @@ Comunicação:
 
 Métricas Calculadas:
     - Volume total (músicas/artistas).
-    - Índices de Popularidade (Média da faixa vs Média do artista).
-    - Janela Temporal (Ano médio, música mais antiga/nova).
+    - Índices de Popularidade (Média, Mediana, Desvio Padrão).
+    - Alcance Econômico (Seguidores dos artistas).
+    - Janela Temporal (Ano médio, música mais antiga/nova, décadas dominantes).
     - Estrutura (Duração média).
     - Top Gêneros e Artistas (Distribuição de frequência).
 
@@ -104,6 +105,9 @@ def gerar_resumo_persona(persona, info):
         df['album_release_year'] = pd.to_datetime(df['album_release_date'], errors='coerce').dt.year
         df['track_popularity'] = pd.to_numeric(df['track_popularity'], errors='coerce')
         df['artist_popularity'] = pd.to_numeric(df['artist_popularity'], errors='coerce')
+        # [ATUALIZADO] Importante para análise econômica e de cauda longa
+        df['artist_followers'] = pd.to_numeric(df['artist_followers'], errors='coerce')
+        
         # Converte ms para segundos para cálculo de média
         df['duration_sec'] = pd.to_numeric(df.get('duration_ms'), errors='coerce') / 1000
         
@@ -129,19 +133,32 @@ def gerar_resumo_persona(persona, info):
     lista_de_todos_os_generos = [genre.strip() for item in generos_validos for genre in item.split(';') if genre.strip()]
     todos_os_generos_ordenados = Counter(lista_de_todos_os_generos).most_common()
 
-    # Médias e Extremos
+    # Métricas de Popularidade e Dispersão [ATUALIZADO]
     media_pop_musica = df['track_popularity'].mean()
+    mediana_pop_musica = df['track_popularity'].median() # Para ver assimetria
+    std_pop_musica = df['track_popularity'].std()        # Para ver consistência
+    
     media_pop_artista = df['artist_popularity'].mean()
     
+    # Métricas de Seguidores (Alcance) [NOVO]
+    media_seguidores = df['artist_followers'].mean()
+    total_seguidores_somados = df['artist_followers'].sum() # Proxy para "Mainstream Index"
+    
+    # Métricas Temporais
     ano_medio = df['album_release_year'].mean()
     ano_min = df['album_release_year'].min()
     ano_max = df['album_release_year'].max()
     
+    # Análise de Décadas [NOVO]
+    # Cria coluna auxiliar de década (ex: 1985 -> 1980)
+    df['decade'] = (df['album_release_year'] // 10) * 10
+    top_decadas = df['decade'].value_counts(normalize=True).head(3) # Top 3 em %
+
     duracao_media_seg = df['duration_sec'].mean()
     duracao_media_formatada = formatar_duracao(duracao_media_seg)
 
     # --- ESCRITA DO RELATÓRIO (IO) ---
-    print(f"  - Salvando resumo em '{output_path}'...")
+    print(f"  - Salvando resumo expandido em '{output_path}'...")
     
     with open(output_path, 'w', encoding='utf-8') as f:
         # Cabeçalho
@@ -150,33 +167,43 @@ def gerar_resumo_persona(persona, info):
         # Bloco 1: Visão Geral
         f.write("--- MÉTRICAS GERAIS ---\n")
         f.write(f"Total de Músicas: {total_musicas}\n")
-        f.write(f"Total de Artistas Únicos: {artistas_unicos}\n\n")
+        f.write(f"Total de Artistas Únicos: {artistas_unicos}\n")
+        # [NOVO] Taxa de Fidelidade
+        f.write(f"Média de Músicas por Artista: {(total_musicas/artistas_unicos):.2f}\n\n")
         
-        # Bloco 2: Popularidade (Indicador de Mainstream)
-        f.write("--- MÉTRICAS DE POPULARIDADE ---\n")
-        f.write(f"Popularidade Média das Músicas: {media_pop_musica:.2f} / 100\n")
-        f.write(f"Popularidade Média dos Artistas: {media_pop_artista:.2f} / 100\n\n")
+        # Bloco 2: Popularidade e Alcance [EXPANDIDO]
+        f.write("--- MÉTRICAS DE POPULARIDADE & ALCANCE ---\n")
+        f.write(f"Popularidade Média das Faixas: {media_pop_musica:.2f} (Mediana: {mediana_pop_musica:.0f})\n")
+        f.write(f"Consistência (Desvio Padrão): +/- {std_pop_musica:.2f} pontos\n")
+        f.write(f"Popularidade Média dos Artistas: {media_pop_artista:.2f}\n")
+        f.write(f"Média de Seguidores dos Artistas: {media_seguidores:,.0f}\n")
+        f.write(f"Alcance Acumulado (Soma Seguidores): {total_seguidores_somados:,.0f}\n\n")
         
-        # Bloco 3: Temporalidade (Indicador de Recência/Nostalgia)
+        # Bloco 3: Temporalidade [EXPANDIDO]
         f.write("--- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---\n")
         f.write(f"Ano Médio de Lançamento: {ano_medio:.0f}\n")
-        f.write(f"Música Mais Antiga (ano): {int(ano_min) if not pd.isna(ano_min) else 'N/A'}\n")
-        f.write(f"Música Mais Nova (ano): {int(ano_max) if not pd.isna(ano_max) else 'N/A'}\n\n")
+        f.write(f"Faixa Etária: {int(ano_min) if not pd.isna(ano_min) else 'N/A'} a {int(ano_max) if not pd.isna(ano_max) else 'N/A'}\n")
+        f.write("Décadas Dominantes:\n")
+        for decada, pct in top_decadas.items():
+            f.write(f"  - Anos {int(decada)}s: {pct*100:.1f}%\n")
+        f.write("\n")
         
         # Bloco 4: Estrutura
         f.write("--- MÉTRICAS ESTRUTURAIS ---\n")
         f.write(f"Duração Média das Músicas: {duracao_media_formatada}\n\n")
 
         # Bloco 5: Gêneros Detalhados
-        f.write("--- LISTA COMPLETA DE GÊNEROS (por frequência) ---\n")
-        for i, (genero, contagem) in enumerate(todos_os_generos_ordenados):
+        f.write("--- LISTA COMPLETA DE GÊNEROS (Top 20 por frequência) ---\n")
+        # [AJUSTE] Limitado a 20 para manter o resumo legível
+        for i, (genero, contagem) in enumerate(todos_os_generos_ordenados[:20]):
             ocorrencia_str = "ocorrência" if contagem == 1 else "ocorrências"
             f.write(f"  {i+1}. {genero} ({contagem} {ocorrencia_str})\n")
         f.write("\n")
 
         # Bloco 6: Artistas Detalhados
-        f.write("--- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---\n")
-        for artista, contagem in contagem_artistas.items():
+        f.write("--- CONCENTRAÇÃO DE ARTISTAS (Top 20 por volume) ---\n")
+        # [AJUSTE] Limitado a 20 para focar nos principais
+        for artista, contagem in contagem_artistas.head(20).items():
             f.write(f"  - {artista}: {contagem} música(s)\n")
     
     print(f"  -> Resumo para {persona.upper()} salvo com sucesso.")

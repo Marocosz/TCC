@@ -3,20 +3,27 @@
 --- MÉTRICAS GERAIS ---
 Total de Músicas: 200
 Total de Artistas Únicos: 18
+Média de Músicas por Artista: 11.11
 
---- MÉTRICAS DE POPULARIDADE ---
-Popularidade Média das Músicas: 66.42 / 100
-Popularidade Média dos Artistas: 78.28 / 100
+--- MÉTRICAS DE POPULARIDADE & ALCANCE ---
+Popularidade Média das Faixas: 66.42 (Mediana: 67)
+Consistência (Desvio Padrão): +/- 10.98 pontos
+Popularidade Média dos Artistas: 78.28
+Média de Seguidores dos Artistas: 16,739,099
+Alcance Acumulado (Soma Seguidores): 3,347,819,834
 
 --- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
 Ano Médio de Lançamento: 1985
-Música Mais Antiga (ano): 1963
-Música Mais Nova (ano): 2021
+Faixa Etária: 1963 a 2021
+Décadas Dominantes:
+  - Anos 1970s: 30.6%
+  - Anos 1980s: 30.1%
+  - Anos 1990s: 21.2%
 
 --- MÉTRICAS ESTRUTURAIS ---
 Duração Média das Músicas: N/A
 
---- LISTA COMPLETA DE GÊNEROS (por frequência) ---
+--- LISTA COMPLETA DE GÊNEROS (Top 20 por frequência) ---
   1. rock (109 ocorrências)
   2. classic rock (87 ocorrências)
   3. mpb (51 ocorrências)
@@ -37,9 +44,8 @@ Duração Média das Músicas: N/A
   18. art rock (8 ocorrências)
   19. yacht rock (8 ocorrências)
   20. soft rock (8 ocorrências)
-  21. brazilian jazz (4 ocorrências)
 
---- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
+--- CONCENTRAÇÃO DE ARTISTAS (Top 20 por volume) ---
   - Djavan: 16 música(s)
   - Metallica: 16 música(s)
   - The Rolling Stones: 16 música(s)

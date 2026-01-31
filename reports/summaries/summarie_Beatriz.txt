@@ -3,20 +3,27 @@
 --- MÉTRICAS GERAIS ---
 Total de Músicas: 200
 Total de Artistas Únicos: 94
+Média de Músicas por Artista: 2.13
 
---- MÉTRICAS DE POPULARIDADE ---
-Popularidade Média das Músicas: 75.41 / 100
-Popularidade Média dos Artistas: 77.84 / 100
+--- MÉTRICAS DE POPULARIDADE & ALCANCE ---
+Popularidade Média das Faixas: 75.41 (Mediana: 74)
+Consistência (Desvio Padrão): +/- 4.42 pontos
+Popularidade Média dos Artistas: 77.84
+Média de Seguidores dos Artistas: 8,197,871
+Alcance Acumulado (Soma Seguidores): 1,639,574,265
 
 --- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
 Ano Médio de Lançamento: 2023
-Música Mais Antiga (ano): 2001
-Música Mais Nova (ano): 2026
+Faixa Etária: 2001 a 2026
+Décadas Dominantes:
+  - Anos 2020s: 84.9%
+  - Anos 2010s: 14.6%
+  - Anos 2000s: 0.5%
 
 --- MÉTRICAS ESTRUTURAIS ---
 Duração Média das Músicas: N/A
 
---- LISTA COMPLETA DE GÊNEROS (por frequência) ---
+--- LISTA COMPLETA DE GÊNEROS (Top 20 por frequência) ---
   1. sertanejo (107 ocorrências)
   2. sertanejo universitário (95 ocorrências)
   3. agronejo (79 ocorrências)
@@ -37,28 +44,8 @@ Duração Média das Músicas: N/A
   18. brazilian pop (8 ocorrências)
   19. funk pop (7 ocorrências)
   20. latin (6 ocorrências)
-  21. brega funk (5 ocorrências)
-  22. funk de bh (3 ocorrências)
-  23. afrobeats (3 ocorrências)
-  24. afrobeat (3 ocorrências)
-  25. afropop (3 ocorrências)
-  26. afroswing (3 ocorrências)
-  27. dancehall (3 ocorrências)
-  28. afropiano (3 ocorrências)
-  29. phonk (2 ocorrências)
-  30. brazilian phonk (2 ocorrências)
-  31. pagode baiano (1 ocorrência)
-  32. axé (1 ocorrência)
-  33. melodic rap (1 ocorrência)
-  34. reggaeton chileno (1 ocorrência)
-  35. grime (1 ocorrência)
-  36. uk grime (1 ocorrência)
-  37. uk drill (1 ocorrência)
-  38. drill (1 ocorrência)
-  39. funk (1 ocorrência)
-  40. latin pop (1 ocorrência)
 
---- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
+--- CONCENTRAÇÃO DE ARTISTAS (Top 20 por volume) ---
   - Panda: 12 música(s)
   - Henrique & Juliano: 10 música(s)
   - Gusttavo Lima: 9 música(s)
@@ -79,77 +66,3 @@ Duração Média das Músicas: N/A
   - MC Tuto: 3 música(s)
   - KayBlack: 3 música(s)
   - Mc IG: 3 música(s)
-  - Burna Boy: 3 música(s)
-  - Simone Mendes: 3 música(s)
-  - Danilo e Davi: 2 música(s)
-  - NATTAN: 2 música(s)
-  - Clayton & Romário: 2 música(s)
-  - Turma do Pagode: 2 música(s)
-  - MC GP: 2 música(s)
-  - AgroPlay: 2 música(s)
-  - Dj GM: 2 música(s)
-  - MC Meno K: 2 música(s)
-  - Ana Castela: 2 música(s)
-  - MC Jvila: 2 música(s)
-  - Natanzinho Lima: 2 música(s)
-  - Vitinho Imperador: 1 música(s)
-  - The Weeknd: 1 música(s)
-  - DJ Oreia: 1 música(s)
-  - Dj Caio Vieira: 1 música(s)
-  - Mari Fernandez: 1 música(s)
-  - Léo Santana: 1 música(s)
-  - Rafa e Junior: 1 música(s)
-  - Gunna: 1 música(s)
-  - Yasmin Sensação: 1 música(s)
-  - Mayke & Rodrigo: 1 música(s)
-  - FloyyMenor: 1 música(s)
-  - Luan Pereira: 1 música(s)
-  - cjnobeat: 1 música(s)
-  - Grupo Chocolate: 1 música(s)
-  - Mc Negão Original: 1 música(s)
-  - Som de Faculdade: 1 música(s)
-  - Repsaj: 1 música(s)
-  - Matheus Vargas: 1 música(s)
-  - Dj Yuri Pedrada: 1 música(s)
-  - MC Willian: 1 música(s)
-  - Wesley Safadão: 1 música(s)
-  - Dj Guuh: 1 música(s)
-  - Lauana Prado: 1 música(s)
-  - Ferrugem: 1 música(s)
-  - Thales Lessa: 1 música(s)
-  - US Agroboy: 1 música(s)
-  - Suel: 1 música(s)
-  - Guilherme & Benuto: 1 música(s)
-  - Naiara Azevedo: 1 música(s)
-  - Dave: 1 música(s)
-  - Sorriso Maroto: 1 música(s)
-  - Matheus Fernandes: 1 música(s)
-  - Pedro Paulo & Alex: 1 música(s)
-  - MC Ryan SP: 1 música(s)
-  - Dj Luan Gomes: 1 música(s)
-  - Diego & Arnaldo: 1 música(s)
-  - Jennifer e Stephany: 1 música(s)
-  - Jmilton: 1 música(s)
-  - CountryBeat: 1 música(s)
-  - Oruam: 1 música(s)
-  - DJ NATAN 22: 1 música(s)
-  - J. Eskine: 1 música(s)
-  - Hugo & Guilherme: 1 música(s)
-  - Bruno & Barretto: 1 música(s)
-  - BLOW RECORDS: 1 música(s)
-  - Brenno & Matheus: 1 música(s)
-  - MC Marks: 1 música(s)
-  - Lu & Rayane: 1 música(s)
-  - DJ Ryder: 1 música(s)
-  - DJ BRIZY: 1 música(s)
-  - MC Cebezinho: 1 música(s)
-  - Matuê: 1 música(s)
-  - Orochi: 1 música(s)
-  - Bruno Rosa: 1 música(s)
-  - MC LUUKY: 1 música(s)
-  - Ricky Martin: 1 música(s)
-  - WIU: 1 música(s)
-  - Eric Land: 1 música(s)
-  - Dj GBR: 1 música(s)
-  - Mc Rodrigo do CN: 1 música(s)
-  - Nagalli: 1 música(s)

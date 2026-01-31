@@ -3,20 +3,26 @@
 --- MÉTRICAS GERAIS ---
 Total de Músicas: 200
 Total de Artistas Únicos: 99
+Média de Músicas por Artista: 2.02
 
---- MÉTRICAS DE POPULARIDADE ---
-Popularidade Média das Músicas: 54.51 / 100
-Popularidade Média dos Artistas: 53.81 / 100
+--- MÉTRICAS DE POPULARIDADE & ALCANCE ---
+Popularidade Média das Faixas: 54.51 (Mediana: 55)
+Consistência (Desvio Padrão): +/- 7.65 pontos
+Popularidade Média dos Artistas: 53.81
+Média de Seguidores dos Artistas: 43,370
+Alcance Acumulado (Soma Seguidores): 8,674,098
 
 --- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
 Ano Médio de Lançamento: 2024
-Música Mais Antiga (ano): 2017
-Música Mais Nova (ano): 2026
+Faixa Etária: 2017 a 2026
+Décadas Dominantes:
+  - Anos 2020s: 98.5%
+  - Anos 2010s: 1.5%
 
 --- MÉTRICAS ESTRUTURAIS ---
 Duração Média das Músicas: N/A
 
---- LISTA COMPLETA DE GÊNEROS (por frequência) ---
+--- LISTA COMPLETA DE GÊNEROS (Top 20 por frequência) ---
   1. lo-fi (186 ocorrências)
   2. lo-fi beats (161 ocorrências)
   3. lo-fi hip hop (74 ocorrências)
@@ -29,7 +35,7 @@ Duração Média das Músicas: N/A
   10. anime (1 ocorrência)
   11. dark ambient (1 ocorrência)
 
---- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
+--- CONCENTRAÇÃO DE ARTISTAS (Top 20 por volume) ---
   - Dosi: 11 música(s)
   - Juliàn: 7 música(s)
   - Lil Leaf: 6 música(s)
@@ -50,82 +56,3 @@ Duração Média das Músicas: N/A
   - cxlt.: 3 música(s)
   - Lenny Loops: 3 música(s)
   - Mujo: 3 música(s)
-  - fnonose: 3 música(s)
-  - mellow fox: 3 música(s)
-  - Flitz&Suppe: 3 música(s)
-  - Notation: 2 música(s)
-  - Golden Mist: 2 música(s)
-  - morningtime: 2 música(s)
-  - Ambulo: 2 música(s)
-  - mell-ø: 2 música(s)
-  - mommy: 2 música(s)
-  - new vibe: 2 música(s)
-  - Fracta Aurea: 2 música(s)
-  - Analogue Alf: 2 música(s)
-  - Slowday: 2 música(s)
-  - butterfli: 2 música(s)
-  - Floating Basket: 2 música(s)
-  - Indigo Songs: 2 música(s)
-  - Cloudroom: 2 música(s)
-  - Spring Bingo: 2 música(s)
-  - Mellow Mirror: 2 música(s)
-  - Tooslo: 2 música(s)
-  - heirloom: 2 música(s)
-  - Beats on 21st: 2 música(s)
-  - Mellow Melt: 2 música(s)
-  - Lofi Girl: 1 música(s)
-  - softy: 1 música(s)
-  - Dimension 32: 1 música(s)
-  - Sátyr: 1 música(s)
-  - Bring Me The Horizon: 1 música(s)
-  - Yasumu: 1 música(s)
-  - Project AER: 1 música(s)
-  - Youthology: 1 música(s)
-  - Oh, My.: 1 música(s)
-  - Banks: 1 música(s)
-  - Bcalm: 1 música(s)
-  - jaackson: 1 música(s)
-  - Smith Beats: 1 música(s)
-  - Erwin Do: 1 música(s)
-  - saint rumi: 1 música(s)
-  - Alto: 1 música(s)
-  - HM Surf: 1 música(s)
-  - Theo Aabel: 1 música(s)
-  - marsquake: 1 música(s)
-  - Frances The Mute: 1 música(s)
-  - Kainbeats: 1 música(s)
-  - jxsn: 1 música(s)
-  - Philanthrope: 1 música(s)
-  - sad notes: 1 música(s)
-  - Osian Lewis: 1 música(s)
-  - Sunny Léo: 1 música(s)
-  - BeatsBySindri: 1 música(s)
-  - Ali Kaj: 1 música(s)
-  - Photosynthetic: 1 música(s)
-  - mxgnetic.: 1 música(s)
-  - lil francky: 1 música(s)
-  - pete castle: 1 música(s)
-  - ourchase: 1 música(s)
-  - Corridor: 1 música(s)
-  - Plaxon: 1 música(s)
-  - KiddoCalvin: 1 música(s)
-  - $imba: 1 música(s)
-  - softflow: 1 música(s)
-  - Dry Season: 1 música(s)
-  - jean opal: 1 música(s)
-  - Breezonic: 1 música(s)
-  - sellar: 1 música(s)
-  - Sleepr Cell: 1 música(s)
-  - deadman 死人: 1 música(s)
-  - Muroki: 1 música(s)
-  - Space Queen: 1 música(s)
-  - nate2timez: 1 música(s)
-  - Dozy Duzzn: 1 música(s)
-  - Fya Playce: 1 música(s)
-  - low pines: 1 música(s)
-  - Soulflu: 1 música(s)
-  - Yumeoka: 1 música(s)
-  - French Connection: 1 música(s)
-  - Cozeen: 1 música(s)
-  - Jazzamass: 1 música(s)
-  - DreamWavez: 1 música(s)
