@@ -1,280 +1,201 @@
-# src/collectors/create_sofia_playlist.py
-
 """
 ================================================================================
-MÓDULO DE GERAÇÃO DE PLAYLIST - PERSONA SOFIA (ALTERNATIVA / DESCOBERTA)
+ARQUITETURA DO TCC: GERADOR SOFIA (UNDERGROUND DEEP DIVE - LOOP FILL)
 ================================================================================
 
-OBJETIVO DO ARQUIVO:
-    Gerenciar a criação da playlist para o perfil "Sofia", focado em música 
-    alternativa e descoberta de "Lado B". 
-    
-    FONTE DE DADOS:
-    Lê o arquivo 'artistas_indie_dados.csv' gerado previamente.
+OBJETIVO:
+    Criar playlist de 200 músicas focada em ARTISTAS OBSCUROS.
 
-RESPONSABILIDADES:
-    1. Carregar lista de artistas do CSV 'indie'.
-    2. Classificar esses artistas em dois grupos (Clusters): 
-       - Populares (Top 50% de popularidade dentro da amostra).
-       - Nicho (Bottom 50% de popularidade).
-    3. Aplicar "Orçamento Ponderado":
-       - Dar mais espaço (70%) para artistas de Nicho.
-       - Dar menos espaço (30%) para artistas Populares.
-    4. Aplicar "Filtro Anti-Hit" para artistas populares (ignorar as top 5 faixas).
-    5. Explorar discografia completa (álbuns/singles) em vez de apenas Top Tracks.
+CORREÇÃO APLICADA:
+    - Como o CSV tem poucos artistas, o script agora possui um mecanismo de
+      REPESCAGEM (Loop Fill).
+    - Se a primeira passada não encher a playlist, ele volta aos mesmos artistas
+      e busca mais faixas (as que sobraram) até atingir a meta de 200.
 
-COMUNICAÇÃO:
-    - Entrada: data/raw/artistas_indie_dados.csv
-    - Saída: Criação de playlist e likes na conta Spotify.
-    - Dependências: Usa 'spotipy' intensivamente para navegação em álbuns.
+LÓGICA:
+    1. Ordena Artistas por Popularidade Crescente (0 -> 100).
+    2. Passada 1: Pega 8 a 13 músicas (Deep Cuts).
+    3. Passada 2 (se necessário): Pega mais músicas dos mesmos artistas.
+
 ================================================================================
 """
 
-import random
-import math
 import sys
 import os
+import random
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 
-# --- Configuração de Caminho para Importação de Módulos Locais ---
+# --- CONFIGURAÇÃO DE AMBIENTE ---
 diretorio_atual = os.path.dirname(os.path.abspath(__file__))
 diretorio_src = os.path.dirname(diretorio_atual)
-diretorio_raiz = os.path.dirname(diretorio_src)
 sys.path.append(diretorio_src)
-
-# Carrega variáveis de ambiente
-load_dotenv(os.path.join(diretorio_raiz, '.env'))
 
 from functions import (
     load_artists_from_csv,
-    create_playlist,
+    create_playlist,        
     add_tracks_to_playlist,
     like_tracks_slowly,
-    get_random_sample
 )
 
-# --- FUNÇÕES AUXILIARES ESPECÍFICAS DA PERSONA SOFIA ---
+load_dotenv()
 
-def get_artist_album_tracks_pure(sp_client, artist_id: str, limit_albums=5) -> list:
+# Inicializa cliente
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+    client_id=os.getenv("SPOTIPY_CLIENT_ID"),
+    client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
+    redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
+    scope="user-library-modify playlist-modify-public playlist-modify-private"
+))
+
+# --- CONFIGURAÇÕES ---
+CONFIG = {
+    "CSV_PATH": os.path.join(os.path.dirname(diretorio_src), "data", "raw", "artistas_indie_dados.csv"),
+    "PLAYLIST_NAME": "Underground Deep Dive (Input Sofia)",
+    "TOTAL_TARGET": 200,
+    "TRACKS_PER_ARTIST_INITIAL": (8, 13) 
+}
+
+def clean_name(name):
+    """Limpa nome para deduplicação simples."""
+    return name.split(' -')[0].split(' (')[0].lower().strip()
+
+def get_all_artist_tracks_sorted(artist_data):
     """
-    Busca faixas de álbuns e singles do artista, indo além das 'Top Tracks'.
-    
-    Regra de Negócio (Sofia):
-        A persona Sofia busca "Lado B" e faixas não comerciais. Usar o endpoint
-        padrão 'top-tracks' viciaria o resultado em hits. Esta função varre
-        os álbuns para encontrar o catálogo profundo.
-        
-    Retorno:
-        list: Lista de objetos de faixa completos (track objects) com 'uri' e 'popularity'.
+    Busca TODAS as faixas do artista e retorna ordenadas por popularidade CRESCENTE.
+    Retorna uma lista de dicionários: [{'uri': ..., 'name': ..., 'popularity': ...}]
     """
-    all_track_ids = set()
+    artist_id = artist_data.get('id')
+    if not artist_id: return []
+
     try:
-        # Busca os álbuns mais recentes ou relevantes
-        results = sp_client.artist_albums(artist_id, album_type='album,single', limit=limit_albums)
+        # Busca catálogo (Album + Single)
+        results = sp.artist_albums(artist_id, album_type='album,single', limit=50)
+        albums = results['items']
         
-        # Itera sobre os álbuns para pegar os IDs das faixas
-        for album in results['items']:
-            track_results = sp_client.album_tracks(album['id'])
-            for track in track_results['items']:
-                if track and track.get('id'):
-                    all_track_ids.add(track['id'])
-    except Exception:
-        return []
-    
-    # Hidratação dos dados:
-    # A chamada anterior retorna objetos simplificados. Precisamos fazer uma nova
-    # chamada (tracks) para obter metadados como 'popularity' de cada faixa.
-    full_track_objects = []
-    if all_track_ids:
-        # Batching: A API permite no máximo 50 IDs por chamada
-        lista_ids = list(all_track_ids)
-        for i in range(0, len(lista_ids), 50):
-            batch_ids = lista_ids[i:i+50]
-            try:
-                tracks_info = sp_client.tracks(batch_ids)
-                full_track_objects.extend([t for t in tracks_info['tracks'] if t])
-            except Exception:
-                continue
-    return full_track_objects
-
-def distribuir_musicas_entre_artistas(total_musicas: int, num_artistas: int) -> list:
-    """
-    Algoritmo de distribuição inteira de carga.
-    Evita divisões flutuantes (ex: 3.33 músicas) distribuindo o resto aleatoriamente.
-    """
-    if num_artistas == 0: return []
-    distribuicao = [0] * num_artistas
-    for _ in range(total_musicas):
-        distribuicao[random.randint(0, num_artistas - 1)] += 1
-    return distribuicao
-
-def main():
-    """
-    Controlador principal do fluxo da Sofia.
-    
-    Estratégia "Robin Hood Musical":
-        O algoritmo tira visibilidade dos artistas ricos (Populares) e dá 
-        visibilidade aos pobres (Nicho). Além disso, quando obrigado a tocar 
-        artistas famosos, o algoritmo evita seus maiores hits.
-    """
-    
-    # --- 1. PAINEL DE CONTROLE ---
-    print("--- PASSO 1: Carregando configurações da 'Curadoria Ponderada' (Sofia) ---")
-    
-    # Inicializa cliente Spotify Localmente (Para acesso à API de álbuns)
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope="playlist-modify-public user-library-modify"))
-
-    # Arquivo CSV Fonte
-    CSV_FILE = r"C:\Users\marco\OneDrive\Documentos\projetos\TCC\data\raw\artistas_indie_dados.csv"
-    NOVO_PLAYLIST_NAME = "Alternativa Pura (Input Sofia)"
-    FINAL_PLAYLIST_SIZE = 100
-    TARGET_INICIAL_DE_COLETA = 130 # Margem de segurança para deduplicação
-
-    # Regra de Negócio: Definição dos Pesos (Orçamento)
-    PROPORCAO_PLAYLIST_POR_TIER = {
-        'populares': 0.3, # Apenas 30% para artistas mainstream
-        'nicho': 0.7      # 70% focado em artistas desconhecidos/médios
-    }
-    print("-" * 40)
-
-    # --- 2. COLETAR E CLASSIFICAR ARTISTAS (SEGMENTAÇÃO VIA CSV) ---
-    # Analisa o CSV e divide os artistas em dois grupos baseados na mediana.
-    print("\n--- PASSO 2: Coletando e classificando os artistas do CSV ---")
-    
-    try:
-        # 1. Carregamento do CSV
-        todos_os_artistas = load_artists_from_csv(CSV_FILE, limit=200)
+        raw_uris = []
+        for album in albums:
+            tracks = sp.album_tracks(album['id'])
+            for t in tracks['items']:
+                raw_uris.append(t['uri'])
         
-        if not todos_os_artistas:
-            print("ERRO CRÍTICO: CSV vazio ou não encontrado.")
-            return
-
-        # 2. Tratamento de Dados (Converter popularidade para int e extrair ID da URI se precisar)
-        artistas_validos = []
-        for a in todos_os_artistas:
-            try:
-                a['popularity'] = int(a.get('popularity', 0))
-                # Garante que temos o ID para buscar álbuns
-                if 'id' not in a or not a['id']:
-                    if 'uri' in a:
-                        a['id'] = a['uri'].split(':')[-1]
-                
-                if a.get('id'):
-                    artistas_validos.append(a)
-            except:
-                continue
-
-        # 3. Ordenação por Popularidade (Decrescente)
-        artistas_validos.sort(key=lambda x: x['popularity'], reverse=True)
+        raw_uris = list(set(raw_uris)) # Deduplica URIs
         
-        # 4. Segmentação (50/50 da lista encontrada)
-        # Quem está na metade de cima é "Popular" (relativamente), quem está embaixo é "Nicho"
-        ponto_de_corte = len(artistas_validos) // 2
-        artistas_populares = artistas_validos[:ponto_de_corte]
-        artistas_nicho = artistas_validos[ponto_de_corte:]
+        if not raw_uris:
+            top = sp.artist_top_tracks(artist_id, country='BR')['tracks']
+            raw_uris = [t['uri'] for t in top]
 
-        print(f"Total processado: {len(artistas_validos)} artistas.")
-        print(f"Grupo Populares: {len(artistas_populares)} artistas (Média Pop: Alta)")
-        print(f"Grupo Nicho: {len(artistas_nicho)} artistas (Média Pop: Baixa)")
-        print("-" * 40)
+        # Busca detalhes (Popularidade)
+        full_tracks = []
+        for i in range(0, len(raw_uris), 50):
+            batch = raw_uris[i:i+50]
+            if batch:
+                res = sp.tracks(batch)
+                full_tracks.extend([t for t in res['tracks'] if t])
+
+        # Ordena: Menos popular -> Mais popular
+        full_tracks.sort(key=lambda x: x['popularity'])
+        
+        return full_tracks
 
     except Exception as e:
-        print(f"ERRO: Não foi possível processar a base de dados. Erro: {e}")
+        print(f"    [Erro API] {artist_data['name']}: {e}")
+        return []
+
+def main():
+    print("\n" + "="*60)
+    print(f"INICIANDO GERADOR SOFIA (LOOP FILL): {CONFIG['PLAYLIST_NAME']}")
+    print("="*60)
+
+    # 1. Carregar Artistas
+    all_artists = load_artists_from_csv(CONFIG['CSV_PATH'], limit=400)
+    if not all_artists: return
+
+    # Ordena: Menor Pop -> Maior Pop
+    all_artists.sort(key=lambda x: int(x.get('popularity', 0)))
+    
+    print(f"Base: {len(all_artists)} artistas (Start Pop: {all_artists[0]['popularity']})")
+
+    final_playlist_uris = []
+    seen_uris = set()
+    seen_names = set() # Controle de nome global para evitar covers/remixes
+
+    # Cache local para não chamar API duas vezes para o mesmo artista no loop
+    # Formato: { artist_id: [lista_de_tracks_ordenadas] }
+    artist_tracks_cache = {}
+
+    print("\n--- Fase 1: Coleta Inicial (8 a 13 faixas) ---")
+
+    # Loop Principal (Repete até encher ou não ter mais nada)
+    round_count = 1
+    
+    while len(final_playlist_uris) < CONFIG['TOTAL_TARGET']:
+        
+        tracks_added_in_round = 0
+        
+        for artist in all_artists:
+            if len(final_playlist_uris) >= CONFIG['TOTAL_TARGET']: break
+            
+            # Carrega catálogo (se não estiver em cache)
+            a_id = artist['id']
+            if a_id not in artist_tracks_cache:
+                print(f"  [Cache] Baixando discografia de {artist['name']}...")
+                artist_tracks_cache[a_id] = get_all_artist_tracks_sorted(artist)
+            
+            # Recupera faixas disponíveis
+            available_tracks = artist_tracks_cache[a_id]
+            
+            # Define quantas pegar nesta rodada
+            if round_count == 1:
+                quota = random.randint(CONFIG['TRACKS_PER_ARTIST_INITIAL'][0], CONFIG['TRACKS_PER_ARTIST_INITIAL'][1])
+            else:
+                # Nas rodadas seguintes, pega um pouco de cada vez para distribuir
+                quota = 3 
+            
+            added_now = 0
+            for track in available_tracks:
+                if added_now >= quota: break
+                
+                # Checagens de duplicidade
+                t_uri = track['uri']
+                t_name_clean = clean_name(track['name'])
+                
+                if t_uri not in seen_uris and t_name_clean not in seen_names:
+                    final_playlist_uris.append(t_uri)
+                    seen_uris.add(t_uri)
+                    seen_names.add(t_name_clean)
+                    added_now += 1
+                    tracks_added_in_round += 1
+            
+            if added_now > 0:
+                print(f"    > {artist['name']}: +{added_now} faixas (Total Global: {len(final_playlist_uris)})")
+
+        # Verifica se o loop travou (não conseguiu adicionar nada em uma rodada inteira)
+        if tracks_added_in_round == 0:
+            print("\n[!] Alerta: Discografias esgotadas! Não há mais músicas únicas disponíveis.")
+            break
+            
+        round_count += 1
+        print(f"\n--- Iniciando Rodada {round_count} (Buscando sobras...) ---")
+
+    # Finalização
+    print("\n" + "-"*40)
+    print(f"RESUMO FINAL:")
+    print(f"Total de Músicas: {len(final_playlist_uris)}")
+    print("-" * 40)
+    
+    if len(final_playlist_uris) < 50:
+        print("[!] Erro: Playlist muito pequena mesmo após repescagem.")
         return
 
-    # --- 3. COLETAR MÚSICAS COM LÓGICA PONDERADA ---
-    # Aqui reside a lógica principal: Tratamento diferente para cada grupo de artistas.
-    print("\n--- PASSO 3: Coletando músicas com a lógica Ponderada (Exploração de Álbuns) ---")
-    
-    track_uris_pool = []
-    
-    # GRUPO A: ARTISTAS POPULARES (Tratamento "Lado B")
-    # Calcula quantas músicas pegar deste grupo (ex: 30% de 130 = ~39 músicas)
-    orcamento_populares = int(TARGET_INICIAL_DE_COLETA * PROPORCAO_PLAYLIST_POR_TIER['populares'])
-    distribuicao_populares = distribuir_musicas_entre_artistas(orcamento_populares, len(artistas_populares))
-    
-    print(f"\nProcessando artistas 'populares' (Orçamento: {orcamento_populares} músicas)...")
-    
-    for artist, total_a_pegar in zip(artistas_populares, distribuicao_populares):
-        if total_a_pegar == 0: continue
-        
-        # Busca catálogo profundo (álbuns e singles)
-        # Nota: Usamos o ID que garantimos no passo 2
-        todas_as_faixas_obj = get_artist_album_tracks_pure(sp, artist['id'])
-        
-        # Ordena por popularidade da FAIXA (para identificar os hits)
-        todas_as_faixas_obj.sort(key=lambda x: x.get('popularity', 0), reverse=True)
-        
-        # FILTRO ANTI-HIT: Ignora as 5 faixas mais populares encontradas nos álbuns
-        # PROTEÇÃO: Se o artista tiver poucas músicas (ex: EP de 4 faixas), 
-        # não aplicamos o corte para não zerar a lista e perder o artista.
-        if len(todas_as_faixas_obj) > 5:
-            pool_musicas = todas_as_faixas_obj[5:] # Pega só "Lado B"
-        else:
-            pool_musicas = todas_as_faixas_obj # Se tem poucas, usa o que tem (Fallback)
-        
-        # Extrai apenas as URIs para seleção
-        uris_disponiveis = [track['uri'] for track in pool_musicas]
-        
-        # Garante que não pede mais do que existe
-        selecao_uris = get_random_sample(uris_disponiveis, total_a_pegar)
-        track_uris_pool.extend(selecao_uris)
-        print(f"  + {len(selecao_uris)} URIs 'lado B' de '{artist['name']}'")
-
-    # GRUPO B: ARTISTAS DE NICHO (Tratamento Livre)
-    # Calcula o restante do orçamento (ex: ~91 músicas)
-    orcamento_nicho = TARGET_INICIAL_DE_COLETA - orcamento_populares
-    distribuicao_nicho = distribuir_musicas_entre_artistas(orcamento_nicho, len(artistas_nicho))
-    
-    print(f"\nProcessando artistas de 'nicho' (Orçamento: {orcamento_nicho} músicas)...")
-    
-    for artist, total_a_pegar in zip(artistas_nicho, distribuicao_nicho):
-        if total_a_pegar == 0: continue
-        
-        # Busca catálogo profundo
-        todas_as_faixas_obj = get_artist_album_tracks_pure(sp, artist['id'])
-        
-        # Sem filtro anti-hit: Para artistas de nicho, qualquer música é válida/descoberta
-        pool_musicas = todas_as_faixas_obj 
-        
-        uris_disponiveis = [track['uri'] for track in pool_musicas]
-        
-        selecao_uris = get_random_sample(uris_disponiveis, total_a_pegar)
-        track_uris_pool.extend(selecao_uris)
-        print(f"  + {len(selecao_uris)} URIs aleatórias de '{artist['name']}'")
-
-    # --- 4. MONTAGEM FINAL COM 100 MÚSICAS GARANTIDAS ---
-    # Etapa padrão de limpeza e persistência.
-    print("\n" + "-" * 40)
-    print(f"\n--- PASSO 4: Montando a playlist final ---")
-
-    unique_uris = list(set(track_uris_pool))
-    print(f"Total de {len(unique_uris)} URIs únicas coletadas.")
-
-    # Corte final para atingir exatamente 100 faixas
-    if len(unique_uris) < FINAL_PLAYLIST_SIZE:
-        print(f"AVISO: Total ({len(unique_uris)}) menor que a meta. Usando todas.")
-        final_track_uris = unique_uris
-    else:
-        final_track_uris = get_random_sample(unique_uris, FINAL_PLAYLIST_SIZE)
-    
-    print(f"Tamanho final da playlist: {len(final_track_uris)} músicas.")
-
-    # Persistência no Spotify
-    # Verifica se a lista não está vazia
-    if not final_track_uris:
-        print("ERRO: Nenhuma música selecionada.")
-        return
-
-    playlist_id = create_playlist(NOVO_PLAYLIST_NAME)
+    playlist_id = create_playlist(CONFIG['PLAYLIST_NAME'])
     if playlist_id:
-        add_tracks_to_playlist(playlist_id, final_track_uris)
-        print("\n--- PASSO 5: Curtindo as músicas (uma por uma) ---")
-        like_tracks_slowly(final_track_uris)
-    
-    print("\n--- PROCESSO FINALIZADO! ---")
+        add_tracks_to_playlist(playlist_id, final_playlist_uris)
+        print(f"\n--- Aplicando 'Likes' na conta... ---")
+        like_tracks_slowly(final_playlist_uris)
+        
+    print(f"\n✅ SUCESSO! Playlist Sofia preenchida.")
 
 if __name__ == "__main__":
     main()

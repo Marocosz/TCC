@@ -158,25 +158,29 @@ def main():
     """
     print("--- Iniciando a geração de resumos textuais por persona ---")
     
+    # Define a raiz do projeto dinamicamente
+    script_dir = os.path.dirname(os.path.abspath(__file__)) # src/analysis
+    project_root = os.path.dirname(os.path.dirname(script_dir)) # TCC root
+
     # Mapeamento de Configuração:
     # Define onde estão os dados brutos e onde salvar o relatório final.
-    # ATUALIZAÇÃO: Caminhos ajustados para a nova estrutura de diretórios e padronização de nomes.
+    # ATUALIZAÇÃO: Caminhos absolutos para garantir execução de qualquer diretório.
     ARQUIVOS_DAS_PERSONAS = {
         'beatriz': {
-            'csv_path': '../../data/processed/dataset_Beatriz_playlist.csv',
-            'output_folder': '../../reports/summaries/'
+            'csv_path': os.path.join(project_root, 'data', 'processed', 'dataset_Beatriz_playlist.csv'),
+            'output_folder': os.path.join(project_root, 'reports', 'summaries')
         },
         'daniel': {
-            'csv_path': '../../data/processed/dataset_Daniel_playlist.csv',
-            'output_folder': '../../reports/summaries/'
+            'csv_path': os.path.join(project_root, 'data', 'processed', 'dataset_Daniel_playlist.csv'),
+            'output_folder': os.path.join(project_root, 'reports', 'summaries')
         },
         'ricardo': {
-            'csv_path': '../../data/processed/dataset_Ricardo_playlist.csv',
-            'output_folder': '../../reports/summaries/'
+            'csv_path': os.path.join(project_root, 'data', 'processed', 'dataset_Ricardo_playlist.csv'),
+            'output_folder': os.path.join(project_root, 'reports', 'summaries')
         },
         'sofia': {
-            'csv_path': '../../data/processed/dataset_Sofia_playlist.csv',
-            'output_folder': '../../reports/summaries/'
+            'csv_path': os.path.join(project_root, 'data', 'processed', 'dataset_Sofia_playlist.csv'),
+            'output_folder': os.path.join(project_root, 'reports', 'summaries')
         }
     }
 

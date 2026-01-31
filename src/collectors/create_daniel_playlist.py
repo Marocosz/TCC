@@ -1,36 +1,36 @@
-# src/collectors/create_daniel_playlist.py
-
 """
 ================================================================================
-MÓDULO DE GERAÇÃO DE PLAYLIST - PERSONA DANIEL (LO-FI / CAOS CONTROLADO)
+ARQUITETURA DO TCC: GERADOR DE PLAYLIST DANIEL (LO-FI / ORGANIC FOCUS)
 ================================================================================
 
-OBJETIVO DO ARQUIVO:
-    Gerenciar a criação da playlist para o perfil "Daniel", focado em música Lo-fi.
-    Diferente de perfis que buscam popularidade, este módulo prioriza a 
-    aleatoriedade e a descoberta (serendipidade), utilizando uma estratégia de 
-    sobre-amostragem (oversampling) para garantir diversidade.
+OBJETIVO:
+    Criar uma playlist de 200 músicas com consistência sonora, mas distribuição
+    ORGÂNICA de faixas por artista, evitando padrões robóticos fixos.
 
-RESPONSABILIDADES:
-    1. Carregar uma base ampla de artistas do gênero Lo-fi.
-    2. Realizar sorteios aleatórios em dois níveis:
-       - Nível 1: Seleção aleatória de artistas.
-       - Nível 2: Seleção aleatória de quantidade e faixas por artista.
-    3. Garantir que a playlist final tenha exatamente 100 músicas (se possível).
-    4. Interagir com a API do Spotify para criar a playlist e salvar as músicas.
+LÓGICA DE DISTRIBUIÇÃO (ORGANIC BUBBLE):
+    1. VIBE SETTERS (Top 10): 60 músicas.
+       - Range: 4 a 8 músicas por artista.
+       - Simula: Artistas favoritos com discografia explorada.
+    
+    2. FLOW KEEPERS (Top 11-30): 80 músicas.
+       - Range: 2 a 6 músicas por artista.
+       - Simula: Artistas recorrentes na rotação.
+    
+    3. TEXTURES (Top 31-70): 60 músicas.
+       - Range: 1 a 2 músicas por artista.
+       - Simula: Variedade e descoberta.
 
-COMUNICAÇÃO:
-    - Entrada: Lê 'daniel/artistas_lofi_dados.csv'.
-    - Saída: Criação de playlist e likes na conta Spotify.
-    - Dependências: Usa 'functions' para operações de I/O e API.
+    TOTAL: ~70 Artistas para 200 Músicas.
+
 ================================================================================
 """
 
-import random
 import sys
 import os
+import random
+import time
 
-# Ajuste de path para garantir importação correta
+# --- CONFIGURAÇÃO DE AMBIENTE ---
 diretorio_atual = os.path.dirname(os.path.abspath(__file__))
 diretorio_src = os.path.dirname(diretorio_atual)
 sys.path.append(diretorio_src)
@@ -38,134 +38,203 @@ sys.path.append(diretorio_src)
 from functions import (
     load_artists_from_csv,
     extract_top_tracks_from_data,
-    get_random_sample,
-    create_playlist,        # Fetch removido pois usamos URIs diretas agora
+    create_playlist,        
     add_tracks_to_playlist,
     like_tracks_slowly
 )
 
+# --- CONFIGURAÇÕES AJUSTÁVEIS ---
+CONFIG = {
+    "CSV_PATH": r"C:\Users\marco\OneDrive\Documentos\Pessoal\Projetos\TCC\data\raw\artistas_lofi_dados.csv",
+    "PLAYLIST_NAME": "Focus Flow Organic (Input Daniel)",
+    
+    # Etapa 1: Vibe Setters (Alta densidade, mas variável)
+    "STAGE_1": {
+        "total_tracks": 60,
+        "artist_range": (0, 10),    # Top 10 artistas
+        "tracks_per_artist": (4, 8) # Entre 4 e 8 músicas (Média 6)
+    },
+    # Etapa 2: Flow Keepers (Média densidade)
+    "STAGE_2": {
+        "total_tracks": 80,
+        "artist_range": (10, 30),   # Próximos 20 artistas
+        "tracks_per_artist": (2, 6) # Entre 2 e 6 músicas (Média 4)
+    },
+    # Etapa 3: Textura (Baixa densidade)
+    "STAGE_3": {
+        "total_tracks": 60,
+        "artist_start_index": 30,   # Do 31 em diante
+        "pool_size_to_fetch": 150   # Analisa pool grande
+    }
+}
+
+def distribuir_cotas(total_alvo, num_artistas, min_p, max_p):
+    """
+    Distribui faixas aleatoriamente respeitando Min e Max.
+    Isso garante que nem todos os artistas tenham o mesmo número de músicas.
+    """
+    if num_artistas == 0: return []
+    
+    # 1. Garante o mínimo para todos
+    cotas = [min_p] * num_artistas
+    saldo_restante = total_alvo - sum(cotas)
+    
+    # Fallback de segurança
+    if saldo_restante < 0:
+        return [max(1, total_alvo // num_artistas)] * num_artistas
+
+    # 2. Distribui o saldo aleatoriamente (aqui nasce a variação orgânica)
+    indices = list(range(num_artistas))
+    while saldo_restante > 0:
+        idx = random.choice(indices)
+        # Só adiciona se não estourar o máximo desse artista
+        if cotas[idx] < max_p:
+            cotas[idx] += 1
+            saldo_restante -= 1
+        
+        # Break de segurança se todos atingirem o máximo
+        if all(c == max_p for c in cotas) and saldo_restante > 0:
+            break 
+            
+    return cotas
+
 def main():
-    """
-    Função controladora principal do fluxo do Daniel.
-    
-    Estratégia "Caos Controlado":
-        Ao invés de pegar as top 10 músicas de 10 artistas, este fluxo sorteia
-        uma quantidade variável de músicas (4 a 8) de um número maior de artistas,
-        criando um "pool" excedente que é recortado aleatoriamente no final.
-    """
-    
-    # --- 1. PAINEL DE CONTROLE (CONFIGURAÇÕES) ---
-    print("--- PASSO 1: Carregando configurações para o 'Daniel - Caos Controlado' ---")
-    
-    # Caminho absoluto para garantir leitura
-    CSV_FILE = r"C:\Users\marco\OneDrive\Documentos\projetos\TCC\data\raw\artistas_lofi_dados.csv"
-    PLAYLIST_NAME = "Lofi Flow (Input Daniel)"
-    FINAL_PLAYLIST_SIZE = 100 # Meta final de faixas na playlist
+    print("\n" + "="*60)
+    print(f"INICIANDO GERADOR ORGÂNICO: {CONFIG['PLAYLIST_NAME']}")
+    print("="*60)
 
-    # Configuração de Amostragem de Artistas:
-    # Lemos 80 do CSV, mas usaremos apenas 22 para compor a playlist.
-    ARTIST_SOURCE_POOL_SIZE = 80 
-    ARTISTAS_A_SELECIONAR = 22 
-
-    # Configuração de Amostragem de Músicas:
-    # Define o intervalo aleatório de faixas a serem extraídas de cada artista.
-    MUSICAS_POR_ARTISTA_RANGE = (4, 8)
-
-    print(f"Lógica: Sobre-amostragem aleatória. Sortear {ARTISTAS_A_SELECIONAR} artistas para garantir {FINAL_PLAYLIST_SIZE} músicas únicas.")
-    print("-" * 40)
-
-    # --- 2. SELEÇÃO ALEATÓRIA DE ARTISTAS ---
-    # Etapa de filtro inicial: Reduz o universo total de artistas para um subgrupo sorteado.
-    print("\n--- PASSO 2: Sorteando artistas aleatoriamente ---")
-    
-    all_artists_pool = load_artists_from_csv(CSV_FILE, limit=ARTIST_SOURCE_POOL_SIZE)
-    
-    if not all_artists_pool:
-        print("ERRO CRÍTICO: Nenhum artista encontrado no CSV.")
+    # 1. Carregar e Ordenar
+    all_artists = load_artists_from_csv(CONFIG['CSV_PATH'], limit=400)
+    if not all_artists:
+        print("[!] Erro: CSV vazio ou não encontrado.")
         return
-
-    # Validação de segurança:
-    if len(all_artists_pool) < ARTISTAS_A_SELECIONAR:
-        print("AVISO: O pool de artistas é menor que o número desejado. Usando todos os artistas disponíveis.")
-        ARTISTAS_A_SELECIONAR = len(all_artists_pool)
-        
-    selected_artists = get_random_sample(all_artists_pool, ARTISTAS_A_SELECIONAR)
     
-    print(f"{len(selected_artists)} artistas foram sorteados aleatoriamente para a curadoria.")
+    all_artists.sort(key=lambda x: int(x.get('popularity', 0)), reverse=True)
+    print(f"Base carregada: {len(all_artists)} artistas ordenados por popularidade.")
+
+    final_playlist_uris = []
+    seen_uris = set() # Controle global de duplicidade
+
+    # ==========================================================================
+    # ETAPA 1: VIBE SETTERS (Top 10)
+    # ==========================================================================
+    print(f"\n--- [ETAPA 1] Vibe Setters (Top 10 -> {CONFIG['STAGE_1']['total_tracks']} faixas) ---")
+    
+    s1_cfg = CONFIG['STAGE_1']
+    artists_s1 = all_artists[s1_cfg['artist_range'][0] : s1_cfg['artist_range'][1]]
+    
+    # Aqui a mágica acontece: uns terão 4, outros 7, outros 5...
+    cotas_s1 = distribuir_cotas(
+        s1_cfg['total_tracks'], 
+        len(artists_s1), 
+        s1_cfg['tracks_per_artist'][0], 
+        s1_cfg['tracks_per_artist'][1]
+    )
+
+    count_s1 = 0
+    for artist, quota in zip(artists_s1, cotas_s1):
+        tracks = extract_top_tracks_from_data(artist)
+        added = 0
+        for t in tracks:
+            if added >= quota: break
+            if t['uri'] not in seen_uris:
+                final_playlist_uris.append(t['uri'])
+                seen_uris.add(t['uri'])
+                added += 1
+                count_s1 += 1
+        print(f"  > {artist['name']}: {added} músicas (Meta variável: {quota})")
+
+    # ==========================================================================
+    # ETAPA 2: FLOW KEEPERS (Top 11-30)
+    # ==========================================================================
+    print(f"\n--- [ETAPA 2] Flow Keepers (Top 11-30 -> {CONFIG['STAGE_2']['total_tracks']} faixas) ---")
+    
+    s2_cfg = CONFIG['STAGE_2']
+    artists_s2 = all_artists[s2_cfg['artist_range'][0] : s2_cfg['artist_range'][1]]
+    
+    cotas_s2 = distribuir_cotas(
+        s2_cfg['total_tracks'], 
+        len(artists_s2), 
+        s2_cfg['tracks_per_artist'][0], 
+        s2_cfg['tracks_per_artist'][1]
+    )
+
+    count_s2 = 0
+    for artist, quota in zip(artists_s2, cotas_s2):
+        tracks = extract_top_tracks_from_data(artist)
+        added = 0
+        for t in tracks:
+            if added >= quota: break
+            if t['uri'] not in seen_uris:
+                final_playlist_uris.append(t['uri'])
+                seen_uris.add(t['uri'])
+                added += 1
+                count_s2 += 1
+        print(f"  > {artist['name']}: {added} músicas (Meta variável: {quota})")
+
+    # ==========================================================================
+    # ETAPA 3: TEXTURES (Variedade com Cauda Longa)
+    # ==========================================================================
+    print(f"\n--- [ETAPA 3] Textures (Top 31+ -> {CONFIG['STAGE_3']['total_tracks']} faixas) ---")
+    
+    s3_cfg = CONFIG['STAGE_3']
+    target_s3 = s3_cfg['total_tracks']
+    
+    deficit = (s1_cfg['total_tracks'] - count_s1) + (s2_cfg['total_tracks'] - count_s2)
+    if deficit > 0:
+        print(f"  [!] Ajuste: Compensando {deficit} músicas faltantes.")
+        target_s3 += deficit
+
+    pool_artists = all_artists[s3_cfg['artist_start_index'] : s3_cfg['artist_start_index'] + s3_cfg['pool_size_to_fetch']]
+    global_pool_tracks = []
+    pool_seen_uris = set() # Evita duplicatas internas no pool
+
+    print(f"  > Analisando catálogo de {len(pool_artists)} artistas restantes...")
+    
+    for artist in pool_artists:
+        tracks = extract_top_tracks_from_data(artist)
+        
+        # Trava leve: Máximo 2 por artista nesta etapa para garantir rotatividade
+        added_from_artist = 0
+        for t in tracks:
+            if added_from_artist >= 2: break 
+            
+            if t['uri'] not in seen_uris and t['uri'] not in pool_seen_uris:
+                global_pool_tracks.append(t)
+                pool_seen_uris.add(t['uri'])
+                added_from_artist += 1
+    
+    # Ordena por popularidade
+    global_pool_tracks.sort(key=lambda x: x['popularity'], reverse=True)
+    
+    selected_s3 = global_pool_tracks[:target_s3]
+    
+    for t in selected_s3:
+        final_playlist_uris.append(t['uri'])
+        seen_uris.add(t['uri'])
+        
+    print(f"  > Selecionadas {len(selected_s3)} músicas de vários artistas.")
+
+    # ==========================================================================
+    # FINALIZAÇÃO
+    # ==========================================================================
+    print("\n" + "-"*40)
+    print(f"RESUMO FINAL:")
+    print(f"Etapa 1: {count_s1}")
+    print(f"Etapa 2: {count_s2}")
+    print(f"Etapa 3: {len(selected_s3)}")
+    print(f"TOTAL: {len(final_playlist_uris)} músicas únicas.")
     print("-" * 40)
 
-    # --- 3. CRIAÇÃO DO "UNIVERSO MUSICAL" (TRACK POOL) ---
-    # Coleta as músicas dos artistas selecionados aplicando aleatoriedade na quantidade.
-    print(f"\n--- PASSO 3: Criando 'pote' de músicas com coleta duplamente aleatória ---")
-    
-    track_uris_pool = [] # Alterado para guardar URIs (Links) em vez de Nomes
-    
-    for artist in selected_artists:
-        # Extrai a lista de objetos de faixa (agora retorna objetos completos com URI)
-        raw_tracks = extract_top_tracks_from_data(artist)
-        
-        # Filtra apenas as URIs válidas
-        artist_uris = []
-        for t in raw_tracks:
-            if isinstance(t, dict) and 'uri' in t:
-                artist_uris.append(t['uri'])
-        
-        # Se não tiver músicas, pula
-        if not artist_uris:
-            continue
+    if len(final_playlist_uris) == 0: return
 
-        # Define aleatoriamente quantas faixas esse artista específico vai contribuir
-        # Proteção: Se tiver menos músicas que o sorteado, ajusta o teto
-        num_musicas_a_pegar = random.randint(MUSICAS_POR_ARTISTA_RANGE[0], MUSICAS_POR_ARTISTA_RANGE[1])
-        num_musicas_a_pegar = min(num_musicas_a_pegar, len(artist_uris))
-        
-        # Seleciona as faixas aleatoriamente dentro do repertório do artista
-        musicas_selecionadas = get_random_sample(artist_uris, num_musicas_a_pegar)
-        
-        track_uris_pool.extend(musicas_selecionadas)
-        print(f"  + Coletadas {len(musicas_selecionadas)} músicas aleatórias de '{artist['name']}'.")
-        
-    # Deduplicação: Remove URIs repetidas
-    # AGORA FUNCIONA: Strings (URIs) são hashables, dicionários não eram.
-    unique_uris = list(set(track_uris_pool))
-    
-    print(f"\nO universo musical contém {len(unique_uris)} músicas ÚNICAS para o sorteio final.")
-    print("-" * 40)
-    
-    # --- 4. SELEÇÃO FINAL (CORTE PARA 100) ---
-    # Ajusta a lista para o tamanho exato da playlist (FINAL_PLAYLIST_SIZE).
-    print(f"\n--- PASSO 4: Montando a playlist final com {FINAL_PLAYLIST_SIZE} músicas ---")
-
-    if len(unique_uris) < FINAL_PLAYLIST_SIZE:
-        # Caso de exceção: Se a coleta aleatória não gerou faixas suficientes.
-        print(f"AVISO CRÍTICO: Mesmo com a sobre-amostragem, o total ({len(unique_uris)}) é menor que {FINAL_PLAYLIST_SIZE}. Usando todas.")
-        final_track_uris = unique_uris
-    else:
-        # Caminho feliz: Temos mais músicas que o necessário.
-        # Sorteamos exatamente 100 faixas do pool limpo para garantir variedade máxima.
-        final_track_uris = get_random_sample(unique_uris, FINAL_PLAYLIST_SIZE)
-
-    print(f"Sorteadas {len(final_track_uris)} músicas para a playlist final.")
-
-    # --- 5. PERSISTÊNCIA NA API DO SPOTIFY ---
-    if not final_track_uris: 
-        print("ERRO: Nenhuma música selecionada.")
-        return
-
-    # Cria a playlist vazia na conta do usuário
-    playlist_id = create_playlist(PLAYLIST_NAME)
-    
+    playlist_id = create_playlist(CONFIG['PLAYLIST_NAME'])
     if playlist_id:
-        # Adiciona as faixas à playlist criada
-        # Nota: Passamos URIs direto, sem precisar de fetch_track_uris
-        add_tracks_to_playlist(playlist_id, final_track_uris)
+        add_tracks_to_playlist(playlist_id, final_playlist_uris)
+        print(f"\n--- Aplicando 'Likes' na conta... ---")
+        like_tracks_slowly(final_playlist_uris)
         
-        # Simula o comportamento do usuário "curtindo" as músicas
-        print("\n--- PASSO 5: Curtindo as músicas (uma por uma) ---")
-        like_tracks_slowly(final_track_uris)
-    
-    print("\n--- PROCESSO FINALIZADO! ---")
-    print(f"Playlist '{PLAYLIST_NAME}' criada com sucesso.")
+    print(f"\n✅ SUCESSO! Playlist '{CONFIG['PLAYLIST_NAME']}' criada.")
 
 if __name__ == "__main__":
     main()

@@ -48,22 +48,26 @@ load_dotenv()
 # Define as regras de execução: Qual playlist ler e onde salvar o DATASET.
 # Permite a execução em lote ou individual sem alterar o código da função principal.
 # ==============================================================================
+# Define a raiz do projeto dinamicamente
+script_dir = os.path.dirname(os.path.abspath(__file__)) # src/analysis
+project_root = os.path.dirname(os.path.dirname(script_dir)) # TCC root
+
 CONFIG_DATASETS = {
     "beatriz": {
-        "url": "https://open.spotify.com/playlist/43t30aNQ4w9JWGWNJZBycx?si=e02f6e26d2574b6e", 
-        "output": "../../data/processed/dataset_Beatriz_playlist.csv"
+        "url": "https://open.spotify.com/playlist/50QfqvGmUpcIBmLpvKwYia?si=64567674fe704edc", 
+        "output": os.path.join(project_root, "data", "processed", "dataset_Beatriz_playlist.csv")
     },
     "daniel": {
-        "url": "https://open.spotify.com/playlist/6bOpB9LfJ5iu8Lert0mVv1?si=55ad0ed7dcb44b43",
-        "output": "../../data/processed/dataset_Daniel_playlist.csv"
+        "url": "https://open.spotify.com/playlist/4is9L43Z54V47i317eEU34?si=b6f80876aebf45fa",
+        "output": os.path.join(project_root, "data", "processed", "dataset_Daniel_playlist.csv")
     },
     "ricardo": {
-        "url": "https://open.spotify.com/playlist/4aHPLH7rqeJqQsgGrAlzw8?si=533c1fbe8aa24b7f",
-        "output": "../../data/processed/dataset_Ricardo_playlist.csv"
+        "url": "https://open.spotify.com/playlist/0M4gzc0tsCbCfZokdXgV7n?si=1997b691d05c4ede",
+        "output": os.path.join(project_root, "data", "processed", "dataset_Ricardo_playlist.csv")
     },
     "sofia": {
-        "url": "https://open.spotify.com/playlist/1DnT0FX5aHNtjw3OzU2LG6?si=893eb9d2df19405d",
-        "output": "../../data/processed/dataset_Sofia_playlist.csv"
+        "url": "https://open.spotify.com/playlist/38A45UlLoWNhgJqOOp1Prb?si=0e3c6e1e938b4961",
+        "output": os.path.join(project_root, "data", "processed", "dataset_Sofia_playlist.csv")
     }
 }
 

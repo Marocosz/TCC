@@ -1,47 +1,57 @@
 =============== RESUMO DA PLAYLIST: SOFIA ===============
 
 --- MÉTRICAS GERAIS ---
-Total de Músicas: 100
-Total de Artistas Únicos: 19
+Total de Músicas: 200
+Total de Artistas Únicos: 27
 
 --- MÉTRICAS DE POPULARIDADE ---
-Popularidade Média das Músicas: 20.43 / 100
-Popularidade Média dos Artistas: 37.61 / 100
+Popularidade Média das Músicas: 10.18 / 100
+Popularidade Média dos Artistas: 36.43 / 100
 
 --- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
-Ano Médio de Lançamento: 2022
+Ano Médio de Lançamento: 2021
 Música Mais Antiga (ano): 1999
-Música Mais Nova (ano): 2025
+Música Mais Nova (ano): 2026
 
 --- MÉTRICAS ESTRUTURAIS ---
 Duração Média das Músicas: N/A
 
 --- LISTA COMPLETA DE GÊNEROS (por frequência) ---
-  1. shoegaze (22 ocorrências)
-  2. plunderphonics (9 ocorrências)
-  3. cloud rap (7 ocorrências)
-  4. experimental hip hop (7 ocorrências)
-  5. lo-fi indie (7 ocorrências)
-  6. art pop (6 ocorrências)
-  7. experimental (1 ocorrência)
+  1. lo-fi indie (20 ocorrências)
+  2. shoegaze (18 ocorrências)
+  3. plunderphonics (16 ocorrências)
+  4. electroclash (15 ocorrências)
+  5. cloud rap (12 ocorrências)
+  6. experimental (6 ocorrências)
+  7. idm (2 ocorrências)
+  8. emo rap (1 ocorrência)
+  9. neofolk (1 ocorrência)
 
 --- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
-  - Camille Keller: 15 música(s)
-  - Double Virgo: 11 música(s)
-  - untitled (halo): 9 música(s)
-  - S.Maharba: 9 música(s)
-  - Lee Ikari: 7 música(s)
-  - mark william lewis: 7 música(s)
-  - Ydegirl: 7 música(s)
-  - Dean Blunt: 6 música(s)
-  - bar italia: 5 música(s)
-  - Eterna: 5 música(s)
-  - Joanne Robertson: 5 música(s)
-  - Samba Jean-Baptiste: 4 música(s)
-  - Michael Angelo: 4 música(s)
-  - X & Yde: 1 música(s)
-  - Chanel Beads: 1 música(s)
+  - S.Maharba: 16 música(s)
+  - Eterna: 15 música(s)
+  - Patch +: 15 música(s)
+  - Camille Keller: 12 música(s)
+  - Lee Ikari: 12 música(s)
+  - bar italia: 12 música(s)
+  - mark william lewis: 11 música(s)
+  - Taraneh: 11 música(s)
+  - Samba Jean-Baptiste: 10 música(s)
+  - NINA: 9 música(s)
+  - Double Virgo: 9 música(s)
+  - Ydegirl: 8 música(s)
+  - untitled (halo): 8 música(s)
+  - Michael Angelo: 8 música(s)
+  - Dean Blunt: 8 música(s)
+  - Chanel Beads: 7 música(s)
+  - Inga Copeland: 6 música(s)
+  - Joanne Robertson: 6 música(s)
+  - X & Yde: 5 música(s)
+  - spirit blue: 3 música(s)
+  - Pedro Vian: 2 música(s)
+  - Tom Greenwood: 2 música(s)
   - Sokora Violetov: 1 música(s)
-  - RIP Swirl: 1 música(s)
+  - Ngahere Wafer: 1 música(s)
   - voyeur: 1 música(s)
-  - spirit blue: 1 música(s)
+  - Sam Fenton: 1 música(s)
+  - LEYA: 1 música(s)

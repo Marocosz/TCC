@@ -70,9 +70,16 @@ def main():
     # ==========================================================================
     print("--- PASSO 1: Carregando e preparando os dados do CSV consolidado ---")
     
+    # Define a raiz do projeto dinamicamente com base na localização deste script
+    # Script está em: src/analysis/build_cross_graphs.py
+    # Raíz está em: ../../
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+
     # Arquivo gerado pela etapa de consolidação anterior
-    CSV_FILE = r'C:\Users\marco\OneDrive\Documentos\projetos\TCC\data\processed\dataset_consolidada_input.csv'
-    OUTPUT_DIR = '../../reports/figures/cross/'
+    # Caminho relativo a partir da raiz do projeto
+    CSV_FILE = os.path.join(project_root, 'data', 'processed', 'dataset_consolidada_input.csv')
+    OUTPUT_DIR = os.path.join(project_root, 'reports', 'figures', 'cross')
 
     # Garante a criação da pasta de saída
     os.makedirs(OUTPUT_DIR, exist_ok=True)

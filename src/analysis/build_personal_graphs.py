@@ -183,23 +183,33 @@ def main():
     # --- 1. PAINEL DE CONTROLE (CONFIGURAÇÕES) ---
     print("--- Iniciando a geração de insights individuais por persona ---")
     
+    # Define a raiz do projeto dinamicamente com base na localização deste script
+    # Script está em: src/analysis/build_personal_graphs.py
+    # Raíz está em: ../../
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+    
+    # Caminhos base
+    data_processed_dir = os.path.join(project_root, 'data', 'processed')
+    reports_figures_dir = os.path.join(project_root, 'reports', 'figures')
+
     # Mapeamento Central: Define onde buscar os dados e onde salvar os gráficos.
     ARQUIVOS_DAS_PERSONAS = {
         'beatriz': {
-            'csv_path': '../../data/processed/dataset_Beatriz_playlist.csv',
-            'output_folder': '../../reports/figures/beatriz/'
+            'csv_path': os.path.join(data_processed_dir, 'dataset_Beatriz_playlist.csv'),
+            'output_folder': os.path.join(reports_figures_dir, 'beatriz')
         },
         'daniel': {
-            'csv_path': '../../data/processed/dataset_Daniel_playlist.csv',
-            'output_folder': '../../reports/figures/daniel/'
+            'csv_path': os.path.join(data_processed_dir, 'dataset_Daniel_playlist.csv'),
+            'output_folder': os.path.join(reports_figures_dir, 'daniel')
         },
         'ricardo': {
-            'csv_path': '../../data/processed/dataset_Ricardo_playlist.csv',
-            'output_folder': '../../reports/figures/ricardo/'
+            'csv_path': os.path.join(data_processed_dir, 'dataset_Ricardo_playlist.csv'),
+            'output_folder': os.path.join(reports_figures_dir, 'ricardo')
         },
         'sofia': {
-            'csv_path': '../../data/processed/dataset_Sofia_playlist.csv',
-            'output_folder': '../../reports/figures/sofia/'
+            'csv_path': os.path.join(data_processed_dir, 'dataset_Sofia_playlist.csv'),
+            'output_folder': os.path.join(reports_figures_dir, 'sofia')
         }
     }
 

@@ -1,15 +1,15 @@
 =============== RESUMO DA PLAYLIST: RICARDO ===============
 
 --- MÉTRICAS GERAIS ---
-Total de Músicas: 100
+Total de Músicas: 200
 Total de Artistas Únicos: 18
 
 --- MÉTRICAS DE POPULARIDADE ---
-Popularidade Média das Músicas: 73.06 / 100
-Popularidade Média dos Artistas: 78.29 / 100
+Popularidade Média das Músicas: 66.50 / 100
+Popularidade Média dos Artistas: 78.28 / 100
 
 --- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
-Ano Médio de Lançamento: 1982
+Ano Médio de Lançamento: 1985
 Música Mais Antiga (ano): 1963
 Música Mais Nova (ano): 2021
 
@@ -17,45 +17,44 @@ Música Mais Nova (ano): 2021
 Duração Média das Músicas: N/A
 
 --- LISTA COMPLETA DE GÊNEROS (por frequência) ---
-  1. classic rock (60 ocorrências)
-  2. rock (34 ocorrências)
-  3. mpb (29 ocorrências)
-  4. glam rock (12 ocorrências)
-  5. hard rock (11 ocorrências)
-  6. rock and roll (11 ocorrências)
-  7. brazilian rock (11 ocorrências)
-  8. psychedelic rock (11 ocorrências)
-  9. samba (9 ocorrências)
-  10. yacht rock (7 ocorrências)
-  11. soft rock (7 ocorrências)
-  12. bossa nova (7 ocorrências)
-  13. axé (7 ocorrências)
-  14. brazilian pop (4 ocorrências)
-  15. latin rock (3 ocorrências)
-  16. pop rock (3 ocorrências)
-  17. pagode (2 ocorrências)
-  18. art rock (2 ocorrências)
-  19. brega (1 ocorrência)
-  20. bolero (1 ocorrência)
-  21. new mpb (1 ocorrência)
-  22. progressive rock (1 ocorrência)
+  1. rock (109 ocorrências)
+  2. classic rock (87 ocorrências)
+  3. mpb (51 ocorrências)
+  4. hard rock (48 ocorrências)
+  5. bossa nova (25 ocorrências)
+  6. rock and roll (24 ocorrências)
+  7. glam metal (23 ocorrências)
+  8. samba (21 ocorrências)
+  9. psychedelic rock (21 ocorrências)
+  10. metal (16 ocorrências)
+  11. thrash metal (16 ocorrências)
+  12. heavy metal (16 ocorrências)
+  13. axé (12 ocorrências)
+  14. forró tradicional (10 ocorrências)
+  15. forró (10 ocorrências)
+  16. glam rock (8 ocorrências)
+  17. progressive rock (8 ocorrências)
+  18. art rock (8 ocorrências)
+  19. yacht rock (8 ocorrências)
+  20. soft rock (8 ocorrências)
+  21. brazilian jazz (4 ocorrências)
 
 --- CONCENTRAÇÃO DE ARTISTAS (Nº de Músicas por Artista) ---
-  - Queen: 11 música(s)
+  - Djavan: 16 música(s)
+  - Metallica: 16 música(s)
+  - The Rolling Stones: 16 música(s)
+  - Led Zeppelin: 15 música(s)
+  - Bon Jovi: 15 música(s)
+  - U2: 14 música(s)
+  - The Beatles: 13 música(s)
+  - Maria Bethânia: 12 música(s)
+  - Alceu Valença: 10 música(s)
   - Dire Straits: 10 música(s)
-  - The Rolling Stones: 10 música(s)
-  - AC/DC: 10 música(s)
-  - The Beatles: 10 música(s)
+  - AC/DC: 9 música(s)
+  - Caetano Veloso: 9 música(s)
   - Elton John: 9 música(s)
-  - Rita Lee: 8 música(s)
-  - Eagles: 7 música(s)
-  - Maria Bethânia: 7 música(s)
-  - Djavan: 7 música(s)
-  - Os Paralamas Do Sucesso: 3 música(s)
-  - Dona Ivone Lara: 2 música(s)
-  - Roberto Carlos: 1 música(s)
-  - ANAVITÓRIA: 1 música(s)
-  - U2: 1 música(s)
-  - David Bowie: 1 música(s)
-  - Pink Floyd: 1 música(s)
-  - Led Zeppelin: 1 música(s)
+  - Scorpions: 8 música(s)
+  - Queen: 8 música(s)
+  - Pink Floyd: 8 música(s)
+  - Eagles: 8 música(s)
+  - Gal Costa: 4 música(s)

@@ -45,24 +45,28 @@ load_dotenv()
 # ==============================================================================
 # CONFIGURAÇÃO CENTRAL (MAPA DE ARTISTAS POR PERSONA)
 # ------------------------------------------------------------------------------
-# Reutiliza as URLs das playlists semente para identificar os artistas seguidos.
+# Reutiliza as URLs das playlists geradas para identificar os artistas seguidos.
 # ==============================================================================
+# Define a raiz do projeto dinamicamente
+script_dir = os.path.dirname(os.path.abspath(__file__)) # src/analysis
+project_root = os.path.dirname(os.path.dirname(script_dir)) # TCC root
+
 CONFIG_ARTISTAS = {
     "beatriz": {
-        "url": "https://open.spotify.com/playlist/43t30aNQ4w9JWGWNJZBycx?si=e02f6e26d2574b6e", 
-        "output": "../../data/processed/dataset_Beatriz_artistas_seguidos.csv"
+        "url": "https://open.spotify.com/playlist/50QfqvGmUpcIBmLpvKwYia?si=50bb7b1c2402480f", 
+        "output": os.path.join(project_root, "data", "processed", "dataset_Beatriz_artistas_seguidos.csv")
     },
     "daniel": {
         "url": "https://open.spotify.com/playlist/6bOpB9LfJ5iu8Lert0mVv1?si=55ad0ed7dcb44b43",
-        "output": "../../data/processed/dataset_Daniel_artistas_seguidos.csv"
+        "output": os.path.join(project_root, "data", "processed", "dataset_Daniel_artistas_seguidos.csv")
     },
     "ricardo": {
-        "url": "https://open.spotify.com/playlist/4aHPLH7rqeJqQsgGrAlzw8?si=533c1fbe8aa24b7f",
-        "output": "../../data/processed/dataset_Ricardo_artistas_seguidos.csv"
+        "url": "https://open.spotify.com/playlist/0M4gzc0tsCbCfZokdXgV7n?si=1997b691d05c4ede",
+        "output": os.path.join(project_root, "data", "processed", "dataset_Ricardo_artistas_seguidos.csv")
     },
     "sofia": {
-        "url": "https://open.spotify.com/playlist/1DnT0FX5aHNtjw3OzU2LG6?si=893eb9d2df19405d",
-        "output": "../../data/processed/dataset_Sofia_artistas_seguidos.csv"
+        "url": "https://open.spotify.com/playlist/38A45UlLoWNhgJqOOp1Prb?si=0e3c6e1e938b4961",
+        "output": os.path.join(project_root, "data", "processed", "dataset_Sofia_artistas_seguidos.csv")
     }
 }
 
