@@ -165,7 +165,7 @@ def main():
             if not top_generos: raise KeyError
             
             df_generos = pd.DataFrame(top_generos, columns=['genero', 'contagem'])
-            sns.barplot(data=df_generos, x='contagem', y='genero', ax=ax, color=palette[i], orient='h')
+            sns.barplot(data=df_generos, x='contagem', y='genero', ax=ax, color=palette[persona_name], orient='h')
             ax.set_title(f'Top 10 Gêneros - {persona_name.capitalize()}', fontsize=14)
             ax.set_xlabel('Contagem de Músicas', fontsize=12)
         except (KeyError, IndexError):
@@ -204,7 +204,7 @@ def main():
         try:
             grupo_persona = df[df['persona'] == persona_name]
             top_artistas = grupo_persona['primary_artist_name'].value_counts().nlargest(10)
-            sns.barplot(x=top_artistas.values, y=top_artistas.index, ax=ax, color=palette[i], orient='h')
+            sns.barplot(x=top_artistas.values, y=top_artistas.index, ax=ax, color=palette[persona_name], orient='h')
             ax.set_title(f'Top 10 Artistas Mais Frequentes - {persona_name.capitalize()}', fontsize=14)
             ax.set_xlabel('Número de Músicas na Playlist', fontsize=12)
         except (KeyError, IndexError):
