@@ -27,8 +27,7 @@ Comunicação:
     - Interna: Gera CSVs base para `build_cross_graphs.py` e `build_personal_graphs.py`.
 
 Uso:
-    python extrair_dados_playlist.py [beatriz|daniel|ricardo|sofia]
-    python extrair_dados_playlist.py all
+    python src/analysis/extrair_dados_playlist.py [persona/todas]
 """
 
 import spotipy

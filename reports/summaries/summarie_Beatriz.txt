@@ -5,8 +5,8 @@ Total de Músicas: 200
 Total de Artistas Únicos: 94
 
 --- MÉTRICAS DE POPULARIDADE ---
-Popularidade Média das Músicas: 75.63 / 100
-Popularidade Média dos Artistas: 77.86 / 100
+Popularidade Média das Músicas: 75.41 / 100
+Popularidade Média dos Artistas: 77.84 / 100
 
 --- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
 Ano Médio de Lançamento: 2023
@@ -31,8 +31,8 @@ Duração Média das Músicas: N/A
   12. brega (13 ocorrências)
   13. brazilian trap (12 ocorrências)
   14. trap (12 ocorrências)
-  15. brazilian hip hop (11 ocorrências)
-  16. funk carioca (10 ocorrências)
+  15. funk carioca (11 ocorrências)
+  16. brazilian hip hop (11 ocorrências)
   17. seresta (10 ocorrências)
   18. brazilian pop (8 ocorrências)
   19. funk pop (7 ocorrências)
@@ -153,6 +153,3 @@ Duração Média das Músicas: N/A
   - Dj GBR: 1 música(s)
   - Mc Rodrigo do CN: 1 música(s)
   - Nagalli: 1 música(s)
-
-
-Se perguntarem: "Por que 200 músicas e por que essa repetição?" Você responde: "Essa distribuição não é aleatória. Ela segue a Lei de Potência (Zipf). Para representar um usuário Mainstream, eu precisei simular o viés de popularidade, onde a atenção é concentrada em poucos 'Superstars' (como Henrique & Juliano) e a variedade vem apenas de hits virais isolados. Se eu tivesse feito uma distribuição plana (1 música por artista), eu estaria simulando um Arquivista, não um usuário comum de Top 50."

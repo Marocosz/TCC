@@ -5,7 +5,7 @@ Total de Músicas: 200
 Total de Artistas Únicos: 18
 
 --- MÉTRICAS DE POPULARIDADE ---
-Popularidade Média das Músicas: 66.50 / 100
+Popularidade Média das Músicas: 66.42 / 100
 Popularidade Média dos Artistas: 78.28 / 100
 
 --- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---

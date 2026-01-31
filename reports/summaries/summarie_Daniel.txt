@@ -5,8 +5,8 @@ Total de Músicas: 200
 Total de Artistas Únicos: 99
 
 --- MÉTRICAS DE POPULARIDADE ---
-Popularidade Média das Músicas: 54.49 / 100
-Popularidade Média dos Artistas: 53.67 / 100
+Popularidade Média das Músicas: 54.51 / 100
+Popularidade Média dos Artistas: 53.81 / 100
 
 --- MÉTRICAS TEMPORAIS (ERA MUSICAL) ---
 Ano Médio de Lançamento: 2024

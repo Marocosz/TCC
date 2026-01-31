@@ -26,8 +26,7 @@ Comunicação:
     - Interna: Provê dados para o cálculo de métricas de diversidade e viés.
 
 Uso:
-    python extrair_dados_artistas_seguidos.py [nome_da_persona]
-    python extrair_dados_artistas_seguidos.py todas
+    python src/analysis/extrair_dados_artistas_seguidos.py [persona/todas]
 """
 
 import spotipy
@@ -52,11 +51,11 @@ project_root = os.path.dirname(os.path.dirname(script_dir)) # TCC root
 
 CONFIG_ARTISTAS = {
     "beatriz": {
-        "url": "https://open.spotify.com/playlist/50QfqvGmUpcIBmLpvKwYia?si=50bb7b1c2402480f", 
+        "url": "https://open.spotify.com/playlist/50QfqvGmUpcIBmLpvKwYia?si=64567674fe704edc", 
         "output": os.path.join(project_root, "data", "processed", "dataset_Beatriz_artistas_seguidos.csv")
     },
     "daniel": {
-        "url": "https://open.spotify.com/playlist/6bOpB9LfJ5iu8Lert0mVv1?si=55ad0ed7dcb44b43",
+        "url": "https://open.spotify.com/playlist/4is9L43Z54V47i317eEU34?si=b6f80876aebf45fa",
         "output": os.path.join(project_root, "data", "processed", "dataset_Daniel_artistas_seguidos.csv")
     },
     "ricardo": {

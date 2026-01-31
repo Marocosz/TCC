@@ -121,8 +121,14 @@ def main():
     # 2. CONFIGURAÇÃO VISUAL GLOBAL
     # ==========================================================================
     
-    # Paleta consistente: garante que Beatriz seja sempre a mesma cor em todos os gráficos
-    palette = sns.color_palette("husl", len(df['persona'].unique()))
+    # Paleta consistente: garante que cada Persona tenha sua cor fixa (Brand Identity do TCC)
+    # Isso evita que as cores mudem dependendo de quantos dados existem no CSV.
+    palette = {
+        'beatriz': '#FF007F', # Rosa/Magenta (Pop/Vibrante)
+        'ricardo': '#0000FF', # Azul (Clássico/Rock)
+        'sofia':   '#800080', # Roxo (Indie/Misterioso)
+        'daniel':  '#008000'  # Verde (Lo-Fi/Calmo)
+    }
     order = ['beatriz', 'ricardo', 'sofia', 'daniel']
     
     # ==========================================================================
