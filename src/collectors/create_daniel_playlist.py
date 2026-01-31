@@ -1,28 +1,29 @@
+# TIPO DE ARQUIVO: RECEBE CSV
+
 """
 ================================================================================
-ARQUITETURA DO TCC: GERADOR DE PLAYLIST DANIEL (LO-FI / ORGANIC FOCUS)
+ARQUITETURA DO TCC: GERADOR DANIEL (LO-FI / ORGANIC FOCUS)
 ================================================================================
 
-OBJETIVO:
-    Criar uma playlist de 200 músicas com consistência sonora, mas distribuição
-    ORGÂNICA de faixas por artista, evitando padrões robóticos fixos.
+Objetivo do Arquivo:
+    Gerar a playlist da Persona "Daniel", focada em Lo-Fi/Focus e uma
+    distribuição mais humanizada ("orgânica") das faixas.
 
-LÓGICA DE DISTRIBUIÇÃO (ORGANIC BUBBLE):
-    1. VIBE SETTERS (Top 10): 60 músicas.
-       - Range: 4 a 8 músicas por artista.
-       - Simula: Artistas favoritos com discografia explorada.
-    
-    2. FLOW KEEPERS (Top 11-30): 80 músicas.
-       - Range: 2 a 6 músicas por artista.
-       - Simula: Artistas recorrentes na rotação.
-    
-    3. TEXTURES (Top 31-70): 60 músicas.
-       - Range: 1 a 2 músicas por artista.
-       - Simula: Variedade e descoberta.
+Parte do Sistema:
+    Collectors (Gerador de Dataset de Entrada).
 
-    TOTAL: ~70 Artistas para 200 Músicas.
+Responsabilidades:
+    1. Simulação Orgânica: Distribui faixas de forma desigual entre artistas
+       para evitar a "roboticidade" de ter fixo 2 músicas por artista.
+    2. Estratificação: Divide a playlist em 3 tiers (Vibe Setters, Flow Keepers, Textures).
+    3. Construção: Seleciona as faixas e monta a playlist de 200 músicas.
 
-================================================================================
+Comunicação:
+    - Entrada: CSV `data/raw/artistas_lofi_dados.csv`.
+    - Saída: Playlist 'Focus Flow Organic' no Spotify.
+
+Uso:
+    python src/collectors/create_daniel_playlist.py
 """
 
 import sys
@@ -70,8 +71,21 @@ CONFIG = {
 
 def distribuir_cotas(total_alvo, num_artistas, min_p, max_p):
     """
-    Distribui faixas aleatoriamente respeitando Min e Max.
-    Isso garante que nem todos os artistas tenham o mesmo número de músicas.
+    Calcula quantas músicas cada artista vai contribuir para a playlist.
+
+    Lógica de Negócio:
+        Em vez de uma divisão matemática exata (ex: 200/100 = 2), usamos
+        aleatoriedade controlada para dar "peso" a determinados artistas,
+        simulando a preferência real de um usuário.
+
+    Args:
+        total_alvo (int): Quantas músicas no total precisamos nesta etapa.
+        num_artistas (int): Quantos artistas estão disponíveis.
+        min_p (int): Mínimo de músicas por artista.
+        max_p (int): Máximo de músicas por artista.
+
+    Returns:
+        list: Lista de inteiros representando a cota de cada artista.
     """
     if num_artistas == 0: return []
     
@@ -99,11 +113,15 @@ def distribuir_cotas(total_alvo, num_artistas, min_p, max_p):
     return cotas
 
 def main():
+    """
+    Função Principal (Flow Builder).
+    Executa a lógica de 3 estágios para montagem da playlist.
+    """
     print("\n" + "="*60)
     print(f"INICIANDO GERADOR ORGÂNICO: {CONFIG['PLAYLIST_NAME']}")
     print("="*60)
 
-    # 1. Carregar e Ordenar
+    # 1. Carregar e Ordenar (Prioriza Artistas Populares do Nicho)
     all_artists = load_artists_from_csv(CONFIG['CSV_PATH'], limit=400)
     if not all_artists:
         print("[!] Erro: CSV vazio ou não encontrado.")
@@ -118,6 +136,7 @@ def main():
     # ==========================================================================
     # ETAPA 1: VIBE SETTERS (Top 10)
     # ==========================================================================
+    # Define a "cara" da playlist. Poucos artistas com muitas músicas.
     print(f"\n--- [ETAPA 1] Vibe Setters (Top 10 -> {CONFIG['STAGE_1']['total_tracks']} faixas) ---")
     
     s1_cfg = CONFIG['STAGE_1']
@@ -147,6 +166,7 @@ def main():
     # ==========================================================================
     # ETAPA 2: FLOW KEEPERS (Top 11-30)
     # ==========================================================================
+    # Mantém o fluxo sem repetir demais os mesmos nomes.
     print(f"\n--- [ETAPA 2] Flow Keepers (Top 11-30 -> {CONFIG['STAGE_2']['total_tracks']} faixas) ---")
     
     s2_cfg = CONFIG['STAGE_2']
@@ -175,11 +195,13 @@ def main():
     # ==========================================================================
     # ETAPA 3: TEXTURES (Variedade com Cauda Longa)
     # ==========================================================================
+    # Preenche o restante com "descobertas" (1 ou 2 músicas por artista).
     print(f"\n--- [ETAPA 3] Textures (Top 31+ -> {CONFIG['STAGE_3']['total_tracks']} faixas) ---")
     
     s3_cfg = CONFIG['STAGE_3']
     target_s3 = s3_cfg['total_tracks']
     
+    # Compensa qualquer falha das etapas anteriores para garantir os 200
     deficit = (s1_cfg['total_tracks'] - count_s1) + (s2_cfg['total_tracks'] - count_s2)
     if deficit > 0:
         print(f"  [!] Ajuste: Compensando {deficit} músicas faltantes.")
@@ -188,7 +210,7 @@ def main():
     pool_artists = all_artists[s3_cfg['artist_start_index'] : s3_cfg['artist_start_index'] + s3_cfg['pool_size_to_fetch']]
     global_pool_tracks = []
     pool_seen_uris = set() # Evita duplicatas internas no pool
-
+    
     print(f"  > Analisando catálogo de {len(pool_artists)} artistas restantes...")
     
     for artist in pool_artists:
@@ -204,7 +226,7 @@ def main():
                 pool_seen_uris.add(t['uri'])
                 added_from_artist += 1
     
-    # Ordena por popularidade
+    # Ordena por popularidade (garante qualidade mínima mesmo na cauda longa)
     global_pool_tracks.sort(key=lambda x: x['popularity'], reverse=True)
     
     selected_s3 = global_pool_tracks[:target_s3]

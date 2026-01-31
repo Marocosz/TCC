@@ -1,22 +1,29 @@
+# TIPO DE ARQUIVO: RECEBE CSV
+
 """
 ================================================================================
 ARQUITETURA DO TCC: GERADOR RICARDO (DEEP DIVE / DISCOGRAFIA REAL / STUDIO)
 ================================================================================
 
-OBJETIVO:
-    Criar playlist de 200 músicas (Clássicos) com alta profundidade por artista.
+Objetivo do Arquivo:
+    Gerar a playlist da Persona "Ricardo", que valoriza Álbuns Completos,
+    versões de estúdio originais e rejeita singles soltos ou coletâneas.
 
-DIFERENCIAL TÉCNICO:
-    - Rompe o limite de 10 músicas da API padrão.
-    - Realiza varredura em ÁLBUNS para buscar entre 8 e 16 faixas únicas.
-    - Aplica deduplicação por nome e FILTRO DE CONTEÚDO (Remove Live/Deluxe).
-    - Garante 200 músicas preenchendo o déficit se necessário.
+Parte do Sistema:
+    Collectors (Gerador de Dataset de Entrada).
 
-DISTRIBUIÇÃO (70/30):
-    - 70% Rock/Metal (Ecossistema Rock)
-    - 30% MPB/Soul/Pop (Outros)
+Responsabilidades:
+    1. Mineração Profunda: Escanear álbuns inteiros (não apenas Top Tracks).
+    2. Curadoria: Filtrar versões "Live", "Deluxe", "Remaster" para manter a pureza.
+    3. Distribuição Controlada: 70% Rock/Metal vs 30% Outros.
+    4. Seleção: Escolher entre 8 e 16 músicas POR ARTISTA (alta profundidade).
 
-================================================================================
+Comunicação:
+    - Entrada: CSV `data/raw/artistas_classicos_dados.csv`.
+    - Saída: Playlist 'Clássicos Deep Dive' no Spotify.
+
+Uso:
+    python src/collectors/create_ricardo_playlist.py
 """
 
 import sys
@@ -69,11 +76,31 @@ CONFIG = {
 }
 
 def clean_name(name):
-    """Limpa o nome para comparação e deduplicação."""
+    """
+    Normaliza o nome da faixa para permitir deduplicação.
+
+    Args:
+        name (str): Linkin Park - In The End (Remastered 2020)
+    
+    Returns:
+        str: linkin park-in the end
+    """
     return name.split(' -')[0].split(' (')[0].lower().strip()
 
 def is_content_safe(name):
-    """Verifica se o nome contém palavras proibidas (Live, Deluxe, etc)."""
+    """
+    Filtro de Qualidade: Rejeita faixas com palavras-chave indesejadas (Live, Deluxe).
+
+    Por que existe:
+        Ricardo odeia ouvir aplausos no meio da música ou versões
+        instrumentais/demo que não sejam a obra original.
+
+    Args:
+        name (str): Nome da música ou álbum.
+
+    Returns:
+        bool: True se for seguro (aprovado), False se for proibido.
+    """
     n = name.lower()
     for bad_word in CONFIG["FORBIDDEN_KEYWORDS"]:
         if bad_word in n:
@@ -81,7 +108,16 @@ def is_content_safe(name):
     return True
 
 def is_rock_ecosystem(artist_genres):
-    """Retorna True se o gênero for do ecossistema Rock."""
+    """
+    Classificador de Gênero Simplificado.
+    
+    Lógica:
+        Varre a lista de gêneros do artista procurando palavras-chave
+        do universo Rock/Metal/Blues/Punk.
+
+    Returns:
+        bool: True se for do ecossistema Rock.
+    """
     if isinstance(artist_genres, str):
         try: genres_list = ast.literal_eval(artist_genres)
         except: genres_list = [artist_genres.lower()]
@@ -103,8 +139,21 @@ def is_rock_ecosystem(artist_genres):
 
 def extract_deep_discography(artist_data, target_count):
     """
-    Função avançada: Busca APENAS ÁLBUNS DE ESTÚDIO, filtra lixo, ordena por popularidade
-    e retorna as Top N.
+    Realiza a mineração profunda (Deep Dive) na discografia do artista.
+
+    O que faz:
+        1. Busca todos os álbuns do tipo 'album' (nada de singles).
+        2. Ordena por data de lançamento (cronológico).
+        3. Itera sobre cada álbun extraindo faixas limpas (sem Live/Deluxe).
+        4. Coleta IDs até atingir a meta (target_count).
+        5. Ordena o resultado final por popularidade para garantir os melhores deep cuts.
+
+    Args:
+        artist_data (dict): Dicionário do artista.
+        target_count (int): Quantas músicas queremos deste artista (ex: 12).
+
+    Returns:
+        list: Lista de URIs do Spotify.
     """
     artist_id = artist_data.get('id')
     artist_name = artist_data.get('name')
@@ -179,6 +228,9 @@ def extract_deep_discography(artist_data, target_count):
         return []
 
 def distribuir_cotas_organicas(target_tracks, artist_pool, min_tracks, max_tracks):
+    """
+    Sorteia quantos deep cuts pegar de cada artista.
+    """
     selected_plan = [] 
     current_count = 0
     
@@ -199,6 +251,9 @@ def distribuir_cotas_organicas(target_tracks, artist_pool, min_tracks, max_track
     return selected_plan
 
 def main():
+    """
+    Orquestrador da Playlist Ricardo.
+    """
     print("\n" + "="*60)
     print(f"INICIANDO GERADOR RICARDO (DEEP DIVE / STUDIO): {CONFIG['PLAYLIST_NAME']}")
     print("="*60)

@@ -1,3 +1,4 @@
+# TIPO DE ARQUIVO: RECEBE CSV
 # build_summaries.py
 
 """
@@ -5,29 +6,35 @@
 MÓDULO DE GERAÇÃO DE RESUMOS ESTATÍSTICOS TEXTUAIS
 ================================================================================
 
-OBJETIVO DO ARQUIVO:
+Objetivo do Arquivo:
     Produzir relatórios em texto simples (.txt) contendo estatísticas descritivas
     fundamentais sobre cada playlist analisada. Estes resumos servem como
     "fichas técnicas" rápidas para consulta durante a escrita do TCC.
 
-RESPONSABILIDADES:
+Parte do Sistema:
+    Analysis (Relatórios Textuais).
+
+Responsabilidades:
     1. Leitura de Datasets: Carregar os dados processados de cada Persona.
     2. Cálculo Estatístico: Computar médias (popularidade, ano), contagens
        (gêneros, artistas) e extremos (máximos/mínimos).
     3. Formatação: Converter dados brutos em texto legível para humanos.
     4. Persistência: Salvar os arquivos .txt organizados por persona.
 
-COMUNICAÇÃO:
-    - Entrada: Lê CSVs de 'data/processed/'.
-    - Saída: Salva arquivos .txt em 'reports/summaries/'.
+Comunicação:
+    - Entrada: CSVs de 'data/processed/'.
+    - Saída: Arquivos .txt em 'reports/summaries/'.
 
-MÉTRICAS CALCULADAS:
+Métricas Calculadas:
     - Volume total (músicas/artistas).
     - Índices de Popularidade (Média da faixa vs Média do artista).
     - Janela Temporal (Ano médio, música mais antiga/nova).
     - Estrutura (Duração média).
     - Top Gêneros e Artistas (Distribuição de frequência).
-================================================================================
+
+Uso:
+    python src/analysis/build_summaries.py [nome_persona]
+    python src/analysis/build_summaries.py all
 """
 
 import pandas as pd
@@ -40,6 +47,15 @@ def formatar_duracao(segundos):
     """
     Converte uma duração em segundos (float) para formato de relógio (MM:SS).
     
+    O que faz:
+        Recebe segundos (ex: 225.5) e formata para string (ex: "3:45").
+    
+    Por que existe:
+        Facilita a leitura humana das durações médias nos relatórios.
+
+    Quando é chamada:
+        No final do cálculo estatístico, antes de escrever no arquivo .txt.
+
     Args:
         segundos (float): Tempo em segundos.
         
@@ -55,6 +71,19 @@ def formatar_duracao(segundos):
 def gerar_resumo_persona(persona, info):
     """
     Processa os dados e gera o arquivo de texto para uma única persona.
+
+    O que faz:
+        1. Carrega o CSV.
+        2. Calcula todas as estatísticas (Médias, Top Lists, Ranges).
+        3. Formata e escreve um relatório TXT estruturado.
+
+    Por que existe:
+        Para consolidar os "Key Performance Indicators" (KPIs) de cada perfil
+        de forma textual, facilitando citações no texto do TCC.
+
+    Args:
+        persona (str): Nome da persona.
+        info (dict): Configuração de caminhos {csv_path, output_folder}.
     """
     print(f"\n{'='*20} GERANDO RESUMO PARA: {persona.upper()} {'='*20}")
     
@@ -96,6 +125,7 @@ def gerar_resumo_persona(persona, info):
     # Processamento de Gêneros (Explosão de strings compostas)
     # Transforma "pop; rock" em contagens separadas para Pop e Rock
     generos_validos = df['artist_genres'].dropna().astype(str)
+    # List comprehension + Split: Técnica padrão para achatar listas de listas (flatten)
     lista_de_todos_os_generos = [genre.strip() for item in generos_validos for genre in item.split(';') if genre.strip()]
     todos_os_generos_ordenados = Counter(lista_de_todos_os_generos).most_common()
 
@@ -164,7 +194,6 @@ def main():
 
     # Mapeamento de Configuração:
     # Define onde estão os dados brutos e onde salvar o relatório final.
-    # ATUALIZAÇÃO: Caminhos absolutos para garantir execução de qualquer diretório.
     ARQUIVOS_DAS_PERSONAS = {
         'beatriz': {
             'csv_path': os.path.join(project_root, 'data', 'processed', 'dataset_Beatriz_playlist.csv'),

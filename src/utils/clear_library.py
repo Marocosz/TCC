@@ -5,13 +5,25 @@
 SCRIPT DE LIMPEZA: REMOVER TODOS OS LIKES (UNLIKE ALL)
 ================================================================================
 
-OBJETIVO:
-    Limpar a biblioteca de "Músicas Curtidas" do usuário.
-    Útil para resetar a conta de testes antes de rodar os scripts de criação de playlist.
+Objetivo do Arquivo:
+    Remover todas as músicas salvas na biblioteca ("Músicas Curtidas") do usuário.
+    Garante que o histórico de "Likes", que é um forte sinal para o algoritmo
+    de recomendação, seja zerado antes de testar uma nova Persona.
 
-PERIGO:
-    Esta ação é IRREVERSÍVEL.
-================================================================================
+Parte do Sistema:
+    Utils / Manutenção de Conta.
+
+Responsabilidades:
+    1. Listar Biblioteca: Iterar sobre todas as músicas salvas.
+    2. Remoção em Lote: Apagar músicas em blocos de 50 (limite da API).
+    3. Controle de Fluxo: Paginação automática até esvaziar a biblioteca.
+    4. Segurança: Solicitação de confirmação explícita do usuário.
+
+Comunicação:
+    - Externa: Spotify Web API (endpoints `me/tracks`).
+
+Uso:
+    python src/utils/clear_library.py
 """
 
 import sys
@@ -39,6 +51,24 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 def remove_all_likes():
+    """
+    Função principal que orquestra a limpeza da biblioteca.
+
+    O que faz:
+        1. Autentica o usuário.
+        2. Solicita confirmação ('SIM').
+        3. Entra num loop 'while' infinito que esvazia a biblioteca em lotes.
+
+    Por que existe:
+        Resetar o estado da conta para garantir a pureza dos testes entre Personas.
+
+    Quando é chamada:
+        Manualmente antes de iniciar uma nova fase de coleta.
+
+    Lógica de Execução:
+        Não usamos paginação tradicional (next) porque estamos removendo itens,
+        então a "próxima página" sempre será a página 0 da nova lista reduzida.
+    """
     # Escopo necessário para LER e REMOVER da biblioteca
     scope = "user-library-read user-library-modify"
     
@@ -54,6 +84,7 @@ def remove_all_likes():
         print(f"Erro na autenticação: {e}")
         return
     
+    # --- CONFIRMAÇÃO DE SEGURANÇA ---
     print("!!!" * 20)
     print("ATENÇÃO: ESTE SCRIPT VAI REMOVER TODAS AS MÚSICAS CURTIDAS DA SUA CONTA.")
     print("!!!" * 20)
@@ -67,9 +98,11 @@ def remove_all_likes():
     total_removido = 0
     batch_size = 50 # Limite máximo da API por chamada
 
+    # --- LOOP DE REMOÇÃO CONTÍNUA ---
     while True:
         try:
             # Busca as primeiras 50 músicas salvas
+            # Como estamos deletando, o offset é sempre 0 (início da fila)
             results = sp.current_user_saved_tracks(limit=batch_size)
             items = results['items']
 
@@ -89,7 +122,7 @@ def remove_all_likes():
                 total_removido += len(track_ids)
                 print(f" - Removidas {len(track_ids)} músicas (Total removido nesta sessão: {total_removido})")
                 
-                # Pequena pausa para não estourar o rate limit
+                # Pequena pausa para não estourar o rate limit (Boas práticas de API)
                 time.sleep(0.5)
             else:
                 break

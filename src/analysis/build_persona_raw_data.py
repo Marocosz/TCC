@@ -1,22 +1,31 @@
+# TIPO DE ARQUIVO: RECEBE LINK
+
 """
 ================================================================================
 ARQUITETURA DO TCC: CONSTRUTOR DE BASE DE DADOS BRUTA (RAW DATA)
 ================================================================================
-Ideia Central:
-Este script é o ponto de partida do experimento. Sua função é "minerar" artistas
-de nichos específicos através de playlists curadas (seed playlists) no Spotify.
 
-O script:
-1. Recebe uma ou mais URLs de playlists que definem o perfil de uma Persona.
-2. Extrai todos os artistas únicos dessas playlists para evitar duplicatas.
-3. Consulta a API do Spotify para obter perfis detalhados (popularidade, gêneros, seguidores).
-4. Salva esses dados em arquivos CSV na pasta 'data/raw/', que serão utilizados
-   posteriormente pelos scripts de criação de playlists (collectors).
+Objetivo do Arquivo:
+    Este script é o ponto de partida do experimento. Sua função é "minerar" artistas
+    de nichos específicos através de playlists curadas (seed playlists) no Spotify
+    e criar a base de dados inicial (Raw Data).
+
+Parte do Sistema:
+    Analysis (Pipeline de Mineração).
+
+Responsabilidades:
+    1. Leitura de Fontes: Recebe URLs de playlists "semente" que definem o perfil.
+    2. Extração de Identidades: Mapeia artistas únicos dessas playlists.
+    3. Enriquecimento de Dados: Consulta a API para obter popularidade, gêneros e seguidores.
+    4. Persistência: Salva os dados brutos em 'data/raw/', que alimentam os Collectors.
+
+Comunicação:
+    - Entrada: URLs configuradas no dicionário PERSONAS.
+    - Saída: Arquivos CSV em 'data/raw/'.
 
 Uso:
     python src/analysis/build_persona_raw_data.py [nome_da_persona]
     python src/analysis/build_persona_raw_data.py all
-================================================================================
 """
 
 import sys
@@ -39,7 +48,7 @@ project_root = os.path.dirname(diretorio_src)
 
 # --- CONFIGURAÇÃO DAS PERSONAS E FONTES DE DADOS ---
 # Este dicionário centraliza as "regras" de onde buscar artistas para cada perfil.
-# Os caminhos de output agora apontam corretamente para 'data/raw/'
+# Os caminhos de output apontam para 'data/raw/'
 PERSONAS = {
     "beatriz": {
         "urls": ["https://open.spotify.com/playlist/3ZNXMWlJdHsrtYvla53nVA?si=b448e5b5b5b4493c"], # Ex: Top Brasil
@@ -63,8 +72,21 @@ def executar_coleta(nome_persona):
     """
     Orquestra a coleta de dados de uma persona específica.
     
-    Argumentos:
-        nome_persona (str): O nome da chave no dicionário PERSONAS.
+    O que faz:
+        1. Identifica a configuração (URLs e Output).
+        2. Itera sobre as playlists semente para extrair IDs de artistas.
+        3. Dedupica a lista de artistas encontrados.
+        4. Busca metadados ricos (Popularidade, Followers) na API.
+        5. Salva o resultado em CSV.
+
+    Por que existe:
+        Centraliza a lógica de ETL para reutilização em todas as personas.
+    
+    Quando é chamada:
+        Pela função `main`, uma vez para cada persona solicitada.
+
+    Args:
+        nome_persona (str): O nome da chave no dicionário PERSONAS (ex: 'beatriz').
     """
     config = PERSONAS.get(nome_persona.lower())
     
@@ -131,7 +153,7 @@ def main():
     argumento = sys.argv[1].lower()
 
     # Opção para automatizar o processamento de todos os perfis de uma vez
-    if argumento == "all":
+    if argumento == "all" or argumento == "todas":
         print("Iniciando processamento em lote de todas as personas...")
         for persona in PERSONAS.keys():
             executar_coleta(persona)

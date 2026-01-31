@@ -1,23 +1,32 @@
+# TIPO DE ARQUIVO: RECEBE CSV
+
 """
 ================================================================================
 ARQUITETURA DO TCC: GERADOR SOFIA (UNDERGROUND DEEP DIVE - LOOP FILL)
 ================================================================================
 
-OBJETIVO:
-    Criar playlist de 200 músicas focada em ARTISTAS OBSCUROS.
+Objetivo do Arquivo:
+    Gerar a playlist da Persona "Sofia", focada em Indie/Underground.
+    O desafio aqui é a ESCASSEZ de dados: artistas desconhecidos tem poucas faixas.
 
-CORREÇÃO APLICADA:
-    - Como o CSV tem poucos artistas, o script agora possui um mecanismo de
-      REPESCAGEM (Loop Fill).
-    - Se a primeira passada não encher a playlist, ele volta aos mesmos artistas
-      e busca mais faixas (as que sobraram) até atingir a meta de 200.
+Parte do Sistema:
+    Collectors (Gerador de Dataset de Entrada).
 
-LÓGICA:
-    1. Ordena Artistas por Popularidade Crescente (0 -> 100).
-    2. Passada 1: Pega 8 a 13 músicas (Deep Cuts).
-    3. Passada 2 (se necessário): Pega mais músicas dos mesmos artistas.
+Responsabilidades:
+    1. Varredura Total: Coleta discografia completa (Álbuns + Singles).
+    2. Estratégia de Preenchimento (Loop Fill):
+       - Passada 1: Tenta pegar 8-13 músicas por artista.
+       - Passada 2+: Se não encheu 200 slots, volta nos mesmos artistas e
+         pega o "resto" do catálogo até completar.
+    3. Ordenação Inversa: Prioriza músicas MENOS populares dentro do catálogo
+       (Deep Cuts) mas a lista de artistas é ordenada do MENOR para o MAIOR.
 
-================================================================================
+Comunicação:
+    - Entrada: CSV `data/raw/artistas_indie_dados.csv`.
+    - Saída: Playlist 'Underground Deep Dive' no Spotify.
+
+Uso:
+    python src/collectors/create_sofia_playlist.py
 """
 
 import sys
@@ -58,13 +67,22 @@ CONFIG = {
 }
 
 def clean_name(name):
-    """Limpa nome para deduplicação simples."""
+    """Limpa nome para deduplicação simples, removendo sufixos."""
     return name.split(' -')[0].split(' (')[0].lower().strip()
 
 def get_all_artist_tracks_sorted(artist_data):
     """
     Busca TODAS as faixas do artista e retorna ordenadas por popularidade CRESCENTE.
-    Retorna uma lista de dicionários: [{'uri': ..., 'name': ..., 'popularity': ...}]
+
+    Por que Crescente?
+        Sofia busca o "Lado B", as joias escondidas. Queremos as músicas
+        que os fãs hardcores conhecem, não os hits de rádio.
+
+    Args:
+        artist_data (dict): Dados do artista.
+
+    Returns:
+        list: Lista de dicionários [{'uri': ..., 'name': ..., 'popularity': ...}].
     """
     artist_id = artist_data.get('id')
     if not artist_id: return []
@@ -82,6 +100,7 @@ def get_all_artist_tracks_sorted(artist_data):
         
         raw_uris = list(set(raw_uris)) # Deduplica URIs
         
+        # Fallback: Se não achar álbuns, pega Top Tracks (melhor que nada)
         if not raw_uris:
             top = sp.artist_top_tracks(artist_id, country='BR')['tracks']
             raw_uris = [t['uri'] for t in top]
@@ -94,7 +113,8 @@ def get_all_artist_tracks_sorted(artist_data):
                 res = sp.tracks(batch)
                 full_tracks.extend([t for t in res['tracks'] if t])
 
-        # Ordena: Menos popular -> Mais popular
+        # Ordena: Menos popular -> Mais popular e retorna a lista completa
+        # (O filtro de quantidade será feito no loop principal)
         full_tracks.sort(key=lambda x: x['popularity'])
         
         return full_tracks
@@ -104,6 +124,10 @@ def get_all_artist_tracks_sorted(artist_data):
         return []
 
 def main():
+    """
+    Orquestrador da Playlist Sofia.
+    Utiliza cache local para evitar múltiplas chamadas à API no Loop de Repescagem.
+    """
     print("\n" + "="*60)
     print(f"INICIANDO GERADOR SOFIA (LOOP FILL): {CONFIG['PLAYLIST_NAME']}")
     print("="*60)
@@ -112,7 +136,7 @@ def main():
     all_artists = load_artists_from_csv(CONFIG['CSV_PATH'], limit=400)
     if not all_artists: return
 
-    # Ordena: Menor Pop -> Maior Pop
+    # Ordena: Menor Pop -> Maior Pop (Começa pelos mais desconhecidos)
     all_artists.sort(key=lambda x: int(x.get('popularity', 0)))
     
     print(f"Base: {len(all_artists)} artistas (Start Pop: {all_artists[0]['popularity']})")
@@ -151,6 +175,7 @@ def main():
                 quota = random.randint(CONFIG['TRACKS_PER_ARTIST_INITIAL'][0], CONFIG['TRACKS_PER_ARTIST_INITIAL'][1])
             else:
                 # Nas rodadas seguintes, pega um pouco de cada vez para distribuir
+                # o preenchimento entre todos os artistas restantes
                 quota = 3 
             
             added_now = 0

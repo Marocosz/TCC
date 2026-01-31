@@ -1,3 +1,4 @@
+# TIPO DE ARQUIVO: RECEBE CSV
 # build_personal_graphs.py
 
 """
@@ -5,28 +6,34 @@
 MÓDULO DE GERAÇÃO DE INSIGHTS VISUAIS POR PERSONA
 ================================================================================
 
-OBJETIVO DO ARQUIVO:
+Objetivo do Arquivo:
     Gerar um conjunto detalhado de gráficos estatísticos INDIVIDUAIS para cada
-    Persona. Ao contrário do 'gerar_graficos.py' que compara todos juntos,
+    Persona. Ao contrário do 'build_cross_graphs.py' que compara todos juntos,
     este script foca na análise profunda e isolada de cada perfil.
 
-RESPONSABILIDADES:
-    1. Leitura de Dados: Carregar os Datasets processados de cada Persona.
-    2. Processamento Estatístico: Calcular frequências de gêneros, artistas e distribuição temporal.
-    3. Visualização: Gerar 5 tipos de gráficos específicos (Histogramas, Barras, Dispersão).
-    4. Persistência de Relatórios: Salvar as imagens geradas na pasta de relatórios.
+Parte do Sistema:
+    Analysis (Visualização de Dados).
 
-COMUNICAÇÃO:
-    - Entrada: Lê arquivos CSV de 'data/processed/'.
+Responsabilidades:
+    1. Leitura de Dados: Carregar os Datasets processados de cada Persona.
+    2. Processamento Estatístico: Calcular frequências e distribuições.
+    3. Visualização: Gerar 5 tipos de gráficos específicos (Histogramas, Barras).
+    4. Persistência de Relatórios: Salvar as imagens PNG.
+
+Comunicação:
+    - Entrada: CSVs de 'data/processed/'.
     - Saída: Salva imagens PNG em 'reports/figures/[persona]/'.
 
-GRÁFICOS GERADOS:
-    1. Distribuição de Popularidade (Histograma)
-    2. Top Gêneros Musicais (Bar Chart)
-    3. Era Musical / Ano de Lançamento (Histograma Temporal)
-    4. Concentração de Artistas (Bar Chart)
-    5. Dispersão Popularidade vs Seguidores (Scatter Plot)
-================================================================================
+Gráficos Gerados:
+    1. Popularidade (Histograma)
+    2. Top Gêneros (Bar Chart)
+    3. Era Musical (Histograma)
+    4. Concentração Artistica (Bar Chart)
+    5. Scatter Popularidade vs Seguidores
+
+Uso:
+    python src/analysis/build_personal_graphs.py [nome_persona]
+    python src/analysis/build_personal_graphs.py all
 """
 
 import pandas as pd
@@ -43,25 +50,42 @@ def calcular_top_generos(series_generos, top_n=10):
     """
     Processa a coluna de gêneros (strings compostas) para ranking de frequência.
     
-    Lógica:
+    O que faz:
         - Remove valores nulos.
         - Tokeniza strings separadas por ';' (ex: "pop; rock" -> ["pop", "rock"]).
         - Conta ocorrências e retorna os Top N.
+
+    Por que existe:
+        Permite analisar a diversidade real de gêneros, desagrupando termos compostos.
+
+    Quando é chamada:
+        Na geração do Gráfico 2 (Diversidade).
         
     Args:
         series_generos (pd.Series): Coluna do DataFrame com gêneros.
-        top_n (int): Número de gêneros a retornar.
+        top_n (int): Número de gêneros a retornar (Default: 10).
         
     Returns:
         list: Lista de tuplas [('genero', contagem), ...].
     """
     generos_validos = series_generos.dropna().astype(str)
+    # List comprehension aninhada para flatten
     lista_de_todos_os_generos = [genre.strip() for item in generos_validos for genre in item.split(';') if genre.strip()]
     return Counter(lista_de_todos_os_generos).most_common(top_n)
 
 def gerar_graficos_para_persona(persona, config):
     """
-    Função encapsulada para gerar os gráficos de uma única persona.
+    Gera o pacote completo de gráficos para uma única persona.
+
+    O que faz:
+        Orquestra a leitura do CSV específico da persona e a plotagem de 5 visualizações.
+    
+    Por que existe:
+        Encapsula a lógica de plotagem para permitir execução modular (uma persona ou todas).
+
+    Args:
+        persona (str): Nome da persona (ex: 'beatriz').
+        config (dict): Dicionário contendo { 'csv_path': ..., 'output_folder': ... }.
     """
     print(f"\n{'='*20} GERANDO GRÁFICOS PARA: {persona.upper()} {'='*20}")
     
@@ -179,13 +203,12 @@ def gerar_graficos_para_persona(persona, config):
 def main():
     """
     Fluxo principal de geração de relatórios visuais.
+    Gerencia argumentos de CLI para decidir se gera para 'all' ou específica.
     """
     # --- 1. PAINEL DE CONTROLE (CONFIGURAÇÕES) ---
     print("--- Iniciando a geração de insights individuais por persona ---")
     
-    # Define a raiz do projeto dinamicamente com base na localização deste script
-    # Script está em: src/analysis/build_personal_graphs.py
-    # Raíz está em: ../../
+    # Define a raiz do projeto dinamicamente
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
     

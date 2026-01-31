@@ -1,3 +1,4 @@
+# TIPO DE ARQUIVO: RECEBE LINK
 # src/analysis/extrair_dados_artistas_seguidos.py
 
 """
@@ -5,30 +6,28 @@
 MÓDULO DE EXTRAÇÃO DE DADOS DE ARTISTAS SEGUIDOS (AUDIT DATASET BUILDER)
 ================================================================================
 
-OBJETIVO DO ARQUIVO:
+Objetivo do Arquivo:
     Gerar o dataset de "Interesses Explícitos" do TCC.
     Este script identifica os artistas principais das playlists semente de cada 
     persona (aqueles que foram seguidos pelas contas) e extrai seus metadados 
     completos para análise estatística de perfil.
 
-PARTE DO SISTEMA:
-    Camada de Análise (Analysis). Fornece a linha de base (baseline) para comparar 
-    o perfil de entrada da persona com o perfil de saída gerado pela IA.
+Parte do Sistema:
+    Analysis (Coleta de Baseline).
 
-RESPONSABILIDADES:
+Responsabilidades:
     1. Identificação de Alvos: Mapeia os artistas primários de cada nicho.
     2. Deduplicação: Garante que cada artista apareça apenas uma vez no dataset.
     3. Enriquecimento de Metadados: Busca popularidade, gêneros e volume de seguidores.
     4. Persistência: Gera arquivos CSV estruturados em 'data/processed/'.
 
-COMUNICAÇÃO:
-    - Externa: Spotify Web API (via biblioteca `spotipy`).
+Comunicação:
+    - Externa: API do Spotify (Spotipy).
     - Interna: Provê dados para o cálculo de métricas de diversidade e viés.
 
-USO:
+Uso:
     python extrair_dados_artistas_seguidos.py [nome_da_persona]
     python extrair_dados_artistas_seguidos.py todas
-================================================================================
 """
 
 import spotipy
@@ -73,6 +72,19 @@ CONFIG_ARTISTAS = {
 def extrair_dados_artistas(playlist_url: str, output_csv_file: str):
     """
     Executa o fluxo de extração de metadados dos artistas principais de uma playlist.
+
+    O que faz:
+        1. Acessa a playlist semente.
+        2. Itera sobre todas as faixas e extrai o ID do primeiro artista (Principal).
+        3. Envia IDs únicos para a API de 'artists' (batch request).
+        4. Compila dados de popularidade e seguidores e salva em CSV.
+
+    Por que existe:
+        Para criar um baseline de "Quem a persona segue/gosta" para comparar
+        com "O que a persona recebe" nas recomendações.
+
+    Quando é chamada:
+        Durante a fase de setup do experimento ou para auditoria.
 
     Args:
         playlist_url (str): Link da playlist que originou os seguidores.
@@ -149,6 +161,9 @@ def extrair_dados_artistas(playlist_url: str, output_csv_file: str):
         print(f"Ocorreu um erro no processamento: {e}")
 
 def main():
+    """
+    Ponto de entrada do script.
+    """
     if len(sys.argv) < 2:
         print("\nUso: python extrair_dados_artistas_seguidos.py [persona/todas]")
         return
@@ -165,5 +180,5 @@ def main():
         else:
             print(f"ERRO: Persona '{argumento}' não encontrada.")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

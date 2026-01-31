@@ -1,30 +1,32 @@
+# TIPO DE ARQUIVO: RECEBE CSV
 # build_cross_graphs.py
 
 """
 ================================================================================
-MÓDULO DE VISUALIZAÇÃO DE DADOS E GERAÇÃO DE INSIGHTS
+MÓDULO DE VISUALIZAÇÃO DE DADOS E GERAÇÃO DE INSIGHTS CRUZADOS
 ================================================================================
 
-OBJETIVO DO ARQUIVO:
+Objetivo do Arquivo:
     Transformar os dados tabulares brutos (CSV consolidado) em representações
     visuais (gráficos estáticos) que fundamentam a argumentação do TCC.
-    
-    Este script é o responsável por gerar as "provas visuais" da auditoria
-    algorítmica, comparando o comportamento das diferentes Personas.
+    Gera "provas visuais" da auditoria algorítmica, comparando o comportamento 
+    das diferentes Personas lado a lado.
 
-RESPONSABILIDADES:
+Parte do Sistema:
+    Analysis (Visualização de Dados).
+
+Responsabilidades:
     1. Carregamento e Tipagem: Ler o dataset consolidado e corrigir tipos de dados.
     2. Engenharia de Features: Criar colunas derivadas (ex: duração em segundos).
-    3. Padronização Visual: Garantir que cada Persona tenha sempre a mesma cor
-       em todos os gráficos para facilitar a leitura cruzada.
-    4. Geração de Figuras: Criar e salvar 6 tipos de gráficos específicos para
-       análise de popularidade, diversidade, temporalidade e estrutura musical.
+    3. Padronização Visual: Garantir que cada Persona tenha sempre a mesma cor.
+    4. Geração de Figuras: Criar 6 tipos de gráficos comparativos.
 
-COMUNICAÇÃO:
-    - Entrada: Lê 'analise_consolidada_input.csv' (gerado por consolidar_dados.py).
-    - Saída: Salva arquivos .png na pasta reports/figures/cross.
+Comunicação:
+    - Entrada: 'data/processed/dataset_consolidada_input.csv'.
+    - Saída: Arquivos .png em 'reports/figures/cross/'.
 
-================================================================================
+Uso:
+    python src/analysis/build_cross_graphs.py
 """
 
 import pandas as pd
@@ -35,16 +37,22 @@ import os
 
 def calcular_top_generos(series_generos, top_n=10):
     """
-    Processa a coluna de gêneros (que contém strings compostas) para ranking.
+    Processa a coluna de gêneros (strings compostas) para ranking.
 
-    Motivação:
-        O Spotify retorna gêneros como uma string única (ex: "pop; dance pop").
-        Para analisar diversidade, precisamos "explodir" essa string, contar
-        cada gênero individualmente e retornar os mais frequentes.
+    O que faz:
+        Recebe uma série de strings (ex: "pop; rock"), quebra nos delimitadores,
+        conta a frequência de cada termo individual e retorna os Top N.
+
+    Por que existe:
+        O Spotify retorna múltiplos gêneros concatenados. Para analisar diversidade
+        real, precisamos contar "Pop" e "Rock" separadamente, não a combinação única.
+
+    Quando é chamada:
+        Durante a geração do Gráfico 2 (Diversidade de Gêneros).
 
     Args:
         series_generos (pd.Series): Coluna do DataFrame contendo strings de gêneros.
-        top_n (int): Quantidade de itens a retornar.
+        top_n (int): Quantidade de itens a retornar (Default: 10).
 
     Returns:
         list: Lista de tuplas [('genero', contagem), ...] ordenada por frequência.
@@ -63,21 +71,27 @@ def calcular_top_generos(series_generos, top_n=10):
 
 def main():
     """
-    Fluxo principal de execução da pipeline de visualização.
+    Função Principal (Pipeline de Visualização).
+
+    O que faz:
+        1. Carrega o CSV consolidado.
+        2. Aplica casting de tipos (numéricos e datas).
+        3. Define paleta de cores consistente.
+        4. Gera e salva 5 gráficos comparativos (Boxplots, Violins, Scatters).
+
+    Por que existe:
+        Para automatizar a geração de TODAS as figuras comparativas do TCC de uma vez.
     """
     # ==========================================================================
     # 1. CARREGAMENTO E PREPARAÇÃO DOS DADOS (ETL)
     # ==========================================================================
     print("--- PASSO 1: Carregando e preparando os dados do CSV consolidado ---")
     
-    # Define a raiz do projeto dinamicamente com base na localização deste script
-    # Script está em: src/analysis/build_cross_graphs.py
-    # Raíz está em: ../../
+    # Define a raiz do projeto dinamicamente
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
 
     # Arquivo gerado pela etapa de consolidação anterior
-    # Caminho relativo a partir da raiz do projeto
     CSV_FILE = os.path.join(project_root, 'data', 'processed', 'dataset_consolidada_input.csv')
     OUTPUT_DIR = os.path.join(project_root, 'reports', 'figures', 'cross')
 
@@ -87,18 +101,17 @@ def main():
     try:
         df = pd.read_csv(CSV_FILE)
     except FileNotFoundError:
-        print(f"ERRO: Arquivo '{CSV_FILE}' não encontrado. Verifique o nome e o local do arquivo.")
+        print(f"ERRO: Arquivo '{CSV_FILE}' não encontrado. Execute 'merge_datasets.py' primeiro.")
         return
 
-    # Tratamento de Tipos (Casting):
-    # CSVs perdem a tipagem original (tudo vira string ou int genérico).
-    # Aqui forçamos os tipos corretos para permitir cálculos estatísticos e plotagem.
+    # Tratamento de Tipos (Casting)
+    # Necessário pois CSV perde tipagem original
     df['album_release_year'] = pd.to_datetime(df['album_release_date'], errors='coerce').dt.year
     df['track_popularity'] = pd.to_numeric(df['track_popularity'], errors='coerce')
     df['artist_popularity'] = pd.to_numeric(df['artist_popularity'], errors='coerce')
     df['artist_followers'] = pd.to_numeric(df['artist_followers'], errors='coerce')
     
-    # Normalização: Converte ms para segundos para facilitar leitura humana no eixo Y
+    # Normalização: ms para segundos
     df['duration_sec'] = pd.to_numeric(df.get('duration_ms'), errors='coerce') / 1000 
 
     print("Dados carregados e preparados com sucesso.")
@@ -108,20 +121,15 @@ def main():
     # 2. CONFIGURAÇÃO VISUAL GLOBAL
     # ==========================================================================
     
-    # Define uma paleta de cores consistente baseada no número de personas únicas.
-    # A lista 'order' garante que a Beatriz seja sempre a cor X e o Daniel a cor Y,
-    # independente da ordem dos dados no arquivo.
+    # Paleta consistente: garante que Beatriz seja sempre a mesma cor em todos os gráficos
     palette = sns.color_palette("husl", len(df['persona'].unique()))
     order = ['beatriz', 'ricardo', 'sofia', 'daniel']
     
     # ==========================================================================
     # GRÁFICO 1: ANÁLISE DE POPULARIDADE (Mainstream vs Nicho)
     # --------------------------------------------------------------------------
-    # Insight Buscado:
-    # Comparar a mediana e a dispersão da popularidade.
-    # - Beatriz deve estar no topo (Mainstream).
-    # - Sofia deve estar em baixo (Nicho).
-    # - Se o Spotify homogeneizar, as caixas tendem a subir e se estreitar.
+    # Insight: Comparar a mediana e dispersão da popularidade das faixas.
+    # Esperado: Beatriz no topo, Sofia em baixo.
     # ==========================================================================
     print("\n--- Gerando Gráfico 1: Popularidade (Box Plot) ---")
     plt.figure(figsize=(12, 8))
@@ -130,53 +138,42 @@ def main():
     plt.xlabel('Persona', fontsize=12)
     plt.ylabel('Índice de Popularidade da Música (0-100)', fontsize=12)
     plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_popularidade.png'))
-    print(f"Gráfico 'grafico_popularidade.png' salvo em {OUTPUT_DIR}")
+    print(f"Gráfico 'grafico_popularidade.png' salvo.")
     
     # ==========================================================================
     # GRÁFICO 2: ANÁLISE DE DIVERSIDADE DE GÊNEROS
     # --------------------------------------------------------------------------
-    # Insight Buscado:
-    # Verificar a "Entropia de Gênero".
-    # - Personas como Daniel (Caos) devem ter barras menores e mais distribuídas.
-    # - Personas de nicho (Sofia) podem ter gêneros muito específicos.
-    # - O algoritmo tende a reduzir essa diversidade?
+    # Insight: Verificar a "Entropia de Gênero" e bolhas de filtro.
+    # Esperado: Daniel com distribuição mais plana (caos), Sofia com nichos específicos.
     # ==========================================================================
     print("\n--- Gerando Gráfico 2: Diversidade de Gêneros (Bar Chart) ---")
-    fig, axes = plt.subplots(2, 2, figsize=(20, 15)) # Cria grid 2x2
+    fig, axes = plt.subplots(2, 2, figsize=(20, 15))
     axes = axes.flatten()
     
     for i, persona_name in enumerate(order):
         ax = axes[i]
         try:
-            # Filtra dados apenas da persona atual do loop
             grupo_persona = df[df['persona'] == persona_name]
-            
-            # Chama função auxiliar para processar a string de gêneros
             top_generos = calcular_top_generos(grupo_persona['artist_genres'], top_n=10)
             
             if not top_generos: raise KeyError
             
-            # Prepara DataFrame temporário para plotagem
             df_generos = pd.DataFrame(top_generos, columns=['genero', 'contagem'])
-            
             sns.barplot(data=df_generos, x='contagem', y='genero', ax=ax, color=palette[i], orient='h')
             ax.set_title(f'Top 10 Gêneros - {persona_name.capitalize()}', fontsize=14)
             ax.set_xlabel('Contagem de Músicas', fontsize=12)
         except (KeyError, IndexError):
-            # Tratamento para casos onde a persona não tem dados suficientes ou gêneros vazios
             ax.set_title(f'Top 10 Gêneros - {persona_name.capitalize()} (Sem Dados)', fontsize=14)
 
     plt.tight_layout(pad=3.0)
     plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_generos.png'))
-    print(f"Gráfico 'grafico_generos.png' salvo em {OUTPUT_DIR}")
+    print(f"Gráfico 'grafico_generos.png' salvo.")
 
     # ==========================================================================
-    # GRÁFICO 3: ANÁLISE TEMPORAL (Viés de Recência vs Nostalgia)
+    # GRÁFICO 3: ANÁLISE TEMPORAL (Viés de Recência)
     # --------------------------------------------------------------------------
-    # Insight Buscado:
-    # O Violin Plot mostra a densidade de distribuição dos anos.
-    # - Ricardo deve ter um "bojo" nos anos 70/80/90.
-    # - A IA tende a recomendar músicas novas (viés de recência) mesmo para perfis retrô?
+    # Insight: Distribuição dos anos de lançamento.
+    # Esperado: Ricardo concentrado em 70s/80s/90s.
     # ==========================================================================
     print("\n--- Gerando Gráfico 3: Época Musical (Violin Plot) ---")
     plt.figure(figsize=(12, 8))
@@ -185,15 +182,12 @@ def main():
     plt.xlabel('Persona', fontsize=12)
     plt.ylabel('Ano de Lançamento', fontsize=12)
     plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_era_musical.png'))
-    print(f"Gráfico 'grafico_era_musical.png' salvo em {OUTPUT_DIR}")
+    print(f"Gráfico 'grafico_era_musical.png' salvo.")
 
     # ==========================================================================
-    # GRÁFICO 4: CONCENTRAÇÃO DE ARTISTAS (Bolha de Filtro)
+    # GRÁFICO 4: CONCENTRAÇÃO DE ARTISTAS
     # --------------------------------------------------------------------------
-    # Insight Buscado:
-    # Medir a repetitividade.
-    # - Se o topo é dominado por poucos artistas com muitas músicas, indica "Bolha".
-    # - Uma distribuição plana indica alta descoberta/variação.
+    # Insight: Medir repetitividade vs descoberta.
     # ==========================================================================
     print("\n--- Gerando Gráfico 4: Concentração de Artistas ---")
     fig, axes = plt.subplots(2, 2, figsize=(20, 15))
@@ -212,27 +206,24 @@ def main():
 
     plt.tight_layout(pad=3.0)
     plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_concentracao_artistas.png'))
-    print(f"Gráfico 'grafico_concentracao_artistas.png' salvo em {OUTPUT_DIR}")
+    print(f"Gráfico 'grafico_concentracao_artistas.png' salvo.")
 
     # ==========================================================================
     # GRÁFICO 5: ANÁLISE DE CAUDA LONGA (Pop vs Followers)
     # --------------------------------------------------------------------------
-    # Insight Buscado (Crucial para o TCC):
-    # Relaciona "Hype Atual" (Popularidade) com "Base Consolidada" (Seguidores).
-    # - Escala Logarítmica (set_yscale('log')) é usada porque o número de seguidores
-    #   varia exponencialmente (de 1.000 a 100.000.000).
-    # - Permite visualizar se a IA recomenda apenas "Blockbusters" ou "Indies".
+    # Insight: Relaciona Hype Atual (Popularidade) com Base de Fãs (Seguidores).
+    # Uso de escala Log é crucial aqui.
     # ==========================================================================
     print("\n--- Gerando Gráfico 5: Popularidade vs. Seguidores ---")
     plt.figure(figsize=(14, 10))
     g = sns.scatterplot(data=df, x='artist_popularity', y='artist_followers', hue='persona', palette=palette, hue_order=order, s=100, alpha=0.7)
-    g.set_yscale('log') # Ajuste técnico essencial para visualização de dados de rede social
+    g.set_yscale('log')
     plt.title('Análise de Nicho vs. Mainstream (Popularidade vs. Seguidores)', fontsize=16)
     plt.xlabel('Popularidade do Artista (Relevância Atual)', fontsize=12)
     plt.ylabel('Seguidores do Artista (Base de Fãs) - Escala Log', fontsize=12)
     plt.legend(title='Persona')
     plt.savefig(os.path.join(OUTPUT_DIR, 'grafico_pop_vs_followers.png'))
-    print(f"Gráfico 'grafico_pop_vs_followers.png' salvo em {OUTPUT_DIR}")
+    print(f"Gráfico 'grafico_pop_vs_followers.png' salvo.")
     
 if __name__ == "__main__":
     main()

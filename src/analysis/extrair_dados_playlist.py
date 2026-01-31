@@ -1,3 +1,4 @@
+# TIPO DE ARQUIVO: RECEBE LINK
 # src/analysis/extrair_dados_playlist.py
 
 """
@@ -5,31 +6,29 @@
 MÓDULO DE EXTRAÇÃO DE DADOS DE PLAYLISTS (DATASET BUILDER)
 ================================================================================
 
-OBJETIVO DO ARQUIVO:
+Objetivo do Arquivo:
     Atuar como a ferramenta de extração e processamento de dados brutos (ETL) do TCC.
     Este script conecta à API do Spotify, baixa o conteúdo completo de playlists
     (seja a semente criada manualmente ou as recomendações da IA) e transforma
     esses dados em um DATASET (CSV) estruturado para posterior análise.
 
-PARTE DO SISTEMA:
-    Camada de Coleta/Análise (Analysis). É executado após a criação das playlists ou
-    após o período de coleta de recomendações.
+Parte do Sistema:
+    Analysis (Coleta de Dados Pós-Geração).
 
-RESPONSABILIDADES:
-    1. Gerenciamento de Configuração: Mapeia cada Persona à sua respectiva Playlist e arquivo de saída.
-    2. Conexão Híbrida: Utiliza autenticação de Usuário (para ler playlists) e de Cliente (para metadados).
-    3. Tratamento de Paginação: Garante que playlists com mais de 100 músicas sejam baixadas integralmente.
-    4. Enriquecimento de Dados: Cruza dados da faixa com dados do artista (gêneros, popularidade).
-    5. Persistência: Salva o resultado formatado como Dataset CSV.
+Responsabilidades:
+    1. Gerenciamento de Configuração: Mapeia cada Persona à sua respectiva Playlist.
+    2. Conexão Híbrida: Utiliza autenticação de Usuário e de Cliente.
+    3. Tratamento de Paginação: Garante que playlists grandes sejam lidas por completo.
+    4. Enriquecimento de Dados: Cruza dados da música com métricas do artista.
+    5. Persistência: Grava o resultado em CSV na pasta 'data/processed/'.
 
-COMUNICAÇÃO:
-    - Externa: Spotify Web API (via biblioteca `spotipy`).
-    - Interna: Gera arquivos em `data/processed/` que serão lidos pelos scripts de gráficos.
+Comunicação:
+    - Externa: API do Spotify (Spotipy).
+    - Interna: Gera CSVs base para `build_cross_graphs.py` e `build_personal_graphs.py`.
 
-USO:
-    python extrair_dados_playlist.py [nome_da_persona]
-    python extrair_dados_playlist.py todas
-================================================================================
+Uso:
+    python extrair_dados_playlist.py [beatriz|daniel|ricardo|sofia]
+    python extrair_dados_playlist.py all
 """
 
 import spotipy
@@ -75,16 +74,21 @@ CONFIG_DATASETS = {
 def ms_para_min_seg(ms):
     """
     Converte milissegundos para um formato legível 'min:seg'.
-    
+
+    O que faz:
+        Recebe um inteiro (ex: 184000) e retorna string formatada (ex: "3:04").
+
     Por que existe:
-        A API retorna duração em int (ex: 180000), mas para relatórios
-        humanos precisamos de strings (ex: '3:00').
+        A API retorna duração crua em int, mas relatórios exigem leitura humana.
+
+    Quando é chamada:
+        Durante a montagem da linha de dados para o CSV.
         
     Args:
-        ms (int/float): Duração bruta.
+        ms (int): Duração bruta em milissegundos.
         
     Returns:
-        str: Tempo formatado.
+        str: Tempo formatado ou "0:00" se inválido.
     """
     if not isinstance(ms, (int, float)):
         return "0:00"
@@ -98,15 +102,21 @@ def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str):
     """
     Executa o fluxo ETL (Extract, Transform, Load) para uma playlist específica.
 
-    Fluxo Lógico:
-    1. Autentica como Usuário para acessar a playlist (mesmo se privada).
-    2. Itera sobre as páginas da playlist para baixar todas as faixas.
-    3. Autentica como Aplicação para buscar metadados de artistas (melhor rate limit).
-    4. Cruza as informações e salva o Dataset em CSV.
+    O que faz:
+        1. Conecta ao Spotify como Usuário para ler a playlist (mesmo privada).
+        2. Itera por todas as páginas (paginação) para coletar URIs.
+        3. Conecta como App para baixar detalhes de artistas em lote (Performance).
+        4. Compila metadados (popularidade, genres, dates) e salva em CSV.
+
+    Por que existe:
+        É o motor principal de coleta de dados do projeto.
+
+    Quando é chamada:
+        Pelo orquestrador `main` para cada persona solicitada.
 
     Args:
-        playlist_url (str): Link ou URI da playlist no Spotify.
-        output_csv_file (str): Caminho relativo onde o arquivo será salvo.
+        playlist_url (str): Link completo da playlist.
+        output_csv_file (str): Caminho absoluto de destino do arquivo.
     """
     print(f"\n--- Iniciando extração de dados: {output_csv_file.split('/')[-1]} ---")
     
@@ -129,8 +139,7 @@ def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str):
         playlist_id = playlist_url.split('/')[-1].split('?')[0]
         
         # Paginação Automática:
-        # O Spotify entrega max 100 itens por request. O loop 'while' garante
-        # que playlists maiores sejam baixadas na íntegra.
+        # O Spotify entrega max 100 itens por request.
         resultados = sp_user.playlist_items(playlist_id)
         itens_playlist = resultados['items']
         while resultados['next']:
@@ -146,14 +155,12 @@ def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str):
         # ETAPA 2: BUSCAR DETALHES DOS ARTISTAS (Auth de Aplicativo)
         # ----------------------------------------------------------------------
         # Troca para Client Credentials Flow.
-        # Motivo: Dados de artistas são públicos e esse método tem limites
-        # de requisição (Rate Limits) mais altos que o token de usuário.
+        # Motivo: Dados de artistas são públicos e esse método tem limites maiores.
         print("Buscando detalhes dos artistas em lote...")
         
         sp_app = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
         # Deduplicação:
-        # Cria lista de IDs únicos para não consultar o mesmo artista várias vezes.
         artist_ids = list(set(
             artist['id'] for track in tracks for artist in track['artists'] if artist and artist.get('id')
         ))
@@ -161,7 +168,7 @@ def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str):
         artist_details_map = {}
         
         # Processamento em Lote (Batching):
-        # A API 'artists' aceita até 50 IDs. Iteramos em blocos para otimizar rede.
+        # API permite até 50 IDs por request.
         for i in range(0, len(artist_ids), 50):
             batch_ids = artist_ids[i:i+50]
             artist_results = sp_app.artists(batch_ids)
@@ -252,7 +259,7 @@ def main():
     argumento = sys.argv[1].lower()
 
     # Lógica de decisão: Todas vs Individual
-    if argumento == "all":
+    if argumento == "all" or argumento == "todas":
         print(">>> INICIANDO EXTRAÇÃO EM LOTE (TODAS AS PERSONAS)")
         for persona, config in CONFIG_DATASETS.items():
             extrair_e_salvar_dados(config["url"], config["output"])

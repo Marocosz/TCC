@@ -1,3 +1,4 @@
+# TIPO DE ARQUIVO: RECEBE CSV
 # merge_datasets.py
 
 """
@@ -5,23 +6,28 @@
 MÓDULO DE CONSOLIDAÇÃO DE DADOS (MERGE)
 ================================================================================
 
-OBJETIVO DO ARQUIVO:
+Objetivo do Arquivo:
     Unificar os datasets individuais de cada Persona em um único arquivo CSV mestre.
     Isso é essencial para permitir análises comparativas e a geração de gráficos
     que cruzam dados de diferentes perfis (ex: Boxplot comparativo).
 
-RESPONSABILIDADES:
+Parte do Sistema:
+    Analysis (Pipeline de Dados).
+
+Responsabilidades:
     1. Leitura Múltipla: Iterar sobre uma lista de arquivos CSV de entrada.
     2. Normalização: Adicionar uma coluna identificadora ('persona') para rastrear
        a origem de cada linha no arquivo consolidado.
     3. Fusão: Concatenar todos os registros em uma única estrutura tabular.
     4. Persistência: Salvar o resultado como um novo CSV consolidado.
 
-COMUNICAÇÃO:
+Comunicação:
     - Entrada: Lê múltiplos arquivos 'dataset_NOME.csv' de 'data/processed/'.
-    - Saída: Gera 'analise_consolidada_input.csv' na mesma pasta.
-    - Consumidor: Este arquivo final é lido pelo script 'gerar_graficos.py'.
-================================================================================
+    - Saída: Gera 'dataset_consolidada_input.csv' na mesma pasta.
+    - Consumidor: Este arquivo final é lido pelo script 'build_cross_graphs.py'.
+
+Uso:
+    python src/analysis/merge_datasets.py
 """
 
 import csv
@@ -104,19 +110,23 @@ def consolidar_csvs_de_personas(arquivos_de_entrada: dict, arquivo_de_saida: str
 
 # --- SEÇÃO PRINCIPAL (CONFIGURAÇÃO E EXECUÇÃO) ---
 if __name__ == '__main__':
+    # Define caminhos dinâmicos baseados na localização atual do script
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+    data_processed_dir = os.path.join(project_root, 'data', 'processed')
+
     # Mapeamento de Entrada:
     # Define quais arquivos compõem o estudo.
-    # ATUALIZAÇÃO: Caminhos relativos ajustados para a pasta 'src/analysis/'
     ARQUIVOS_DAS_PERSONAS = {
-        'beatriz': '../../data/processed/dataset_Beatriz_playlist.csv',
-        'daniel': '../../data/processed/dataset_Daniel_playlist.csv',
-        'ricardo': '../../data/processed/dataset_Ricardo_playlist.csv',
-        'sofia': '../../data/processed/dataset_Sofia_playlist.csv'
+        'beatriz': os.path.join(data_processed_dir, 'dataset_Beatriz_playlist.csv'),
+        'daniel': os.path.join(data_processed_dir, 'dataset_Daniel_playlist.csv'),
+        'ricardo': os.path.join(data_processed_dir, 'dataset_Ricardo_playlist.csv'),
+        'sofia': os.path.join(data_processed_dir, 'dataset_Sofia_playlist.csv')
     }
     
     # Arquivo de Saída:
     # O arquivo consolidado é salvo na mesma pasta dos processados.
-    ARQUIVO_FINAL = "../../data/processed/dataset_consolidada_input.csv"
+    ARQUIVO_FINAL = os.path.join(data_processed_dir, "dataset_consolidada_input.csv")
     
     # Execução
     consolidar_csvs_de_personas(ARQUIVOS_DAS_PERSONAS, ARQUIVO_FINAL)

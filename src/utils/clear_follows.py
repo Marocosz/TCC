@@ -5,14 +5,24 @@
 SCRIPT DE LIMPEZA: DEIXAR DE SEGUIR TODOS OS ARTISTAS (UNFOLLOW ALL)
 ================================================================================
 
-OBJETIVO:
-    Remover todos os artistas seguidos na conta do usuário.
-    Fundamental para limpar o perfil da Persona antes de iniciar um novo 
-    treinamento de nicho.
+Objetivo do Arquivo:
+    Resetar o gráfico social da conta do usuário, removendo todos os artistas
+    seguidos. Isso prepara o "terreno" para que uma nova Persona possa ser
+    instalada sem interferência de gostos anteriores.
 
-PERIGO:
-    Esta ação é IRREVERSÍVEL.
-================================================================================
+Parte do Sistema:
+    Utils / Manutenção de Conta.
+
+Responsabilidades:
+    1. Listar Seguidores: Iterar sobre todos os artistas seguidos pela conta.
+    2. Remoção em Lote: Enviar comandos de 'unfollow' em blocos de 50.
+    3. Segurança: Exigir confirmação manual antes de executar a ação destrutiva.
+
+Comunicação:
+    - Externa: Spotify Web API (endpoints `me/following`).
+
+Uso:
+    python src/utils/clear_follows.py
 """
 
 import sys
@@ -34,6 +44,25 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 def remove_all_follows():
+    """
+    Remove TODOS os artistas que o usuário segue.
+
+    O que faz:
+        Busca paginada de todos os artistas seguidos e envia comandos de unfollow.
+
+    Por que existe:
+        Para evitar que o Spotify misture recomendações de Personas diferentes.
+        Se a conta segue "Metallica" (Ricardo) e "Anitta" (Beatriz), o algoritmo
+        de recomendação (Discover Weekly/Release Radar) ficará confuso.
+        A limpeza garante isolamento do experimento.
+
+    Quando é chamada:
+        Manualmente pelo pesquisador antes de iniciar uma nova fase de coleta.
+
+    Ação:
+        - Busca paginada (cursor-based) de artistas seguidos.
+        - Deleta em lotes de 50.
+    """
     # Escopo necessário para LER e MODIFICAR seguidores
     scope = "user-follow-read user-follow-modify"
     
@@ -48,6 +77,8 @@ def remove_all_follows():
         print(f"Erro na autenticação: {e}")
         return
     
+    # --- BLOCO DE SEGURANÇA ---
+    # Impede execução acidental em conta pessoal principal se não for a intenção.
     print("!!!" * 20)
     print(f"CONTA: {user['display_name']}")
     print("ATENÇÃO: ESTE SCRIPT VAI DEIXAR DE SEGUIR TODOS OS ARTISTAS DESTA CONTA.")
@@ -61,7 +92,10 @@ def remove_all_follows():
     print("\nIniciando processo de Unfollow...")
     total_removido = 0
     
-    # Diferente das músicas, o Spotify usa um cursor ('after') para paginação de seguidores
+    # --- LOOP DE REMOÇÃO (Paginação por Cursor) ---
+    # Diferente de playlists, a API de seguidores usa um cursor 'after' (ID do último artista).
+    # Porém, como estamos DELETANDO a lista enquanto iteramos, podemos simplesmente
+    # pedir sempre os 'primeiros 50' repetidamente até que a lista volte vazia.
     while True:
         try:
             # Busca os artistas seguidos (máximo de 50 por vez)
@@ -81,7 +115,7 @@ def remove_all_follows():
                 total_removido += len(artist_ids)
                 print(f" - Deixou de seguir {len(artist_ids)} artistas (Total: {total_removido})")
                 
-                # Pausa técnica para evitar Rate Limiting
+                # Pausa técnica para evitar Rate Limiting (Erro 429)
                 time.sleep(0.5)
             
             # Se o resultado for menor que 50, significa que era a última página
