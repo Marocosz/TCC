@@ -21,7 +21,8 @@ Décadas Dominantes:
   - Anos 1990s: 21.2%
 
 --- MÉTRICAS ESTRUTURAIS ---
-Duração Média das Músicas: N/A
+Duração Média das Músicas: 4:33
+Variação de Duração: De 2:02 a 8:35
 
 --- LISTA COMPLETA DE GÊNEROS (Top 20 por frequência) ---
   1. rock (109 ocorrências)

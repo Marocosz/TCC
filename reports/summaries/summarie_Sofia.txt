@@ -21,7 +21,8 @@ Décadas Dominantes:
   - Anos 1990s: 2.0%
 
 --- MÉTRICAS ESTRUTURAIS ---
-Duração Média das Músicas: N/A
+Duração Média das Músicas: 2:57
+Variação de Duração: De 0:06 a 7:04
 
 --- LISTA COMPLETA DE GÊNEROS (Top 20 por frequência) ---
   1. lo-fi indie (20 ocorrências)

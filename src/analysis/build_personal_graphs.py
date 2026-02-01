@@ -44,7 +44,7 @@ import os
 import sys
 
 # Configurações visuais globais para o Seaborn (Estilo acadêmico/limpo)
-sns.set_theme(style="whitegrid", rc={"axes.labelsize": 14, "xtick.labelsize": 12, "ytick.labelsize": 12})
+sns.set_theme(style="ticks", rc={"axes.labelsize": 14, "xtick.labelsize": 12, "ytick.labelsize": 12, "axes.grid": True})
 
 def calcular_top_generos(series_generos, top_n=10):
     """
@@ -118,7 +118,7 @@ def gerar_graficos_para_persona(persona, config):
     # ======================================================================
     print("  - Gerando Gráfico 1: Popularidade...")
     plt.figure(figsize=(10, 6))
-    sns.histplot(data=df, x='track_popularity', kde=True, bins=20)
+    sns.histplot(data=df, x='track_popularity', kde=True, bins=20, color='teal')
     plt.title(f'Insight 1: Distribuição da Popularidade das Músicas ({persona.capitalize()})', fontsize=16)
     plt.xlabel('Índice de Popularidade da Música')
     plt.ylabel('Contagem')
@@ -137,7 +137,7 @@ def gerar_graficos_para_persona(persona, config):
     
     if top_generos:
         df_generos = pd.DataFrame(top_generos, columns=['genero', 'contagem'])
-        sns.barplot(data=df_generos, x='contagem', y='genero', orient='h')
+        sns.barplot(data=df_generos, x='contagem', y='genero', orient='h', palette='mako')
         plt.title(f'Insight 2: Top 10 Gêneros Musicais ({persona.capitalize()})', fontsize=16)
         plt.xlabel('Contagem de Músicas')
         plt.ylabel('Gênero')
@@ -153,7 +153,7 @@ def gerar_graficos_para_persona(persona, config):
     print("  - Gerando Gráfico 3: Época Musical...")
     plt.figure(figsize=(10, 6))
     # Filtra anos inválidos (NaN) para evitar erros no plot
-    sns.histplot(data=df.dropna(subset=['album_release_year']), x='album_release_year', kde=True, bins=25)
+    sns.histplot(data=df.dropna(subset=['album_release_year']), x='album_release_year', kde=True, bins=25, color='indigo')
     plt.title(f'Insight 3: A "Era Musical" da Playlist ({persona.capitalize()})', fontsize=16)
     plt.xlabel('Ano de Lançamento do Álbum')
     plt.ylabel('Contagem')
@@ -169,7 +169,7 @@ def gerar_graficos_para_persona(persona, config):
     print("  - Gerando Gráfico 4: Concentração de Artistas...")
     plt.figure(figsize=(12, 8))
     top_artistas = df['primary_artist_name'].value_counts().nlargest(15)
-    sns.barplot(x=top_artistas.values, y=top_artistas.index, orient='h')
+    sns.barplot(x=top_artistas.values, y=top_artistas.index, orient='h', palette='magma')
     plt.title(f'Insight 4: Top 15 Artistas Mais Frequentes ({persona.capitalize()})', fontsize=16)
     plt.xlabel('Número de Músicas na Playlist')
     plt.ylabel('Artista')
@@ -188,17 +188,120 @@ def gerar_graficos_para_persona(persona, config):
     # Remove duplicatas de artistas para não enviesar o gráfico com pontos repetidos
     df_artists = df.drop_duplicates(subset=['primary_artist_name'])
     
-    g = sns.scatterplot(data=df_artists, x='artist_popularity', y='artist_followers', s=100, alpha=0.7)
+    # Define os limites para os quadrantes (Mediana é mais robusta que Média aqui)
+    pop_median = df_artists['artist_popularity'].median()
+    followers_median = df_artists['artist_followers'].median()
+
+    g = sns.scatterplot(data=df_artists, x='artist_popularity', y='artist_followers', s=100, alpha=0.7, color='crimson')
     g.set_yscale('log')
     
-    plt.title(f'Insight 5: Perfil de Fama dos Artistas ({persona.capitalize()})', fontsize=16)
-    plt.xlabel('Popularidade do Artista (Hype Recente)')
-    plt.ylabel('Seguidores do Artista (Base de Fãs) - Escala Log')
-    plt.grid(True, which="both", ls="--")
+    # Linhas de Quadrante
+    plt.axvline(pop_median, color='gray', linestyle='--', alpha=0.5)
+    plt.axhline(followers_median, color='gray', linestyle='--', alpha=0.5)
+
+    # Anotações dos Quadrantes (Ajudam na interpretação do TCC)
+    plt.text(df_artists['artist_popularity'].max()*0.95, df_artists['artist_followers'].max()*0.5, "Superstars\n(Mainstream + Cult)", ha='right', fontsize=10, color='green')
+    plt.text(df_artists['artist_popularity'].min()*1.1, df_artists['artist_followers'].max()*0.5, "Lendas/Legado\n(Muita história, pouco hype hoje)", ha='left', fontsize=10, color='blue')
+    plt.text(df_artists['artist_popularity'].max()*0.95, df_artists['artist_followers'].min()*2, "Hypes do Momento\n(Virais, One-Hit Wonders)", ha='right', fontsize=10, color='orange')
+    plt.text(df_artists['artist_popularity'].min()*1.1, df_artists['artist_followers'].min()*2, "Nicho/Underground\n(Exploração)", ha='left', fontsize=10, color='gray')
+
+    plt.title(f'Insight 5: Perfil de Fama dos Artistas - Quadrantes de Influência ({persona.capitalize()})', fontsize=16)
+    plt.xlabel(f'Popularidade Atual (Mediana: {pop_median:.0f})')
+    plt.ylabel(f'Base de Seguidores (Escala Log) (Mediana: {followers_median:.0f})')
+    plt.grid(True, which="both", ls="--", alpha=0.3)
     plt.savefig(os.path.join(output_folder, 'insight_5_pop_vs_followers.png'))
     plt.close()
     
-    print(f"  -> Gráficos para {persona.upper()} salvos na pasta '{output_folder}'.")
+    print(f"  -> Gráficos básicos para {persona.upper()} gerados.")
+
+    # ======================================================================
+    # MELHORIA ESTÉTICA: PALETA DE CORES
+    # ----------------------------------------------------------------------
+    # Usaremos paletas distintas para dar identidade visual, mas sóbrias.
+    # ======================================================================
+    palette_choice = "viridis" 
+
+
+    # ======================================================================
+    # GRÁFICO 6: DURAÇÃO DAS MÚSICAS (Histograma)
+    # ----------------------------------------------------------------------
+    # Objetivo: Analisar "Attention Span".
+    # Requer conversão de string "min:seg" para segundos.
+    # ======================================================================
+    if 'duration_readable' in df.columns:
+        print("  - Gerando Gráfico 6: Duração das Faixas...")
+        
+        # Converte direto da string "MM:SS" do CSV para segundos (necessário para o eixo X numérico)
+        df['duration_seconds'] = df['duration_readable'].astype(str).apply(
+            lambda x: int(x.split(':')[0])*60 + int(x.split(':')[1]) if ':' in x else None
+        )
+        
+        plt.figure(figsize=(10, 6))
+        sns.histplot(data=df.dropna(subset=['duration_seconds']), x='duration_seconds', kde=True, bins=20, color='purple')
+        
+        # Adiciona linhas de média
+        mean_val = df['duration_seconds'].mean()
+        plt.axvline(mean_val, color='red', linestyle='--', label=f'Média: {int(mean_val // 60)}:{int(mean_val % 60):02d}')
+        
+        plt.title(f'Insight 6: Preferência de Duração das Músicas ({persona.capitalize()})', fontsize=16)
+        plt.xlabel('Duração em Segundos')
+        plt.ylabel('Contagem de Músicas')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_folder, 'insight_6_music_duration.png'))
+        plt.close()
+
+    print(f"  -> Todos os gráficos individuais para {persona.upper()} salvos em '{output_folder}'.")
+
+    # ======================================================================
+    # RELATÓRIO VISUAL CONSOLIDADO (GRID FINAL 3x2)
+    # ----------------------------------------------------------------------
+    # Objetivo: Gerar uma única imagem de alta resolução (A4 friendly)
+    # contendo todos os 6 insights para fácil inclusão no documento do TCC.
+    # ======================================================================
+    print("  - Gerando Grid Consolidado de Alta Resolução...")
+    
+    # Lista de arquivos esperados na ordem de leitura
+    graficos = [
+        ('insight_1_popularidade.png', 'Métrica 1: Popularidade'),
+        ('insight_2_generos.png', 'Métrica 2: Gêneros'),
+        ('insight_3_era_musical.png', 'Métrica 3: Era Musical'),
+        ('insight_4_concentracao_artistas.png', 'Métrica 4: Artistas'),
+        ('insight_5_pop_vs_followers.png', 'Métrica 5: Quadrantes de Fama'),
+        ('insight_6_music_duration.png', 'Métrica 6: Duração')
+    ]
+
+    # Criar figura gigante para alta resolução (Proporção similar a uma folha A4 vertical)
+    fig_grid = plt.figure(figsize=(20, 24), constrained_layout=True)
+    fig_grid.suptitle(f"Perfil Analítico Musical: {persona.upper()}", fontsize=35, weight='bold', y=1.02)
+    
+    # GridSpec para layout flexível
+    gs = fig_grid.add_gridspec(3, 2)
+    
+    import matplotlib.image as mpimg
+
+    for idx, (filename, title) in enumerate(graficos):
+        filepath = os.path.join(output_folder, filename)
+        
+        # Subplot index logic (3 rows, 2 cols)
+        row = idx // 2
+        col = idx % 2
+        ax = fig_grid.add_subplot(gs[row, col])
+        
+        if os.path.exists(filepath):
+            img = mpimg.imread(filepath)
+            ax.imshow(img)
+            ax.axis('off') # Remove eixos da imagem (já tem eixos no próprio gráfico)
+        else:
+            ax.text(0.5, 0.5, f"Imagem não encontrada:\n{filename}", 
+                    ha='center', va='center', fontsize=14, color='red')
+            ax.axis('off')
+
+    output_grid_path = os.path.join(output_folder, 'final_summary_grid.png')
+    plt.savefig(output_grid_path, dpi=300, bbox_inches='tight') # DPI 300 = Qualidade de Impressão
+    plt.close()
+    
+    print(f"  -> IMAGEM FINAL GERADA: '{output_grid_path}' (DPI 300)")
 
 def main():
     """

@@ -190,7 +190,21 @@ def gerar_resumo_persona(persona, info):
         
         # Bloco 4: Estrutura
         f.write("--- MÉTRICAS ESTRUTURAIS ---\n")
-        f.write(f"Duração Média das Músicas: {duracao_media_formatada}\n\n")
+        
+        # Conversão robusta de "MM:SS" para segundos para estatísticas
+        series_sec = df['duration_readable'].astype(str).apply(
+            lambda x: int(x.split(':')[0])*60 + int(x.split(':')[1]) if ':' in x else None
+        ).dropna()
+        
+        if not series_sec.empty:
+            media_sec = series_sec.mean()
+            min_sec = series_sec.min()
+            max_sec = series_sec.max()
+            
+            f.write(f"Duração Média das Músicas: {formatar_duracao(media_sec)}\n")
+            f.write(f"Variação de Duração: De {formatar_duracao(min_sec)} a {formatar_duracao(max_sec)}\n\n")
+        else:
+             f.write("Duração Média das Músicas: N/A\n\n")
 
         # Bloco 5: Gêneros Detalhados
         f.write("--- LISTA COMPLETA DE GÊNEROS (Top 20 por frequência) ---\n")
