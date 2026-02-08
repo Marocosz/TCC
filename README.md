@@ -19,6 +19,7 @@ Orientador: José Eduardo Ferreira Lopes
   - [2.1 Objetivos Específicos](#21-objetivos-específicos)
 - [3 METODOLOGIA](#3-metodologia)
   - [3.1 Procedimento de Coleta e Preparação Técnica](#31-procedimento-de-coleta-e-preparação-técnica)
+    - [3.1.1 Tratamento de Dados e Definição das Métricas de Auditoria](#311-tratamento-de-dados-e-definição-das-métricas-de-auditoria)
   - [3.2 Arquitetura dos Agentes de Teste: Caracterização das Personas Sintéticas](#32-arquitetura-dos-agentes-de-teste-caracterização-das-personas-sintéticas)
     - [3.2.1 Beatriz (A Consumidora Mainstream)](#321-beatriz-a-consumidora-mainstream)
       - [3.2.1.1 Tabela de indicadores](#3211-tabela-de-indicadores)
@@ -89,6 +90,35 @@ O procedimento experimental foi dividido em fases sequenciais de configuração 
 Para a automação da interação com estas contas, utilizou-se o portal Spotify for Developers para obtenção das credenciais de autenticação. O motor da pesquisa foi construído em linguagem Python, utilizando a biblioteca Spotipy como interface para as chamadas à API (Application Programming Interface) do serviço. Os códigos desenvolvidos foram responsáveis por automatizar a extração de metadados das faixas e a construção das bibliotecas personalizadas (playlists), garantindo que a base de dados musical de cada persona fosse estruturada de forma isolada e sistemática.
 
 Complementarmente à automação da curadoria, foi desenvolvida uma arquitetura de análise de dados robusta para processar e auditar os resultados. O sistema integrou ferramentas de ciência de dados, como pandas para a estruturação tabular, e matplotlib e seaborn para a visualização gráfica. Mais do que apenas recolher listas de reprodução, o código foi programado para calcular métricas complexas de diversidade e concentração - incluindo a Entropia de Shannon, o Coeficiente de Gini e o Índice de Jaccard. Tais métricas permitem transformar a percepção subjetiva de gosto musical em dados quantitativos auditáveis, essenciais para a verificação de vieses algorítmicos.
+
+### 3.1.1 Tratamento de Dados e Definição das Métricas de Auditoria
+
+Para transcender a análise puramente qualitativa do gosto musical, esta pesquisa implementou um *pipeline* de engenharia de dados em Python, focado na extração de indicadores matemáticos de diversidade e concentração. Os dados brutos coletados via API foram processados utilizando as bibliotecas `pandas` para estruturação tabular e `numpy` para operações vetoriais, garantindo a reprodutibilidade dos cálculos.
+
+A fim de quantificar fenômenos subjetivos como "ecletismo", "bolha de filtro" e "viés de popularidade", foram adotadas quatro métricas estatísticas fundamentais, adaptadas da Teoria da Informação e da Economia da Cultura:
+
+**A) Entropia de Shannon (Diversidade Informacional)**
+Utilizada para mensurar o grau de imprevisibilidade e variedade na curadoria de artistas. No contexto deste estudo, a Entropia ($H$) calcula a distribuição de frequência dos artistas dentro de uma playlist.
+* **Fórmula:** $H(X) = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i)$
+  * Onde $p(x_i)$ é a probabilidade (frequência relativa) de ocorrência do artista $i$.
+* **Implementação:** Calculada via script Python, onde valores mais altos indicam maior diversidade (playlist pulverizada) e valores baixos indicam alta repetição (playlist monótona).
+
+**B) Coeficiente de Gini (Desigualdade de Atenção)**
+Originalmente usado para medir desigualdade de renda, aqui o Coeficiente de Gini ($G$) auditou a concentração de *plays* entre os artistas.
+* **Interpretação:** Um Gini próximo de 0 indica que todos os artistas têm o mesmo espaço na playlist (igualdade perfeita). Um Gini próximo de 1 indica que poucos artistas dominam a quase totalidade das faixas (desigualdade extrema/monopólio de atenção).
+* **Implementação:** O algoritmo ordena os artistas por frequência e calcula a área sob a Curva de Lorenz, permitindo identificar perfis "Superfãs" (alto Gini) versus "Ouvintes Casuais" (baixo Gini).
+
+**C) Índice Herfindahl-Hirschman (HHI de Gêneros)**
+Métrica econômica utilizada para detectar monopólios de mercado. Neste estudo, o HHI avaliou a diversidade de gêneros musicais.
+* **Fórmula:** $HHI = \sum_{i=1}^{N} s_i^2$
+  * Onde $s_i$ é a participação de mercado (% do total) de cada gênero musical na biblioteca.
+* **Aplicação:** Um HHI alto (> 0.25) sinaliza uma "Bolha de Filtro" temática (ex: usuário que só ouve Lo-fi), enquanto um HHI baixo (< 0.15) indica um consumo cosmopolita e variado.
+
+**D) Índice de Jaccard (Similaridade de Conjuntos)**
+Empregado na etapa de validação cruzada para medir a sobreposição (*overlap*) entre as bibliotecas das diferentes personas.
+* **Fórmula:** $J(A,B) = \frac{|A \cap B|}{|A \cup B|}$
+  * Mede a razão entre a interseção (artistas em comum) e a união (total de artistas) dos conjuntos $A$ e $B$.
+* **Objetivo:** Validar matematicamente o isolamento dos perfis no estado inicial (*Cold Start*). Um índice Jaccard de 0.0 entre duas personas comprova que elas ocupam espaços vetoriais disjuntos, garantindo a integridade do grupo de controle.
 
 ## 3.2 Arquitetura dos Agentes de Teste: Caracterização das Personas Sintéticas
 
