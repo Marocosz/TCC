@@ -20,6 +20,7 @@ Orientador: José Eduardo Ferreira Lopes
 - [3 METODOLOGIA](#3-metodologia)
   - [3.1 Procedimento de Coleta e Preparação Técnica](#31-procedimento-de-coleta-e-preparação-técnica)
     - [3.1.1 Tratamento de Dados e Definição das Métricas de Auditoria](#311-tratamento-de-dados-e-definição-das-métricas-de-auditoria)
+    - [3.1.2 Síntese Estatística e Definição dos Indicadores Descritivos](#312-síntese-estatística-e-definição-dos-indicadores-descritivos)
   - [3.2 Arquitetura dos Agentes de Teste: Caracterização das Personas Sintéticas](#32-arquitetura-dos-agentes-de-teste-caracterização-das-personas-sintéticas)
     - [3.2.1 Beatriz (A Consumidora Mainstream)](#321-beatriz-a-consumidora-mainstream)
       - [3.2.1.1 Tabela de indicadores](#3211-tabela-de-indicadores)
@@ -120,6 +121,34 @@ Empregado na etapa de validação cruzada para medir a sobreposição (*overlap*
   * Mede a razão entre a interseção (artistas em comum) e a união (total de artistas) dos conjuntos $A$ e $B$.
 * **Objetivo:** Validar matematicamente o isolamento dos perfis no estado inicial (*Cold Start*). Um índice Jaccard de 0.0 entre duas personas comprova que elas ocupam espaços vetoriais disjuntos, garantindo a integridade do grupo de controle.
 
+
+### 3.1.2 Síntese Estatística e Definição dos Indicadores Descritivos
+
+Complementarmente à análise matemática de diversidade, foi desenvolvida uma etapa de processamento dedicada à geração de **Resumos Estatísticos Textuais**. O objetivo deste procedimento foi converter os dados brutos de cada *playlist* em relatórios estruturados, consolidando os principais indicadores de desempenho (*KPIs*) que compõem a "Ficha Técnica" de cada persona.
+
+Para operacionalizar essa síntese, utilizou-se um *script* python, que computa as estatísticas descritivas fundamentais. Abaixo, definem-se os conceitos operacionais e a interpretação metodológica de cada indicador apresentado nas tabelas de validação:
+
+**A) Popularidade Média e Zona de Segurança**
+Calculada a partir do índice `track_popularity` (0 a 100) fornecido pela API do Spotify, que pondera o número total de reproduções e a recência dessas execuções.
+* **Interpretação:** Uma média alta (>70) indica um perfil situado na "Zona de Segurança Algorítmica", consumindo conteúdos que a plataforma já validou como sucessos. Uma média baixa (<20) indica consumo na "Zona de Risco", onde o algoritmo possui menos dados históricos de engajamento.
+
+**B) Consistência Interna (Desvio Padrão da Popularidade)**
+Métrica estatística ($\sigma$) que mede a variação dos índices de popularidade dentro da mesma playlist.
+* **Interpretação:** Um desvio padrão baixo (ex: $\pm 4.0$) indica uma curadoria homogênea ("apenas *hits*" ou "apenas *underground*"). Um desvio alto indica um comportamento errático, misturando *superstars* com artistas desconhecidos, o que dificulta a perfilagem pelo sistema.
+
+**C) Recência Temporal e Viés de Imediatismo**
+Análise da distribuição dos anos de lançamento dos álbuns (`release_date`).
+* **Interpretação:** Mede o quão preso ao "agora" está o usuário. Perfis com >80% das faixas na década atual exibem "Viés de Imediatismo" (consumo de novidades), enquanto perfis ancorados em décadas passadas testam a capacidade do algoritmo de respeitar o "Legado Cultural".
+
+**D) Alcance Médio (Capital Social)**
+Média do número de seguidores (`followers.total`) dos artistas presentes na biblioteca.
+* **Interpretação:** Serve como *proxy* para o Capital Econômico e Social dos artistas. Permite distinguir entre o consumo de "Artistas de Estádio" (milhões de seguidores) e "Artistas de Nicho" (milhares), validando a posição do usuário na distribuição da Cauda Longa.
+
+**E) Estrutura (Duração Média)**
+Média da duração das faixas em minutos e segundos.
+* **Interpretação:** Indicador da Economia da Atenção. Faixas curtas (~2:00) tendem a ser otimizadas para *streaming* e *looping* (como no Lo-fi), enquanto faixas longas (>4:30) indicam resistência à comoditização da música, priorizando narrativas complexas (como no Rock Progressivo ou Jazz).
+
+A automatização desses resumos garante que a caracterização das personas (apresentada na seção 3.2) seja fundamentada em dados quantitativos auditáveis, estabelecendo uma linha de base rigorosa para o experimento.
 ## 3.2 Arquitetura dos Agentes de Teste: Caracterização das Personas Sintéticas
 
 O núcleo experimental desta auditoria reside na implementação de Personas Sintéticas. Estes agentes digitais constituem construções metodológicas desenhadas para representar arquétipos de comportamento musical distintos e polarizados, fundamentais para isolar variáveis específicas do sistema de recomendação, como a popularidade, a recência e a funcionalidade sonora.
