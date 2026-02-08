@@ -11,6 +11,7 @@
 Orientador: José Eduardo Ferreira Lopes
 
 # Sumário
+
 - [AUDITORIA DE SISTEMAS DE INTELIGÊNCIA ARTIFICIAL EM PLATAFORMAS DE STREAMING: UM ESTUDO EXPERIMENTAL SOBRE VIESES E RECOMENDAÇÃO MUSICAL NO SPOTIFY](#auditoria-de-sistemas-de-inteligência-artificial-em-plataformas-de-streaming-um-estudo-experimental-sobre-vieses-e-recomendação-musical-no-spotify)
 - [Sumário](#sumário)
 - [1 INTRODUÇÃO](#1-introdução)
@@ -31,7 +32,6 @@ Orientador: José Eduardo Ferreira Lopes
     - [3.2.4 Ricardo (O Consumidor Nostálgico)](#324-ricardo-o-consumidor-nostálgico)
       - [3.2.4.1 Tabela de indicadores](#3241-tabela-de-indicadores)
       - [3.2.4.2 Gráficos](#3242-gráficos)
-
 
 # 1 INTRODUÇÃO
 
@@ -159,7 +159,7 @@ A análise de gênero mostra um "Mono-Cluster": 186 das 200 faixas são categori
 
 ### 3.2.3 Sofia (A Consumidora de Nicho)
 
->**Perfil Psicográfico:** Nascida em 2002, Sofia cresceu na fronteira entre o físico e o digital, mas escolheu habitar os cantos mais silenciosos da internet. Formada em Design Gráfico, ela encara a música não como entretenimento de fundo, mas como uma extensão direta de sua identidade estética e emocional. Diferente da euforia coletiva de Beatriz, a experiência musical de Sofia é introspectiva e solitária, forjada em fóruns de discussão e blogs especializados (como o Rate Your Music) em vez de feeds de redes sociais de massa. Ela valoriza a autenticidade, a textura sonora e a "melancolia poética", buscando ativamente o que é raro. Sua postura é de curadoria ativa: Sofia não espera que o algoritmo lhe diga o que ouvir; ela garimpa, cataloga e preserva suas descobertas como artefatos digitais preciosos, temendo a banalização de seus "tesouros" pelo mainstream.
+> **Perfil Psicográfico:** Nascida em 2002, Sofia cresceu na fronteira entre o físico e o digital, mas escolheu habitar os cantos mais silenciosos da internet. Formada em Design Gráfico, ela encara a música não como entretenimento de fundo, mas como uma extensão direta de sua identidade estética e emocional. Diferente da euforia coletiva de Beatriz, a experiência musical de Sofia é introspectiva e solitária, forjada em fóruns de discussão e blogs especializados (como o Rate Your Music) em vez de feeds de redes sociais de massa. Ela valoriza a autenticidade, a textura sonora e a "melancolia poética", buscando ativamente o que é raro. Sua postura é de curadoria ativa: Sofia não espera que o algoritmo lhe diga o que ouvir; ela garimpa, cataloga e preserva suas descobertas como artefatos digitais preciosos, temendo a banalização de seus "tesouros" pelo mainstream.
 
 **Motivação:** Esta persona atua como o Caso de Borda (Edge Case) ou o teste da Cauda Longa (Long Tail). Sofia representa o desafio de personalização para usuários com gostos altamente específicos e baixa sobreposição com a massa de dados global. O objetivo é testar a capacidade do sistema de recomendação em operar com data sparsity (escassez de dados comportamentais coletivos), verificando se o algoritmo consegue manter a coerência estética de nicho ou se sofre de um viés de popularidade, sugerindo artistas famosos incorretamente na tentativa de preencher lacunas. Avalia-se aqui a precisão em micro-gêneros e a sensibilidade a texturas sonoras complexas.
 
@@ -223,3 +223,66 @@ Temporalmente, o input é deslocado para o século passado, com um Ano Médio de
 ![Insight 5 Pop vs Followers](reports/figures/ricardo/insight_5_pop_vs_followers.png)
 ![Insight 6 Music Duration](reports/figures/ricardo/insight_6_music_duration.png)
 
+### 3.3 Análise Comparativa e Validação dos Estímulos (Inputs)
+
+Para garantir a robustez da auditoria, é imperativo verificar se as personas geradas representam, de fato, clusters distintos de comportamento musical. A validação cruzada dos inputs demonstra que os quatro perfis ocupam quadrantes separados no espectro de popularidade versus diversidade, estabelecendo uma linha de base sólida para o teste de "Caixa-Preta".
+
+Conforme observado nos dados comparativos a seguir, a distância vetorial entre o perfil "Mainstream" (Beatriz) e o "Ultra-Nicho" (Sofia) é maximizada, garantindo que o algoritmo seja testado em extremos opostos da curva de preferência. Simultaneamente, os perfis de Ricardo e Daniel introduzem variáveis controladas de temporalidade e funcionalidade, respectivamente, permitindo isolar se as recomendações respondem ao "gosto" ou apenas a padrões de "uso".
+
+Esta etapa confirma o **Isolamento de Variáveis**: não há sobreposição significativa entre os conjuntos de dados iniciais, o que significa que qualquer convergência futura nas recomendações (outputs) poderá ser atribuída ao viés do sistema, e não à similaridade original dos usuários.
+
+#### 3.3.1 Métricas de Diversidade e Entropia da Informação
+
+A tabela abaixo apresenta os cálculos de Entropia de Shannon e Coeficiente de Gini para cada perfil. Observe como Ricardo, embora consuma artistas populares, possui a menor entropia devido à sua fidelidade extrema a poucos artistas (baixa riqueza), enquanto Daniel possui a maior entropia, reflexo de uma curadoria fragmentada e sem lealdade a artistas específicos (consumo funcional).
+
+| Persona | Entropia (Shannon) | Desigualdade (Gini) | Riqueza (Artistas Únicos) | Total Músicas |
+| :------ | :----------------- | :------------------ | :------------------------ | :------------ |
+| Beatriz | 6.03               | 0.42                | 94                        | 200           |
+| Daniel  | 6.27               | 0.37                | 99                        | 200           |
+| Ricardo | 4.10               | 0.18                | 18                        | 200           |
+| Sofia   | 4.43               | 0.36                | 27                        | 200           |
+
+#### 3.3.2 Distribuição de Mercado (Cauda Longa)
+
+A análise da distribuição de mercado valida a hipótese de estratificação econômica. Ricardo consome exclusivamente "Superstars" (100% acima de 1M seguidores), enquanto Sofia e Daniel operam quase inteiramente na "Cauda Longa" (88.9% e 97.0% de artistas de nicho, respectivamente).
+
+| Persona | Concentração de Gênero (HHI) | % Superstars (>1M seg) | % Médios (50k-1M seg) | % Nicho/Cauda (<50k seg) |
+| :------ | :--------------------------- | :--------------------- | :-------------------- | :----------------------- |
+| Beatriz | 0.08                         | 57.4%                  | 31.9%                 | 10.6%                    |
+| Daniel  | 0.32                         | 1.0%                   | 2.0%                  | 97.0%                    |
+| Ricardo | 0.10                         | 100.0%                 | 0.0%                  | 0.0%                     |
+| Sofia   | 0.17                         | 0.0%                   | 11.1%                 | 88.9%                    |
+
+#### 3.3.3 Visualizações Comparativas (Cross-Analysis)
+
+As visualizações a seguir sintetizam as diferenças estruturais entre as quatro personas, comprovando a heterogeneidade da amostra inicial.
+
+**Matriz de Similaridade (Índice de Jaccard):**
+Confirma a independência dos perfis. Valores próximos de zero indicam que as bibliotecas não compartilham músicas ou artistas, garantindo que o "Cold Start" seja único para cada persona.
+
+![Matriz de Similaridade Jaccard](reports/figures/cross/matriz_similaridade_jaccard.png)
+
+**Comparativo de Popularidade:**
+Evidencia o abismo entre o consumo massificado (Beatriz/Ricardo) e o consumo de nicho (Sofia/Daniel).
+
+![Gráfico Comparativo de Popularidade](reports/figures/cross/grafico_popularidade.png)
+
+**Relação Popularidade vs. Seguidores:**
+Demonstra visualmente a dispersão dos artistas no ecossistema da plataforma. Note a concentração de Daniel e Sofia no canto inferior esquerdo (baixa fama, baixa popularidade) versus a concentração de Ricardo no topo direito (lendas consagradas).
+
+![Gráfico Pop vs Followers](reports/figures/cross/grafico_pop_vs_followers.png)
+
+**Distribuição Temporal (Era Musical):**
+Valida o controle da variável "Tempo". Enquanto Daniel e Beatriz são estritamente contemporâneos, Ricardo é o único ancorado no século XX.
+
+![Gráfico Era Musical](reports/figures/cross/grafico_era_musical.png)
+
+**Diversidade de Gêneros:**
+Contrasta a especialização de Daniel (Mono-gênero Lo-fi) com o ecletismo comercial de Beatriz.
+
+![Gráfico Gêneros](reports/figures/cross/grafico_generos.png)
+
+**Concentração de Artistas (Curva de Lorenz):**
+Ilustra a desigualdade na distribuição de atenção. A curva de Ricardo é a mais acentuada, indicando que poucos artistas detêm a maioria das reproduções.
+
+![Gráfico Concentração Artistas](reports/figures/cross/grafico_concentracao_artistas.png)
