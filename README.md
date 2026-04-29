@@ -39,6 +39,17 @@ Orientador: José Eduardo Ferreira Lopes
     - [3.3.2 Distribuição de Mercado (Cauda Longa)](#332-distribuição-de-mercado-cauda-longa)
     - [3.3.3 Análise Visual Cruzada e Topologia dos Dados](#333-análise-visual-cruzada-e-topologia-dos-dados)
   - [3.4 Síntese Metodológica e Limitações](#34-síntese-metodológica-e-limitações)
+- [4 RESULTADOS: ANÁLISE DOS OUTPUTS E O DELTA ALGORÍTMICO](#4-resultados-análise-dos-outputs-e-o-delta-algorítmico)
+  - [4.1 Apresentação dos Outputs Coletados (Daily Mixes)](#41-apresentação-dos-outputs-coletados-daily-mixes)
+  - [4.2 Taxa de Overlap Interno: Redundância Intra-Persona](#42-taxa-de-overlap-interno-redundância-intra-persona)
+  - [4.3 O Delta Algorítmico — Visão Geral](#43-o-delta-algorítmico--visão-geral)
+  - [4.4 Análise Persona por Persona](#44-análise-persona-por-persona)
+    - [4.4.1 Beatriz (Mainstream) — O Grupo de Controle Validado](#441-beatriz-mainstream--o-grupo-de-controle-validado)
+    - [4.4.2 Daniel (Lo-fi) — Confirmação do Viés de Popularidade](#442-daniel-lo-fi--confirmação-do-viés-de-popularidade)
+    - [4.4.3 Sofia (Nicho) — Viés do Hit dentro da Cauda Longa](#443-sofia-nicho--viés-do-hit-dentro-da-cauda-longa)
+    - [4.4.4 Ricardo (Nostálgico) — Pulverização da Fidelidade Canônica](#444-ricardo-nostálgico--pulverização-da-fidelidade-canônica)
+  - [4.5 O Colapso de Contexto: Evidência da Homogeneização Algorítmica](#45-o-colapso-de-contexto-evidência-da-homogeneização-algorítmica)
+  - [4.6 Síntese dos Achados e Discussão](#46-síntese-dos-achados-e-discussão)
 
 # 1 INTRODUÇÃO
 
@@ -149,6 +160,44 @@ Média da duração das faixas em minutos e segundos.
 * **Interpretação:** Indicador da Economia da Atenção. Faixas curtas (~2:00) tendem a ser otimizadas para *streaming* e *looping* (como no Lo-fi), enquanto faixas longas (>4:30) indicam resistência à comoditização da música, priorizando narrativas complexas (como no Rock Progressivo ou Jazz).
 
 A automatização desses resumos garante que a caracterização das personas (apresentada na seção 3.2) seja fundamentada em dados quantitativos auditáveis, estabelecendo uma linha de base rigorosa para o experimento.
+
+### 3.1.3 Adaptação Metodológica: Migração para Fontes Externas (Last.fm + MusicBrainz)
+
+Durante a execução da pesquisa, observou-se que a Spotify Web API sofreu **três ondas progressivas de restrição** ao longo de 2024 e 2026, afetando diretamente os campos centrais utilizados na análise quantitativa do estudo. Este fato, longe de constituir apenas uma limitação operacional, revelou-se um achado original com valor científico próprio, evidenciando empiricamente o argumento central desta pesquisa sobre a opacidade e a governança algorítmica unilateral exercida por plataformas de streaming.
+
+**Cronologia das restrições documentadas:**
+
+1. **Onda 1 (27/11/2024):** A Spotify removeu, para aplicações em modo *development*, o acesso programático às playlists algorítmicas (*Daily Mix*, *Discover Weekly*, *Release Radar*, *Made For You*) e ao endpoint `/recommendations`. Como contornar essa restrição exigia autorização exclusiva via *Extended Quota Mode* — cujo processo de aprovação tem taxa de sucesso historicamente baixa para projetos acadêmicos — adotou-se um *workaround* manual: cada persona, após o período de incubação algorítmica, copiou as faixas dos seis *Daily Mixes* gerados pelo sistema para uma "playlist espelho" de propriedade da própria conta, viabilizando a leitura via OAuth.
+
+2. **Onda 2 (06/02/2026):** A Spotify [anunciou oficialmente](https://developer.spotify.com/blog/2026-02-06-update-developer-access) novas restrições estruturais ao *Development Mode*: exigência de assinatura *Premium* ativa para o titular da aplicação, limitação a um único *Client ID* por desenvolvedor, restrição a cinco usuários autorizados e migração do endpoint `/playlists/{id}/tracks` (depreciado) para `/playlists/{id}/items`, com regra adicional de que a leitura de itens passa a exigir que o usuário OAuth seja *dono ou colaborador* da playlist consultada.
+
+3. **Onda 3 (Fevereiro/2026, sem changelog público):** Verificação empírica conduzida em 28 de abril de 2026 evidenciou a remoção sistemática dos campos `popularity`, `followers` e `genres` das respostas dos endpoints `/artists`, `/tracks`, `/albums` e `/search` para aplicações em *Development Mode*. A confirmação foi obtida em testes controlados com tokens OAuth de usuários *Premium* e *Free*, bem como com *Client Credentials*, todos retornando os mesmos campos vazios — comprovando o caráter universal da restrição em nível de aplicação, não em nível de usuário ou plano.
+
+**Solução metodológica adotada — fontes externas com mesma metodologia para Input e Output:**
+
+A perda dos campos `track_popularity`, `artist_popularity`, `artist_followers` e `artist_genres` comprometeria as métricas centrais (HHI de gêneros, Long Tail, Quadrante de Fama, Popularidade Média) caso fossem mantidos exclusivamente os dados extraíveis via Spotify. Para preservar o rigor metodológico e a comparabilidade *Input vs. Output*, a pesquisa adotou um pipeline de enriquecimento via **duas fontes externas consagradas**, aplicado consistentemente a ambos os conjuntos de dados:
+
+- **[Last.fm](https://www.last.fm/api)** — API gratuita que fornece, para cada artista e cada faixa: número de *listeners* únicos, total de *plays* históricos cumulativos e *top tags* atribuídas pela comunidade. O endpoint `artist.getInfo` substituiu o cálculo de popularidade e alcance do artista; o `track.getInfo` substituiu o `track_popularity` do Spotify.
+
+- **[MusicBrainz](https://musicbrainz.org/doc/MusicBrainz_API)** — banco de dados aberto que fornece metadados ricos sobre artistas: gêneros (*tags* crowdsourced), país de origem, área geográfica, ano de início de carreira (*life-span begin*), tipo de artista (*Person*, *Group*, *Choir*, *Orchestra*) e gênero (*Male*, *Female*, *Other*).
+
+A correspondência semântica entre as métricas migradas é descrita na tabela abaixo:
+
+| Métrica original (Spotify) | Substituto adotado (Externo) | Justificativa metodológica |
+| :--- | :--- | :--- |
+| `track_popularity` (índice 0-100) | Last.fm `track.listeners` | Ouvintes únicos como medida absoluta de alcance da faixa, em escala logarítmica natural. |
+| `artist_popularity` (índice 0-100) | Last.fm `artist.playcount` | Plays históricos cumulativos como proxy de popularidade consagrada (não apenas atual). |
+| `artist_followers` (contagem) | Last.fm `artist.listeners` | Ouvintes únicos como proxy direto de base de fãs ativa. |
+| `artist_genres` (lista Spotify) | MusicBrainz `tags` (com fallback Last.fm) | Tags crowdsourced de fonte aberta, comparáveis em granularidade. |
+| (não existia anteriormente) | MusicBrainz `life-span.begin` | Ano de início de carreira do artista — métrica nova que separa "legado" de "newcomers". |
+| (não existia anteriormente) | MusicBrainz `type` | Distinção solo (*Person*) vs. coletivo (*Group*) — métrica nova de estrutura social do consumo. |
+
+**Impacto na calibração das métricas:** os limiares utilizados na análise de Cauda Longa (*Long Tail*) foram recalibrados via **percentis dentro do conjunto unificado** (P25 e P75 do pool combinado de *inputs* e *outputs*), substituindo os limiares absolutos baseados em *followers* do Spotify (cujo intervalo de valores não é diretamente transferível para a escala de *listeners* do Last.fm). Esta abordagem aumenta a robustez da classificação a mudanças de fonte e é metodologicamente mais defensável academicamente.
+
+**Cobertura empírica do enriquecimento:** o processo cobriu 100% dos 996 artistas únicos identificados nos *inputs* e *outputs* combinados, com 98,6% obtendo dados de ambas as fontes (Last.fm + MusicBrainz) e 1,4% apenas de Last.fm. Os resultados foram persistidos em um cache JSON incremental (`data/external_cache.json`), garantindo reprodutibilidade integral e permitindo recolocação eficiente de artistas que aparecem em múltiplas personas.
+
+**Implicação epistemológica:** o fato de que o próprio instrumental técnico empregado em uma auditoria algorítmica tenha sido sistematicamente obstruído pela plataforma auditada — *durante* a execução da pesquisa, sem aviso público no caso da Onda 3 — constitui *meta-evidência* da assimetria informacional entre plataformas de *streaming* e atores externos (incluindo pesquisadores acadêmicos). Esta observação é retomada na seção de Limitações Metodológicas (§3.4) como achado central da pesquisa.
+
 ## 3.2 Arquitetura dos Agentes de Teste: Caracterização das Personas Sintéticas
 
 O núcleo experimental desta auditoria reside na implementação de Personas Sintéticas. Estes agentes digitais constituem construções metodológicas desenhadas para representar arquétipos de comportamento musical distintos e polarizados, fundamentais para isolar variáveis específicas do sistema de recomendação, como a popularidade, a recência e a funcionalidade sonora.
@@ -161,32 +210,37 @@ Para cobrir um espectro abrangente de hábitos de consumo, foram modelados quatr
 
 **Motivação:** Esta persona atua como o Grupo de Controle (Baseline) do experimento. Beatriz representa o comportamento padrão "ideal" para modelos de negócio baseados em economia da atenção: consumo rápido, alta retenção e foco em sucessos globais. O objetivo é verificar a existência de um ciclo de feedback positivo (feedback loop), testando a hipótese de que o sistema de recomendação tende a blindar usuários mainstream contra conteúdos de nicho, reforçando uma bolha de alta popularidade e dificultando a serendipidade (descoberta do inesperado).
 
-**Validação Quantitativa do Input:** A análise estatística dos dados de entrada confirma a aderência do perfil Beatriz ao arquétipo Mainstream brasileiro contemporâneo. A biblioteca gerada apresenta uma Popularidade Média de Faixas de 75.41 e uma Mediana de 74, com um desvio padrão baixo (+/- 4.42), evidenciando uma consistência rigorosa no consumo de faixas de alta performance comercial. O viés de recência é extremo: 84.9% das faixas pertencem à década de 2020, resultando em um Ano Médio de Lançamento de 2023, o que corrobora o perfil de consumo imediatista e focado em novidades virais.
+**Validação Quantitativa do Input:** A análise estatística dos dados de entrada confirma a aderência do perfil Beatriz ao arquétipo Mainstream brasileiro contemporâneo. A biblioteca apresenta uma Mediana de **194 mil ouvintes únicos no Last.fm** por artista e uma **Mediana de Playcount Histórico de 3,4 milhões** de execuções por artista — patamares característicos da zona de consagração comercial massiva. O viés de recência (do álbum) é extremo: **84.9% das faixas pertencem à década de 2020**, com Ano Médio de Lançamento de 2023, corroborando o perfil de consumo imediatista e focado em novidades virais. A **Mediana de Listeners por Track** alcança **51,8 mil**, valor consistente com faixas que ocupam posições intermediárias-superiores em rankings populares brasileiros.
 
-Em termos estruturais, a playlist reflete o formato radiofônico padrão, com uma Duração Média das Músicas de 3:20, alinhada com as produções comerciais otimizadas para streaming e engajamento rápido. O caráter de "validação social" desta persona é reforçado pelas métricas de alcance econômico: a Média de Seguidores dos artistas selecionados ultrapassa 8 milhões, acumulando um alcance total superior a 1.6 bilhão de seguidores somados.
+Em termos estruturais, a playlist reflete o formato radiofônico padrão, com Duração Média de 3:20, alinhada com as produções comerciais otimizadas para streaming e engajamento rápido. A análise de **estrutura social do consumo** (`mb_artist_type`) revela um equilíbrio entre artistas solo (61% *Person*) e bandas/duplas (37% *Group*) — composição típica do mainstream brasileiro, onde duplas sertanejas coexistem com solistas pop. A **Era de Carreira Mediana dos Artistas é 1993** (cobertura: 51%), refletindo presença de artistas consagrados como Henrique & Juliano e Gusttavo Lima, ainda que com forte recência no consumo das faixas específicas.
 
-A diversidade aparente de gêneros (HHI 0.08) revela-se, na prática, uma concentração temática em estilos de apelo massivo no Brasil: o Sertanejo e suas vertentes (Universitário, Agronejo) dominam a lista com mais de 200 ocorrências combinadas, seguidos pelo Funk Brasileiro e suas variações (Trap Funk, Consciente), refletindo fielmente os charts nacionais atuais. A dispersão de artistas (94 únicos, média de 2.13 músicas por artista) confirma um comportamento de escuta passiva, focado em hits diversos em vez de discografias profundas.
+A diversidade aparente de gêneros (HHI 0.035 sobre tags de MusicBrainz) revela, na prática, uma concentração temática brasileira: as tags `sertanejo` (64), `brazil`/`brazilian` (103 combinadas), `pop` (30) e `funk` (23) dominam o repertório, refletindo fielmente os *charts* nacionais. A dispersão de artistas (94 únicos, média de 2.13 faixas por artista) confirma um comportamento de escuta passiva, focado em hits diversos em vez de discografias profundas.
 
 #### 3.2.1.1 Tabela de indicadores
 
-| Indicador                   | Valor Obtido      | Interpretação                                                                                                                    |
-| :-------------------------- | :---------------- | :------------------------------------------------------------------------------------------------------------------------------- |
-| Popularidade Média (Faixas) | 75.41 / 100       | Evidência de Viés de Popularidade positivo; o perfil situa-se na zona de "segurança algorítmica" (baixo risco de rejeição).      |
-| Entropia de Artistas        | Alta (94 únicos)  | Padrão de escuta passiva ou "tipo rádio" (Grazing), com baixa fidelidade a artistas específicos e alta rotatividade.             |
-| Recência Temporal           | 84.9% (Anos 2020) | Viés de Imediatismo extremo; rejeição ao "catálogo profundo" (back catalogue) em favor de novidades virais.                      |
-| Alcance Médio (Seguidores)  | ~8.2 Milhões      | Consumo concentrado na "Cabeça" (Head) da Cauda Longa; validação baseada em prova social massiva.                                |
-| Gêneros Dominantes          | Sertanejo / Funk  | Bolha de Filtro Geocultural; espelhamento direto dos charts locais, indicando comportamento de "efeito manada" (herding).        |
-| Estrutura (Duração)         | Média 03:20       | Adesão ao Formato Radiofônico (Radio Edit); preferência por estruturas concisas otimizadas para retenção em streaming.           |
-| Consistência Interna        |                   | Baixa Entropia de Popularidade; indica uma seleção altamente homogênea, sem outliers ou riscos estatísticos (padrão "Hitmaker"). |
+| Indicador | Valor Obtido | Interpretação |
+| :--- | :--- | :--- |
+| Listeners Mediano por Artista (Last.fm) | 194,228 | Zona de consagração massiva; artistas com base de fãs ativa de centenas de milhares. |
+| Playcount Mediano por Artista (Last.fm) | 3,434,708 | Histórico cumulativo robusto; evidência de validação comercial sustentada no tempo. |
+| Listeners Mediano por Track (Last.fm) | 51,879 | Faixas com alcance amplo, características de hits radiofônicos. |
+| Entropia de Shannon (Artistas) | 6.03 (Alta) | Escuta horizontal pulverizada — padrão "tipo rádio" (*Grazing*), com baixa fidelidade a artistas específicos. |
+| Coeficiente de Gini | 0.42 (Médio) | Distribuição moderadamente desigual de faixas entre artistas; alguns favoritos sem monopolização. |
+| Riqueza (Artistas Únicos) | 94 | Alta variedade característica do consumo "tipo rádio". |
+| Era de Carreira Mediana | 1993 (cob. 51%) | Mistura de artistas estabelecidos (sertanejo legacy) com novidades virais — coerente com um perfil "playlist contemporânea". |
+| Tipo de Artista (MB) | 61% solo, 37% grupo | Equilíbrio típico do mainstream brasileiro (duplas sertanejas + solistas pop/funk). |
+| Recência Temporal (Álbum) | 84.9% Anos 2020 | Viés de Imediatismo extremo; rejeição ao catálogo profundo em favor de novidades virais. |
+| Tags Dominantes (mb_tags) | sertanejo, brazil, pop, funk | Bolha de filtro geocultural; espelhamento direto dos *charts* locais (efeito manada). |
+| HHI de Tags | 0.035 (Baixo) | Diversidade aparente de tags, mas concentração temática implícita na predominância brasileira. |
+| Estrutura (Duração) | Média 3:20 | Adesão ao formato radiofônico (Radio Edit). |
 
 #### 3.2.1.2 Gráficos
 
-![Insight 1 Popularidade](reports/figures/beatriz/insight_1_popularidade.png)
-![Insight 2 Generos](reports/figures/beatriz/insight_2_generos.png)
-![Insight 3 Era Musical](reports/figures/beatriz/insight_3_era_musical.png)
-![Insight 4 Concentracao Artistas](reports/figures/beatriz/insight_4_concentracao_artistas.png)
-![Insight 5 Pop vs Followers](reports/figures/beatriz/insight_5_pop_vs_followers.png)
-![Insight 6 Music Duration](reports/figures/beatriz/insight_6_music_duration.png)
+![Insight 1 Track Listeners](reports/inputs/figures/beatriz/insight_1_track_listeners.png)
+![Insight 2 Generos](reports/inputs/figures/beatriz/insight_2_generos.png)
+![Insight 3 Era Musical](reports/inputs/figures/beatriz/insight_3_era_musical.png)
+![Insight 4 Concentracao Artistas](reports/inputs/figures/beatriz/insight_4_concentracao_artistas.png)
+![Insight 5 Pop vs Followers](reports/inputs/figures/beatriz/insight_5_pop_vs_followers.png)
+![Insight 6 Music Duration](reports/inputs/figures/beatriz/insight_6_music_duration.png)
 
 ### 3.2.2 Daniel (O Foco Instrumental/Lo-fi)
 
@@ -194,32 +248,37 @@ A diversidade aparente de gêneros (HHI 0.08) revela-se, na prática, uma concen
 
 **Motivação Científica:** Esta persona foi desenhada para testar a capacidade dos algoritmos de respeitarem contextos funcionais em detrimento da popularidade. Daniel investiga o fenômeno da "Música de Mobília" (Furniture Music), onde a faixa serve como plano de fundo. A hipótese central é verificar se o sistema consegue manter a recomendação dentro de parâmetros acústicos específicos (alta instrumentalidade, baixa energia, sem vocais) ou se ocorrerá uma "contaminação Pop", onde o algoritmo tenta inserir faixas com vocais ou artistas famosos que quebram o fluxo de concentração, revelando uma incapacidade de distinguir "gosto musical" de "uso funcional".
 
-**Validação Quantitativa do Input (Linha de Base):** Os dados de entrada confirmam a construção de um perfil altamente especializado e, paradoxalmente, anônimo. A biblioteca de Daniel apresenta uma Popularidade Média de Faixas de 54.51 (zona intermediária), contrastando brutalmente com a Média de Seguidores dos Artistas de apenas 43.370. Esse abismo entre a popularidade da música (média) e a fama do artista (baixíssima) valida o fenômeno da Comoditização Musical: o usuário consome o "gênero" (Lo-fi Beats), ignorando completamente quem é o autor da obra.
+**Validação Quantitativa do Input (Linha de Base):** Os dados de entrada confirmam a construção de um perfil altamente especializado e, paradoxalmente, anônimo. A biblioteca de Daniel apresenta uma **Mediana de Listeners por Artista de 79.6 mil** (Last.fm) — patamar característico da Cauda Longa do consumo musical — combinada com uma **Mediana de Listeners por Track de apenas 18.8 mil**. Esse contraste valida o fenômeno da Comoditização Musical: o usuário consome o "gênero" (Lo-fi Beats), ignorando completamente quem é o autor da obra.
 
-A estrutura das faixas é radicalmente distinta do padrão mainstream. Com uma Duração Média de apenas 2:17, as músicas são projetadas para looping contínuo e consumo rápido em playlists de estudo. O viés de recência é o mais extremo do estudo: 98.5% das faixas são da década de 2020 (Ano Médio 2024), evidenciando a natureza efêmera e industrial desse gênero, onde milhares de beats são lançados diariamente para alimentar algoritmos de foco.
+A estrutura das faixas é radicalmente distinta do padrão mainstream. Com **Duração Média de apenas 2:17**, as músicas são projetadas para looping contínuo e consumo rápido em playlists de estudo. O viés de recência é o mais extremo do estudo: **98.5% das faixas pertencem à década de 2020** (Ano Médio 2024), evidenciando a natureza efêmera e industrial desse gênero, onde milhares de *beats* são lançados diariamente para alimentar algoritmos de foco.
 
-A análise de gênero mostra um "Mono-Cluster": 186 das 200 faixas são categorizadas explicitamente como "lo-fi", "lo-fi beats" ou "lo-fi hip hop". A consistência interna (Desvio Padrão ± 7.65) é ligeiramente maior que a de Beatriz, refletindo a vasta quantidade de pequenos produtores independentes que alimentam esse ecossistema, mas que sonoramente convergem para o mesmo padrão estético.
+A análise de tags revela um **mono-cluster temático**: as marcas `lo-fi` (93 ocorrências), `hip hop` (83), `downtempo` (78) e `instrumental` (77) dominam massivamente. A predominância de **70% artistas solo (Person)** confirma o ecossistema de *bedroom producers* — produtores independentes que operam em isolamento, contribuindo individualmente para o catálogo lo-fi industrial. A **Era de Carreira Mediana de 1987** (cobertura limitada: 20%, refletindo a invisibilidade de produtores obscuros nos catálogos do MusicBrainz) deve ser interpretada com cautela.
 
 #### 3.2.2.1 Tabela de indicadores
 
-| Indicador            | Valor Obtido      | Interpretação Científica                                                                                                                                             |
-| :------------------- | :---------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Popularidade Média   | 54.51 / 100       | Zona Funcional; faixas com alto volume de streaming passivo (playlists editoriais de foco), mas sem status de hit cultural ou reconhecimento de massa.               |
-| Consistência Interna | s = ± 7.65        | Padronização Estética; dispersão moderada reflete um cenário fragmentado de produtores independentes que convergem para a mesma sonoridade (Bedroom Producers).      |
-| Entropia de Artistas | Alta (99 únicos)  | Consumo Despersonalizado; indiferença à identidade do artista ("Quem está tocando?"), priorizando a utilidade sonora sobre a autoria (Furniture Music).              |
-| Recência Temporal    | 98.5% (Anos 2020) | Produção Industrial/Efêmera; o ecossistema Lo-fi opera com alta rotatividade de lançamentos para alimentar algoritmos, gerando uma obsolescência rápida do catálogo. |
-| Estrutura (Duração)  | Média 02:17       | Economia do Stream; faixas extremamente curtas projetadas para looping contínuo, maximizando a contagem de reproduções em sessões longas.                            |
-| Alcance Médio        | ~43 Mil           | Dissociação Fama-Sucesso; artistas situados no "Corpo" da Cauda Longa, que possuem milhões de plays mas bases de fãs inexpressivas (Fenômeno Mood-based).            |
-| Gêneros Dominantes   | Lo-fi / Beats     | Hiper-Especialização Cognitiva; bloqueio ativo de gêneros com vocais ou dinâmicas intensas para manutenção de estados de fluxo mental (Deep Work).                   |
+| Indicador | Valor Obtido | Interpretação Científica |
+| :--- | :--- | :--- |
+| Listeners Mediano por Artista (Last.fm) | 79,595 | Zona de Cauda Longa: artistas com base de fãs ativa baixa (alguns milhares), mas com plays altos via consumo passivo. |
+| Playcount Mediano por Artista (Last.fm) | 348,630 | Histórico cumulativo modesto, característico da era *streaming* funcional. |
+| Listeners Mediano por Track (Last.fm) | 18,824 | Faixas projetadas para *background listening*, sem aspiração a *hit* cultural. |
+| Entropia de Shannon (Artistas) | 6.27 (Máxima do estudo) | Pulverização Funcional; indiferença à autoria — o usuário consome o "gênero", não o "artista". |
+| Coeficiente de Gini | 0.37 (Baixo-Médio) | Pouca concentração; distribuição quase uniforme entre os 99 produtores. |
+| Riqueza (Artistas Únicos) | 99 (média 2.02 faixas/artista) | Consumo extremamente disperso. |
+| Era de Carreira Mediana | 1987 (cob. 20%) | Cobertura limitada — muitos produtores lo-fi não têm registro no MusicBrainz; valor com baixa confiabilidade. |
+| Tipo de Artista (MB) | 70% solo, 24% grupo | Confirma ecossistema de *bedroom producers* individuais. |
+| Recência Temporal (Álbum) | 98.5% Anos 2020 | Produção Industrial/Efêmera; obsolescência rápida do catálogo. |
+| Tags Dominantes (mb+lastfm) | lo-fi, hip hop, downtempo, instrumental | Hiper-especialização cognitiva; bloqueio ativo de vocais e dinâmicas intensas (Deep Work). |
+| HHI de Tags | 0.055 (Baixo) | Tags concentradas em poucos termos relacionados ao mesmo cluster sonoro. |
+| Estrutura (Duração) | Média 2:17 | Economia do Stream; *looping* contínuo em sessões longas. |
 
 #### 3.2.2.2 Gráficos
 
-![Insight 1 Popularidade](reports/figures/daniel/insight_1_popularidade.png)
-![Insight 2 Generos](reports/figures/daniel/insight_2_generos.png)
-![Insight 3 Era Musical](reports/figures/daniel/insight_3_era_musical.png)
-![Insight 4 Concentracao Artistas](reports/figures/daniel/insight_4_concentracao_artistas.png)
-![Insight 5 Pop vs Followers](reports/figures/daniel/insight_5_pop_vs_followers.png)
-![Insight 6 Music Duration](reports/figures/daniel/insight_6_music_duration.png)
+![Insight 1 Track Listeners](reports/inputs/figures/daniel/insight_1_track_listeners.png)
+![Insight 2 Generos](reports/inputs/figures/daniel/insight_2_generos.png)
+![Insight 3 Era Musical](reports/inputs/figures/daniel/insight_3_era_musical.png)
+![Insight 4 Concentracao Artistas](reports/inputs/figures/daniel/insight_4_concentracao_artistas.png)
+![Insight 5 Pop vs Followers](reports/inputs/figures/daniel/insight_5_pop_vs_followers.png)
+![Insight 6 Music Duration](reports/inputs/figures/daniel/insight_6_music_duration.png)
 
 ### 3.2.3 Sofia (A Consumidora de Nicho)
 
@@ -227,32 +286,37 @@ A análise de gênero mostra um "Mono-Cluster": 186 das 200 faixas são categori
 
 **Motivação:** Esta persona atua como o Caso de Borda (Edge Case) ou o teste da Cauda Longa (Long Tail). Sofia representa o desafio de personalização para usuários com gostos altamente específicos e baixa sobreposição com a massa de dados global. O objetivo é testar a capacidade do sistema de recomendação em operar com data sparsity (escassez de dados comportamentais coletivos), verificando se o algoritmo consegue manter a coerência estética de nicho ou se sofre de um viés de popularidade, sugerindo artistas famosos incorretamente na tentativa de preencher lacunas. Avalia-se aqui a precisão em micro-gêneros e a sensibilidade a texturas sonoras complexas.
 
-**Validação Quantitativa do Input:** A análise dos metadados da biblioteca de Sofia confirma rigorosamente seu arquétipo de "Arqueóloga Digital" e consumidora underground. O contraste com a persona anterior é brutal: a Popularidade Média de Faixas é de apenas 10.19, com uma Mediana de 6, indicando que a grande maioria de seu consumo reside na obscuridade quase total do catálogo global. A Média de Seguidores dos Artistas (40.666) é estatisticamente insignificante comparada aos milhões da persona mainstream, validando seu interesse pelo cenário independente e lo-fi.
+**Validação Quantitativa do Input:** A análise dos metadados da biblioteca de Sofia confirma rigorosamente seu arquétipo de "Arqueóloga Digital" e consumidora underground. **A Mediana de Listeners por Track no Last.fm é de apenas 1,223** — três ordens de magnitude abaixo de Beatriz (51.879) e quase 16 vezes menor que Daniel — evidenciando que a grande maioria de seu consumo reside na obscuridade quase total do catálogo global. A Mediana de Listeners por Artista (59,042) também é a mais baixa do estudo, validando seu interesse pelo cenário independente.
 
-O comportamento de consumo de Sofia é profundamente focado e leal, evidenciado pela Média de Músicas por Artista de 7.41. Enquanto a persona mainstream consome hits isolados, Sofia consome discografias e álbuns: artistas como S.Maharba, Eterna e Patch+ possuem 15 ou mais faixas cada em sua biblioteca, demonstrando uma escuta vertical e investigativa.
+O comportamento de consumo de Sofia é profundamente focado e leal, evidenciado pela **média de 7.41 faixas por artista** (segunda maior, atrás apenas de Ricardo). Enquanto a persona mainstream consome hits isolados, Sofia consome discografias e álbuns: artistas como S.Maharba, Eterna e Patch+ possuem 15 ou mais faixas cada em sua biblioteca, demonstrando uma escuta vertical e investigativa.
 
-Temporalmente, ela compartilha o viés de contemporaneidade (Ano Médio 2021, com 77% das faixas na década de 2020), mas com um propósito diferente: ela busca a vanguarda experimental atual, não os sucessos de rádio. A distribuição de gêneros valida sua formação em design e gosto por atmosferas: há uma predominância de estilos baseados em textura e colagem sonora, como Shoegaze (18), Plunderphonics (16), Cloud Rap (12) e IDM, gêneros complexos que exigem uma análise de conteúdo de áudio (timbre/ritmo) mais apurada do que a simples filtragem colaborativa.
+Temporalmente, ela compartilha o viés de contemporaneidade (Ano Médio 2021, com 77% das faixas na década de 2020), mas com um propósito diferente: ela busca a vanguarda experimental atual, não os sucessos de rádio. A distribuição de tags valida sua formação em design e gosto por atmosferas: há predominância de estilos baseados em textura e colagem sonora — `shoegaze`, `plunderphonics`, `cloud rap`, `IDM`, `lo-fi indie` — gêneros complexos que exigem análise de conteúdo de áudio (timbre/ritmo) mais apurada do que a simples filtragem colaborativa. A composição **61% solo, 39% grupos** (MusicBrainz) reflete a predominância individual típica de cenas independentes contemporâneas.
 
 #### 3.2.3.1 Tabela de indicadores
 
-| Indicador            | Valor Obtido                            | Interpretação Científica                                                                                                                                                                                                                                                 |
-| :------------------- | :-------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Popularidade Média   | 10.19 / 100 (Mediana: 6)                | Zona de Obscuridade Extrema; isolamento quase total das tendências de massa. O consumo atua como gerador de "capital subcultural", onde o valor da obra está intrinsecamente ligado à sua inacessibilidade comercial (Underground).                                      |
-| Consistência Interna | s = ± 10.19                             | Coerência de Nicho; a baixa variação absoluta indica uma blindagem voluntária contra o mainstream. Não há "furos" na curadoria com hits acidentais; a biblioteca permanece estritamente na base da Cauda Longa.                                                          |
-| Entropia de Artistas | Baixa (27 únicos, Média 7.41/artista)   | Consumo Imersivo/Vertical; forte oposição à escuta passiva. A alta taxa de repetição do mesmo artista (ex: 16 faixas de S.Maharba) evidencia uma escuta focada na autoria, valorizando a jornada do álbum e a identidade do criador (Active Listening).                  |
-| Recência Temporal    | 77% (Anos 2020) / Ano Médio: 2021       | Vanguarda Contemporânea; ao contrário do perfil saudosista, a busca pelo alternativo se dá no tempo presente. Há um monitoramento ativo da cena experimental e independente em tempo real, ditando o pulso atual do nicho.                                               |
-| Estrutura (Duração)  | Média 02:57 (Range: 0:06 a 7:04)        | Flexibilidade Artística; a variação extrema (de vinhetas abstratas a épicos de 7 minutos) demonstra rejeição à padronização estrutural algorítmica. A métrica de sucesso é a expressão narrativa, não a retenção comercial.                                              |
-| Alcance Médio        | ~40.6 Mil                               | Economia de Comunidade; artistas situados na "Cauda Longa Profunda". Embora o alcance global seja minúsculo comparado aos gigantes, essas bases de fãs costumam ter alta densidade de engajamento e lealdade, sustentando micro-cenas independentes.                     |
-| Gêneros Dominantes   | Shoegaze / Plunderphonics / Lo-fi Indie | Curadoria Estético-Textural; priorização de gêneros de alta complexidade tímbrica que exigem escuta ativa. A melancolia e a distorção (Shoegaze) ou a colagem sonora (Plunderphonics) refletem uma relação identitária e estética com a música, e não apenas utilitária. |
+| Indicador | Valor Obtido | Interpretação Científica |
+| :--- | :--- | :--- |
+| Listeners Mediano por Artista (Last.fm) | 59,042 | A mais baixa do estudo; isolamento quase total das tendências de massa. |
+| Playcount Mediano por Artista (Last.fm) | 565,579 | Comunidades de nicho com fãs leais e ativos, gerando *plays* concentrados em audiência pequena. |
+| Listeners Mediano por Track (Last.fm) | **1,223** | **Três ordens de magnitude abaixo do mainstream**; consumo na zona de obscuridade extrema do catálogo global. |
+| Entropia de Shannon (Artistas) | 4.43 (Baixa) | Consumo Imersivo/Vertical; forte oposição à escuta passiva. |
+| Coeficiente de Gini | 0.36 | Distribuição com algumas favoritas claras (S.Maharba, Eterna, Patch+ com 15+ faixas cada). |
+| Riqueza (Artistas Únicos) | 27 (média 7.41 faixas/artista) | Escuta focada em discografia profunda — *active listening*. |
+| Era de Carreira Mediana | 1984 (cob. 41%) | Cena experimental com mistura de pioneiros (anos 80-90) e contemporâneos. |
+| Tipo de Artista (MB) | 61% solo, 39% grupo | Predominância de projetos individuais — característico de cenas independentes. |
+| Recência Temporal (Álbum) | 77.0% Anos 2020 | Vanguarda contemporânea; busca do alternativo no tempo presente. |
+| Tags Dominantes (mb+lastfm) | shoegaze, plunderphonics, cloud rap, IDM, lo-fi indie | Curadoria estético-textural; gêneros de alta complexidade tímbrica. |
+| HHI de Tags | 0.024 (Mais baixo do estudo) | Maior diversidade tímbrica/conceitual entre as personas. |
+| Estrutura (Duração) | Média 2:57 (range 0:06 – 7:04) | Flexibilidade artística; rejeição à padronização (vinhetas a épicos). |
 
 #### 3.2.3.2 Gráficos
 
-![Insight 1 Popularidade](reports/figures/sofia/insight_1_popularidade.png)
-![Insight 2 Generos](reports/figures/sofia/insight_2_generos.png)
-![Insight 3 Era Musical](reports/figures/sofia/insight_3_era_musical.png)
-![Insight 4 Concentracao Artistas](reports/figures/sofia/insight_4_concentracao_artistas.png)
-![Insight 5 Pop vs Followers](reports/figures/sofia/insight_5_pop_vs_followers.png)
-![Insight 6 Music Duration](reports/figures/sofia/insight_6_music_duration.png)
+![Insight 1 Track Listeners](reports/inputs/figures/sofia/insight_1_track_listeners.png)
+![Insight 2 Generos](reports/inputs/figures/sofia/insight_2_generos.png)
+![Insight 3 Era Musical](reports/inputs/figures/sofia/insight_3_era_musical.png)
+![Insight 4 Concentracao Artistas](reports/inputs/figures/sofia/insight_4_concentracao_artistas.png)
+![Insight 5 Pop vs Followers](reports/inputs/figures/sofia/insight_5_pop_vs_followers.png)
+![Insight 6 Music Duration](reports/inputs/figures/sofia/insight_6_music_duration.png)
 
 ### 3.2.4 Ricardo (O Consumidor Nostálgico)
 
@@ -260,32 +324,37 @@ Temporalmente, ela compartilha o viés de contemporaneidade (Ano Médio 2021, co
 
 **Motivação:** Esta persona atua como o Controle Temporal (Legacy Control) do experimento. Ricardo desafia o sistema de recomendação a lidar com o "Viés de Recência" (Recency Bias). O objetivo é verificar se o algoritmo consegue distinguir entre "Alta Popularidade Atual" e "Alta Popularidade Histórica". Testa-se a capacidade do modelo em recomendar "Deep Cuts" (faixas menos conhecidas de artistas famosos) e se ele é capaz de sair do loop temporal, sugerindo, por exemplo, bandas novas que tenham a sonoridade "Classic Rock" (Greta Van Fleet, por exemplo) ou se ficará preso recomendando apenas reedições das décadas de 70 e 80, gerando um estagnamento de descoberta.
 
-**Validação Quantitativa do Input:** A análise dos metadados valida robustamente o arquétipo do ouvinte "Saudosista e Leal". A biblioteca apresenta uma dicotomia interessante: uma Popularidade Média de Faixas de 66.42 (alta), mas sustentada por um catálogo antigo. A Popularidade Média dos Artistas (78.28) é superior à da própria persona Mainstream, indicando que Ricardo consome "Lendas da Música" e "Gigantes do Estádio" (Metallica, Queen, Rolling Stones), cujas bases de fãs globais acumulam impressionantes 3.3 bilhões de seguidores somados.
+**Validação Quantitativa do Input:** A análise dos metadados valida robustamente o arquétipo do ouvinte "Saudosista e Leal". A biblioteca exibe a **Mediana de Listeners por Artista mais alta do estudo** — **4.4 milhões** no Last.fm — e uma **Mediana de Playcount Histórico cumulativo de 144,5 milhões**, evidenciando que Ricardo consome "Lendas da Música" e "Gigantes do Estádio" (Metallica, Queen, Rolling Stones, Beatles). A **Mediana de Listeners por Track de 311 mil** corrobora que mesmo as faixas individuais escolhidas são singles de grande exposição.
 
-O indicador mais forte de seu comportamento de "escuta de álbum" (em oposição à escuta de playlist) é a Concentração de Artistas: com apenas 18 artistas únicos para 200 músicas, Ricardo apresenta uma Média de Músicas por Artista de 11.11. Isso confirma que ele não consome apenas os greatest hits, mas mergulha na discografia profunda de seus ídolos (ex: 16 faixas de Djavan e Metallica).
+O indicador mais forte de seu comportamento de "escuta de álbum" (em oposição à escuta de playlist) é a **Concentração de Artistas**: com apenas **18 artistas únicos para 200 músicas** (média 11.11 faixas/artista), Ricardo apresenta a **menor entropia de Shannon do estudo (4.10) e Gini de 0.18** (mínimo de desigualdade — todos os 18 artistas têm peso comparável). Isso confirma que ele não consome apenas os *greatest hits*, mas mergulha na discografia profunda de seus ídolos (ex: 16 faixas de Djavan e Metallica).
 
-Temporalmente, o input é deslocado para o século passado, com um Ano Médio de Lançamento de 1985 e mais de 60% das faixas concentradas entre as décadas de 70 e 80. Estruturalmente, a playlist rejeita a economia da atenção atual: a Duração Média das Músicas é de 4:33, com faixas chegando a quase 9 minutos, refletindo a preferência por solos de guitarra extensos, introduções longas e a complexidade lírica característica do Rock Progressivo e da MPB clássica.
+Temporalmente, o input é deslocado para o século passado, com Ano Médio de Lançamento de 1985 e mais de 81% das faixas concentradas entre as décadas de 70, 80 e 90. A análise de **Era de Carreira no MusicBrainz** (cobertura 100% — todos os 18 artistas têm registro completo) confirma com **mediana de 1965** que a seleção concentra-se em artistas que iniciaram carreira na "Era de Ouro" da indústria fonográfica. **66.7% dos artistas são bandas (Group)**, refletindo a centralidade do *band format* no rock clássico, em contraste com a predominância solo das demais personas. Estruturalmente, a playlist rejeita a economia da atenção atual: Duração Média de 4:33, com faixas chegando a quase 9 minutos.
 
 #### 3.2.4.1 Tabela de indicadores
 
-| Indicador            | Valor Obtido                            | Interpretação Científica                                                                                                                                                                                                                                                            |
-| :------------------- | :-------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Popularidade Média   | 66.42 / 100 (Mediana: 67)               | Zona de Consagração Histórica; métricas elevadas sustentadas não por viralidade recente, mas pelo acúmulo de prestígio cultural ao longo de décadas (Legacy Acts). O consumo reflete a busca por validação canônica ("Clássicos") em vez de novidade.                               |
-| Consistência Interna | s = ± 10.98                             | Estabilidade Canônica; o desvio padrão indica uma curadoria conservadora, que oscila apenas dentro do espectro de artistas já estabelecidos e legitimados pela crítica ou história, evitando tanto o underground obscuro quanto o pop efêmero atual.                                |
-| Entropia de Artistas | Mínima (18 únicos, Média 11.11/artista) | Fidelidade Monolítica (AOR); comportamento típico da era do Album-Oriented Rock. A altíssima concentração de faixas por artista demonstra uma rejeição à "cultura do single", priorizando a imersão completa em discografias e obras conceituais.                                   |
-| Recência Temporal    | Ano Médio: 1985 (60% entre 70s e 90s)   | Ancoragem Temporal (Cristalização); forte viés de nostalgia, onde o gosto musical "congela" no período formativo do usuário. Há uma resistência ativa à produção contemporânea, associada tecnicamente à preferência por masterizações com maior faixa dinâmica (pré-Loudness War). |
-| Estrutura (Duração)  | Média 04:33 (Range: 2:02 a 8:35)        | Narrativa Progressiva; a longa duração média reflete a valorização de complexidade instrumental (solos, introduções lentas) e desenvolvimento lírico, em oposição direta à economia da atenção e formatos curtos otimizados para streaming.                                         |
-| Alcance Médio        | ~16.7 Milhões (Soma: ~3.3 Bilhões)      | Legitimidade de Massa (Stadium Status); consumo focado em "Superastros" globais. A validação da qualidade musical para este perfil está correlacionada à longevidade e ao impacto cultural massivo do artista (ex: Queen, Metallica).                                               |
-| Gêneros Dominantes   | Classic Rock / MPB / Hard Rock          | Purismo Analógico; preferência estrita por gêneros fundamentados em instrumentação orgânica (guitarra, bateria, voz natural) e virtuosismo técnico. O perfil demonstra ceticismo quanto a gêneros sintéticos ou eletrônicos, buscando "autenticidade" na execução humana.           |
+| Indicador | Valor Obtido | Interpretação Científica |
+| :--- | :--- | :--- |
+| Listeners Mediano por Artista (Last.fm) | **4,412,516** | Zona de consagração histórica; o mais alto do estudo. Lendas globais com bases de fãs ativas de milhões. |
+| Playcount Mediano por Artista (Last.fm) | **144,558,091** | Histórico cumulativo enorme — décadas de plays acumulados. Validação canônica plena. |
+| Listeners Mediano por Track (Last.fm) | 311,105 | Singles consagrados; todas as faixas têm exposição internacional sustentada. |
+| Entropia de Shannon (Artistas) | **4.10 (Mínima do estudo)** | Fidelidade Monolítica (AOR); rejeição à "cultura do single", priorização de imersão em discografias. |
+| Coeficiente de Gini | **0.18 (Mínimo do estudo)** | Distribuição quase uniforme entre os 18 artistas — todos com 8-16 faixas. |
+| Riqueza (Artistas Únicos) | **18 (média 11.11 faixas/artista)** | Album-Oriented Rock — escuta de discografia, não de playlist. |
+| Era de Carreira Mediana (MB) | **1965 (cob. 100%)** | Era de Ouro da indústria fonográfica; cobertura integral confirma artistas plenamente documentados. |
+| Tipo de Artista (MB) | **66.7% grupo, 33.3% solo** | Predominância de bandas, refletindo o *band format* do rock clássico. |
+| Recência Temporal (Álbum) | Ano Médio 1985 (>81% entre 70s-90s) | Cristalização temporal; viés de nostalgia ativo. |
+| Tags Dominantes (mb+lastfm) | rock, classic rock, hard rock, MPB, bossa nova | Purismo analógico; instrumentação orgânica e virtuosismo técnico. |
+| HHI de Tags | 0.054 | Concentração moderada; cluster temático claro mas não monolítico. |
+| Estrutura (Duração) | Média 4:33 (range 2:02 – 8:35) | Narrativa progressiva; rejeição à economia da atenção atual. |
 
 #### 3.2.4.2 Gráficos
 
-![Insight 1 Popularidade](reports/figures/ricardo/insight_1_popularidade.png)
-![Insight 2 Generos](reports/figures/ricardo/insight_2_generos.png)
-![Insight 3 Era Musical](reports/figures/ricardo/insight_3_era_musical.png)
-![Insight 4 Concentracao Artistas](reports/figures/ricardo/insight_4_concentracao_artistas.png)
-![Insight 5 Pop vs Followers](reports/figures/ricardo/insight_5_pop_vs_followers.png)
-![Insight 6 Music Duration](reports/figures/ricardo/insight_6_music_duration.png)
+![Insight 1 Track Listeners](reports/inputs/figures/ricardo/insight_1_track_listeners.png)
+![Insight 2 Generos](reports/inputs/figures/ricardo/insight_2_generos.png)
+![Insight 3 Era Musical](reports/inputs/figures/ricardo/insight_3_era_musical.png)
+![Insight 4 Concentracao Artistas](reports/inputs/figures/ricardo/insight_4_concentracao_artistas.png)
+![Insight 5 Pop vs Followers](reports/inputs/figures/ricardo/insight_5_pop_vs_followers.png)
+![Insight 6 Music Duration](reports/inputs/figures/ricardo/insight_6_music_duration.png)
 
 ## 3.3 Análise Comparativa e Validação dos Estímulos (Inputs)
 
@@ -295,10 +364,10 @@ Esta validação estabelece a **Linha de Base** (*Baseline*) do experimento. A c
 
 ### 3.3.1 Métricas de Diversidade e Entropia da Informação
 
-A aplicação de indicadores de diversidade revela as diferenças estruturais na "dieta informacional" de cada persona. A Tabela abaixo apresenta os cálculos de Entropia de Shannon (incerteza/variedade) e Coeficiente de Gini (desigualdade de atenção).
+A aplicação de indicadores de diversidade revela as diferenças estruturais na "dieta informacional" de cada persona. A Tabela abaixo apresenta os cálculos de Entropia de Shannon (incerteza/variedade) e Coeficiente de Gini (desigualdade de atenção). Estas métricas dependem apenas da contagem de artistas únicos e suas frequências, não foram afetadas pela transição de fonte e mantêm os valores originalmente computados.
 
 | Persona | Entropia (Shannon) | Desigualdade (Gini) | Riqueza (Artistas Únicos) | Interpretação Estrutural |
-| :------ | :----------------- | :------------------ | :------------------------ | :----------------------- |
+| :--- | :--- | :--- | :--- | :--- |
 | **Beatriz** | 6.03 (Alta) | 0.42 (Média) | 94 | **Consumo Exploratório/Caótico**; reflete a natureza do ouvinte de *hits*, com alta rotatividade e baixa fidelidade a álbuns específicos. |
 | **Daniel** | 6.27 (Máxima) | 0.37 (Baixa) | 99 | **Pulverização Funcional**; o consumo é focado na utilidade da "faixa" e não na identidade do "artista", gerando a maior entropia do grupo. |
 | **Ricardo** | 4.10 (Mínima) | 0.18 (Mínima) | 18 | **Fidelidade Canônica**; a baixa entropia e o Gini mínimo refletem um comportamento de "superfã" concentrado em poucas discografias profundas. |
@@ -308,16 +377,16 @@ A aplicação de indicadores de diversidade revela as diferenças estruturais na
 
 ### 3.3.2 Distribuição de Mercado (Cauda Longa)
 
-A análise da estratificação econômica dos artistas selecionados valida a hipótese de polarização entre "Cabeça" (*Head*) e "Cauda" (*Tail*) da distribuição de Pareto. A Tabela a seguir demonstra como cada persona interage com diferentes níveis de capital simbólico e financeiro.
+A análise da estratificação econômica dos artistas valida a hipótese de polarização entre "Cabeça" (*Head*) e "Cauda" (*Tail*) da distribuição de Pareto. Os limiares de classificação foram **calibrados via percentis dentro do conjunto unificado** dos quatro *inputs* (P25 = 59.150 *listeners*, P75 = 320.097 *listeners* no Last.fm), substituindo os limiares absolutos baseados em *followers* do Spotify (deprecados em 02/2026). A escolha por percentis garante uma classificação relativa robusta a mudanças de fonte de dados.
 
-| Persona | % Superstars (>1M seg) | % Médios (50k-1M seg) | % Nicho/Cauda (<50k seg) | Perfil Econômico |
-| :------ | :--------------------- | :-------------------- | :----------------------- | :--------------- |
-| **Beatriz** | **57.4%** | 31.9% | 10.6% | **Consumidora de Massa**; foco predominante no topo da pirâmide econômica. |
-| **Ricardo** | **100.0%** | 0.0% | 0.0% | **Consumidor de Legado**; foco exclusivo em gigantes consagrados e validados historicamente. |
-| **Daniel** | 1.0% | 2.0% | **97.0%** | **Consumidor Funcional**; base da pirâmide (comoditização e artistas sem rosto). |
-| **Sofia** | 0.0% | 11.1% | **88.9%** | **Consumidora Subcultural**; rejeição total ao *mainstream* e valorização da escassez. |
+| Persona | % Superstars (>P75) | % Médios (P25–P75) | % Cauda Longa (≤P25) | Perfil Econômico |
+| :--- | :--- | :--- | :--- | :--- |
+| **Beatriz** | 21.3% | 67.0% | 11.7% | **Consumidora de Massa**; concentração em Médios brasileiros (sertanejo, funk) com cauda inexpressiva. |
+| **Ricardo** | **100.0%** | 0.0% | 0.0% | **Consumidor de Legado**; foco exclusivo em gigantes consagrados (todos os 18 artistas no topo do ranking de *listeners*). |
+| **Daniel** | 21.2% | 43.4% | **35.4%** | **Consumidor Funcional Misto**; a fronteira entre *bedroom producers* nicho e produtores estabelecidos que viralizaram em playlists editoriais. |
+| **Sofia** | 3.7% | 44.4% | **51.9%** | **Consumidora Subcultural**; majoritariamente cauda longa, com algumas exceções de artistas indie já consolidados. |
 
-> **Análise:** Os dados confirmam o isolamento econômico das variáveis. O contraste absoluto entre Ricardo (100% Superstars) e Sofia (89% Cauda Longa) cria o cenário ideal para auditar o viés econômico: permitirá verificar se o algoritmo tenta forçar uma "gentrificação" do gosto de Sofia, empurrando-a em direção à média de mercado para maximizar a retenção.
+> **Análise:** O contraste absoluto entre Ricardo (100% Superstars) e Sofia (52% Cauda Longa) cria o cenário ideal para auditar o viés econômico: permitirá verificar se o algoritmo tenta forçar uma "gentrificação" do gosto de Sofia, empurrando-a em direção à média de mercado para maximizar a retenção. As diferenças com a versão preliminar (que usava *followers* do Spotify) ilustram como a transição metodológica reorganizou a paisagem de classificação — Daniel deixa de aparecer como 97% cauda longa porque o pool unificado tem agora artistas mais nichados (referencial mais baixo).
 
 ### 3.3.3 Análise Visual Cruzada e Topologia dos Dados
 
@@ -326,7 +395,7 @@ As visualizações a seguir sintetizam graficamente as diferenças estruturais e
 **A) Matriz de Similaridade (Índice de Jaccard)**
 Esta matriz atua como a prova definitiva do isolamento experimental. A predominância absoluta de valores nulos (0.00) ou próximos a zero nas interseções entre personas confirma que não há compartilhamento de repertório. Isso garante que o estado de *Cold Start* é único para cada agente, estabelecendo condições ideais de laboratório para verificar convergências futuras.
 
-![Matriz de Similaridade Jaccard](reports/figures/cross/matriz_similaridade_jaccard.png)
+![Matriz de Similaridade Jaccard](reports/inputs/figures/cross/matriz_similaridade_jaccard.png)
 
 **B) Mapeamento da Economia da Atenção (Scatter Plot: Popularidade x Seguidores)**
 Este gráfico espacializa a Teoria da Cauda Longa (*The Long Tail*).
@@ -334,22 +403,271 @@ Este gráfico espacializa a Teoria da Cauda Longa (*The Long Tail*).
 * **Quadrante Inferior Esquerdo (Tail):** Ocupado por Sofia e Daniel, representando a zona de obscuridade e nicho.
 A clara separação visual valida a capacidade do experimento de auditar o viés algorítmico em diferentes estratos de poder econômico, testando se o sistema privilegia quem já possui fama.
 
-![Gráfico Pop vs Followers](reports/figures/cross/grafico_pop_vs_followers.png)
+![Gráfico Pop vs Followers](reports/inputs/figures/cross/grafico_pop_vs_followers.png)
 
 **C) Cronologia do Consumo (Distribuição Temporal)**
 A visualização de densidade temporal (*KDE Plot*) valida o controle da variável "Tempo". Observa-se a sobreposição das curvas de Daniel, Beatriz e Sofia na extrema direita (anos 2020), enquanto a curva de Ricardo se isola à esquerda (século XX). Este gráfico serve como linha de base para medir o **Viés de Recência**: deslocamentos futuros da curva de Ricardo para a direita indicarão uma tentativa do sistema de impor novidades a um perfil conservador.
 
-![Gráfico Era Musical](reports/figures/cross/grafico_era_musical.png)
+![Gráfico Era Musical](reports/inputs/figures/cross/grafico_era_musical.png)
 
 **D) Curva de Lorenz (Concentração de Artistas)**
 O gráfico ilustra a desigualdade na distribuição de atenção. A curva de Ricardo (mais distante da diagonal perfeita) confirma visualmente sua fidelidade monástica a poucos artistas, enquanto a curva de Beatriz (mais próxima da diagonal) demonstra um consumo pulverizado. Essa métrica será essencial para auditar se o algoritmo respeita a profundidade de catálogo ou se tende a fragmentar a experiência de escuta.
 
-![Gráfico Concentração Artistas](reports/figures/cross/grafico_concentracao_artistas.png)
+![Gráfico Concentração Artistas](reports/inputs/figures/cross/grafico_concentracao_artistas.png)
 
 ## 3.4 Síntese Metodológica e Limitações
 
 A estrutura metodológica aqui apresentada estabelece um ambiente controlado e auditável para a investigação dos algoritmos de recomendação. A validação estatística dos *inputs* confirma que as quatro personas sintéticas — Beatriz, Daniel, Sofia e Ricardo — constituem instrumentos de medição calibrados, representando vetores de comportamento distintos e isolados.
 
-As métricas de diversidade (Shannon), desigualdade (Gini) e similaridade (Jaccard) calculadas nesta etapa formam a **Linha de Base (Baseline)** do estudo. Nos capítulos subsequentes, esses mesmos indicadores serão reaplicados sobre as listas de recomendação geradas pelo Spotify (como "Descobertas da Semana" e "Rádio da Faixa").
+As métricas de diversidade (Shannon), desigualdade (Gini) e similaridade (Jaccard) calculadas nesta etapa formam a **Linha de Base (Baseline)** do estudo. Nos capítulos subsequentes, esses mesmos indicadores serão reaplicados sobre as listas de recomendação geradas pelo Spotify (*Daily Mix 1–6*), permitindo a comparação *Input vs. Output*.
 
-A comparação direta entre os valores de *Input* (apresentados neste capítulo) e os valores de *Output* (a serem coletados) revelará o "Delta Algorítmico": a magnitude e a direção da interferência do sistema sobre o gosto do usuário. Dessa forma, será possível responder aos objetivos da pesquisa, determinando se a plataforma atua como um espelho fiel das preferências do usuário ou como um prisma que distorce a diversidade cultural em favor de padrões comerciais hegemônicos.
+A comparação direta entre os valores de *Input* (apresentados neste capítulo) e os valores de *Output* (a serem analisados no Capítulo 4) revela o "Delta Algorítmico": a magnitude e a direção da interferência do sistema sobre o gosto do usuário. Dessa forma, será possível responder aos objetivos da pesquisa, determinando se a plataforma atua como um espelho fiel das preferências do usuário ou como um prisma que distorce a diversidade cultural em favor de padrões comerciais hegemônicos.
+
+### 3.4.1 Limitações Metodológicas e Achado Original
+
+#### A) Pré-requisito não-trivial de Incubação Algorítmica
+
+Verificou-se empiricamente que o sistema do Spotify **não materializa as playlists personalizadas** (*Daily Mix*, *Discover Weekly*, *Release Radar*) apenas com base em *likes* e *follows* declarados pelo usuário. A geração desses produtos exige um histórico mínimo de **escuta efetiva**, funcionando como sinal implícito de validação. Para satisfazer este pré-requisito, conduziu-se aproximadamente **40 horas de escuta no modo "Aleatório Inteligente" (*Smart Shuffle*)** por conta-persona — totalizando ~160 horas de incubação somadas. A escolha do *Smart Shuffle* (em detrimento do *shuffle* puro) é deliberada: este modo intercala faixas curtidas com sugestões algorítmicas, garantindo registro de interação tanto com o input declarado (*likes*) quanto com recomendações exploratórias.
+
+Este pré-requisito constitui uma **observação metodológica original** desta pesquisa, raramente documentada na literatura de auditoria algorítmica musical. Estudos futuros que tentem replicar este pipeline sem a etapa de incubação ativa **não conseguirão coletar os outputs algorítmicos**.
+
+#### B) Achado Central — Obstrução Progressiva da API como Meta-Evidência
+
+Durante o período de execução desta pesquisa (2025-2026), a Spotify Web API sofreu **três ondas progressivas e parcialmente não-anunciadas de restrição**, conforme detalhado na seção 3.1.3:
+
+1. **Onda 1 (Nov/2024):** remoção do acesso a playlists algorítmicas para apps em modo *development*.
+2. **Onda 2 (Fev/2026):** exigência de Premium para o titular do app, limitação a 5 usuários autorizados, depreciação do endpoint `/playlists/{id}/tracks` e restrição de `/items` a apenas dono ou colaborador.
+3. **Onda 3 (Fev/2026, sem changelog público):** remoção sistemática dos campos `popularity`, `followers` e `genres` das respostas dos endpoints `/artists`, `/tracks`, `/albums` e `/search`.
+
+**A natureza progressiva, parcialmente não-anunciada e unilateral dessas restrições constitui em si um achado científico relevante** desta pesquisa. Ela ilustra empiricamente o argumento central da Introdução sobre a **opacidade e a governança algorítmica** das plataformas de streaming: o próprio instrumental técnico necessário à auditoria foi sendo obstruído **durante** a execução do experimento. Esta observação configura-se como **meta-evidência** da assimetria informacional entre plataformas de *streaming* e atores externos (incluindo pesquisadores acadêmicos), reforçando a urgência metodológica de estudos como este.
+
+#### C) Resposta Metodológica — Apples-to-Apples via Fontes Externas
+
+Para preservar o rigor e a comparabilidade *Input vs. Output*, adotou-se a substituição das métricas comprometidas por dados de **fontes externas consagradas** (Last.fm + MusicBrainz), aplicadas consistentemente aos dois lados da auditoria. Esta solução transforma a limitação em oportunidade — a pesquisa passa a se ancorar em três bases de dados independentes (Spotify para *tracks*/álbuns/datas; Last.fm para audiência/gêneros; MusicBrainz para *life-span*/tipo/região), aumentando a triangulação metodológica e a robustez epistemológica.
+
+A **cobertura empírica** alcançada foi de 100% dos artistas únicos identificados, com 98,6% obtendo dados de ambas as fontes externas. Os limiares de classificação em Cauda Longa foram **recalibrados via percentis no pool unificado**, substituindo limiares absolutos não-transferíveis.
+
+#### D) Outras Limitações
+
+- **Cobertura do MusicBrainz para *bedroom producers*:** A análise de *life-span* (`mb_career_start`) cobre 100% dos artistas de Ricardo (todos consagrados), mas apenas 20% dos artistas de Daniel, refletindo a invisibilidade de produtores lo-fi obscuros nos catálogos institucionais. A métrica "Era de Carreira Mediana" deve ser interpretada com cautela para perfis de nicho.
+- **Generalização limitada:** Os resultados refletem o comportamento do algoritmo do Spotify para perfis brasileiros configurados em abril de 2026; extensões para outros mercados ou momentos exigem replicação independente.
+- **Possível variabilidade temporal:** Os *Daily Mixes* são atualizados continuamente. A coleta foi feita em janela curta (mesma semana de 28/04/2026) para minimizar variabilidade, mas estudos longitudinais futuros seriam metodologicamente mais robustos.
+
+# 4 RESULTADOS: ANÁLISE DOS OUTPUTS E O DELTA ALGORÍTMICO
+
+Concluída a fase de validação dos *inputs* (Capítulo 3), o presente capítulo apresenta a análise empírica dos *outputs* algorítmicos coletados — as faixas que o Spotify recomendou aos quatro perfis sintéticos por meio dos *Daily Mixes*, após o período de incubação descrito na seção §3.4.1. O objetivo central deste capítulo é responder à pergunta condutora da pesquisa: **em que magnitude e direção o algoritmo de recomendação distorce o perfil declarado de cada usuário?**
+
+A análise é estruturada em quatro etapas: (i) apresentação descritiva dos *outputs* coletados; (ii) cálculo da Taxa de Overlap Interno (redundância dentro da bolha de cada persona); (iii) análise do Delta Algorítmico — comparação direta *Input vs. Output* das treze métricas centrais; e (iv) síntese e teste das quatro hipóteses formuladas no Capítulo 2.
+
+## 4.1 Apresentação dos Outputs Coletados (Daily Mixes)
+
+Após o período de incubação algorítmica (~40 horas de escuta efetiva por persona, em modo *Smart Shuffle*), o sistema do Spotify gerou seis *Daily Mixes* para cada conta. Estas playlists foram copiadas manualmente para playlists espelho de propriedade de cada persona — *workaround* necessário em virtude da Onda 1 de restrição da API (§3.1.3). Durante o procedimento de cópia, faixas duplicadas entre os seis *mixes* foram automaticamente filtradas pelo próprio cliente do Spotify, gerando o conjunto final consolidado.
+
+A Tabela 4.1 sintetiza o volume de dados coletados:
+
+**Tabela 4.1 — Volume e cobertura dos Outputs**
+
+| Persona | Faixas únicas (Output) | Faixas (Input) | Δ tamanho | Artistas únicos (Output) | Cobertura Last.fm + MB |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Beatriz | 276 | 200 | +38.0% | 121 | 99.6% |
+| Daniel | 281 | 200 | +40.5% | 115 | 98.6% |
+| Ricardo | 268 | 200 | +34.0% | 126 | ~95% |
+| Sofia | 264 | 200 | +32.0% | 90 | ~96% |
+
+> **Observação:** o tamanho dos *outputs* é sistematicamente maior que o dos *inputs* (200 faixas) — efeito direto dos seis *Daily Mixes* contendo aproximadamente 50 faixas cada (~300 faixas brutas, das quais 6-12% são duplicatas removidas). A cobertura média de enriquecimento via fontes externas supera 97% em todas as personas.
+
+## 4.2 Taxa de Overlap Interno: Redundância Intra-Persona
+
+Esta métrica original do estudo quantifica quanto o algoritmo "**insiste nas mesmas faixas**" entre os seis clusters (*Daily Mixes*) gerados para uma mesma persona. Operacionalmente, é calculada como:
+
+$$\text{Overlap Interno} = \frac{300 - N}{300}$$
+
+…onde $N$ é o número de faixas únicas após dedupe (e 300 representa o pool bruto estimado de seis *mixes* × 50 faixas). Quanto maior a taxa, mais redundante é o conjunto de clusters — sinal de uma "bolha de filtro" mais estreita imposta pelo algoritmo.
+
+**Tabela 4.2 — Taxa de Overlap Interno entre os Daily Mixes**
+
+| Persona | Faixas únicas (N) | Duplicatas | **Taxa de Overlap Interno** | Interpretação |
+| :--- | :---: | :---: | :---: | :--- |
+| Daniel | 281 | 19 | **6.33%** | Variedade alta dentro do nicho lo-fi (algoritmo encontra muito material) |
+| Beatriz | 276 | 24 | 8.00% | Variedade moderada (catálogo brasileiro mainstream amplo) |
+| Ricardo | 268 | 32 | 10.67% | Redundância média (catálogo clássico tem repertório finito de "lendas") |
+| **Sofia** | **264** | **36** | **12.00%** | **Maior redundância** — bolha mais estreita |
+
+> **Achado:** O perfil **Sofia** (consumidora de nicho/underground) apresenta a **maior taxa de redundância** entre as quatro personas. Esse resultado sinaliza que, quando o algoritmo dispõe de **menos diversidade no input declarado** (Sofia tem só 27 artistas únicos contra 99 de Daniel), ele tende a **repetir as mesmas faixas entre clusters distintos**, configurando uma bolha de filtro mais estreita justamente para o perfil que **mais valoriza descoberta**. Esta observação é metodologicamente relevante: contradiz a expectativa de que o algoritmo "amplie o leque" para usuários que demonstram apetite exploratório.
+
+## 4.3 O Delta Algorítmico — Visão Geral
+
+O *Delta Algorítmico* é o resultado quantitativo central deste estudo: a diferença entre o valor de cada métrica no *Output* (recomendações algorítmicas) e no *Input* (perfil declarado pelo usuário), expresso em variação percentual. A Figura 4.1 condensa os deltas de **treze métricas × quatro personas** em uma única visualização:
+
+![Heatmap Delta Percentual](reports/comparison/heatmap_delta_percentual.png)
+
+> **Figura 4.1 — Heatmap do Delta Algorítmico Percentual.** Cores em vermelho indicam crescimento da métrica do *input* para o *output*; cores em azul indicam queda. Quanto mais saturada, maior a magnitude da variação.
+
+A Tabela 4.3 sintetiza os deltas percentuais (também disponíveis em `reports/comparison/delta_metrics_pivot.csv`):
+
+**Tabela 4.3 — Delta Algorítmico Percentual (Input → Output)**
+
+| Métrica | Beatriz | Daniel | Ricardo | Sofia |
+| :--- | :---: | :---: | :---: | :---: |
+| Shannon (Artistas) | +7.9% | +4.0% | **+61.4%** | **+37.1%** |
+| Gini (Artistas) | -5.8% | +0.2% | **+110.8%** | +17.3% |
+| HHI (Tags) | -5.5% | **+48.2%** | -10.5% | -22.8% |
+| Listeners Mediano (Artista) | +6.3% | **+131.3%** | -33.6% | -18.0% |
+| Playcount Mediano (Artista) | +30.6% | **+263.2%** | -59.4% | -30.4% |
+| Listeners Mediano (Track) | -22.5% | -23.6% | +112.4% | **+405.2%** |
+| n. Artistas Únicos | +28.7% | +16.2% | **+600.0%** | +233.3% |
+| % Artistas Solo (Person) | -2.1% | **+24.7%** | -11.9% | -13.5% |
+| % Artistas Grupo (Group) | +1.9% | **-53.2%** | +6.0% | +14.3% |
+| Ano Médio (Carreira) | +0.0% | +0.2% | +0.3% | -0.2% |
+| Ano Médio (Release) | -0.1% | -0.0% | +0.0% | +0.1% |
+| Duração Média | -0.2% | +5.2% | -6.9% | +3.1% |
+
+A leitura horizontal (por métrica) revela quais aspectos do consumo o algoritmo mais distorce; a leitura vertical (por persona) mostra quais perfis sofrem maior interferência.
+
+**Achado preliminar (visão geral):** A magnitude da distorção **cresce em ordem inversa ao alinhamento do perfil com o mainstream**. Beatriz (controle mainstream) mostra apenas mudanças tímidas; Daniel (funcional, mas comoditizado) mostra distorções moderadas; Sofia e Ricardo (perfis verticais e desviantes do mainstream) sofrem **distorções extremas em múltiplas dimensões**. Esta hierarquia será detalhada na análise persona por persona (§4.4).
+
+## 4.4 Análise Persona por Persona
+
+### 4.4.1 Beatriz (Mainstream) — O Grupo de Controle Validado
+
+A persona Beatriz, projetada como controle mainstream brasileiro, exibe os menores deltas entre as quatro personas. As métricas críticas variam dentro de margens estreitas: Shannon entropy +7.9%, listeners por artista +6.3%, percentuais de tipo de artista praticamente inalterados (variação <3%). A Figura 4.2 (KDE de listeners por artista) mostra que as duas distribuições — *input* e *output* — quase se sobrepõem para Beatriz, com leve deslocamento à direita no *output*.
+
+![KDE Listeners Input vs Output](reports/comparison/kde_listeners_in_vs_out.png)
+
+> **Figura 4.2 — Distribuição de Listeners por Artista (Last.fm), em escala logarítmica.** Beatriz: distribuições quase coincidentes; Daniel: deslocamento à direita expressivo (efeito mainstream); Ricardo: deslocamento à esquerda (algoritmo encontra artistas menos consagrados); Sofia: deslocamento bimodal sutil.
+
+A leve elevação do `playcount_med_artista` (+30.6%) e dos listeners (+6.3%) indica que o algoritmo **adiciona artistas com performance histórica ainda maior**, sem alterar a estrutura geral do perfil. Em termos de tags, observa-se manutenção da concentração temática (sertanejo, brazil, pop). A composição solo/grupo mantém o equilíbrio do *input* (~60/40).
+
+> **Conclusão para Beatriz:** O algoritmo "comportou-se bem" — não há distorção significativa do perfil declarado. **Esta conclusão é metodologicamente importante**: valida o instrumental de medição. Caso Beatriz também apresentasse grandes deltas, seria difícil isolar viés algorítmico de ruído experimental. A baixa interferência sobre o perfil mainstream **reforça a confiabilidade dos achados nas demais personas**, onde os deltas são marcadamente maiores.
+
+### 4.4.2 Daniel (Lo-fi) — Confirmação do Viés de Popularidade
+
+A persona Daniel, projetada como consumidor funcional de *lo-fi beats* (perfil de Cauda Longa funcional), revela o achado mais nítido sobre **viés de popularidade**. Os listeners medianos por artista saltam de **79.595 para 184.082 (+131.3%)**, e o playcount mediano salta de **348.630 para 1.266.167 (+263.2%)**. A Figura 4.3 (barra Input vs Output em escala log) torna o efeito visualmente evidente:
+
+![Bar Listeners Input vs Output](reports/comparison/bar_listeners_in_vs_out.png)
+
+> **Figura 4.3 — Mediana de Listeners por Artista, em escala logarítmica.** A coluna vermelha (Output) de Daniel é visivelmente maior que a azul (Input); inversamente, Ricardo e Sofia têm a coluna Output menor.
+
+Adicionalmente, a Figura 4.4 mostra a transformação na estrutura social do consumo:
+
+![Bar Solo vs Group](reports/comparison/bar_solo_vs_group.png)
+
+> **Figura 4.4 — Distribuição percentual de Solo (Person) vs Grupo (Group) entre artistas únicos.** Daniel apresenta queda dramática de % Group (de ~24% para ~11%, **-53.2%**), com correspondente aumento de % Solo (+24.7%).
+
+Esta queda de bandas/grupos confirma uma característica estrutural do nicho lo-fi: **o ecossistema é dominado por *bedroom producers* individuais**. O algoritmo, ao "aprender" o perfil de Daniel, acentua essa característica social, recomendando ainda mais produtores solo do que o próprio *input* continha.
+
+> **Conclusão para Daniel:** Confirma-se a **hipótese de Contaminação Pop** (formulada em §3.2.2). O algoritmo, ao buscar manter Daniel engajado, recomenda **artistas mais conhecidos dentro do nicho lo-fi/instrumental** — produtores que migraram do anonimato para a "elite do nicho", evidenciando que a "Zona de Conforto Algorítmico" desloca o perfil em direção ao centro de gravidade da popularidade, mesmo dentro de um cluster funcional/comoditizado.
+
+### 4.4.3 Sofia (Nicho) — Viés do Hit dentro da Cauda Longa
+
+A persona Sofia, projetada como consumidora *underground*/experimental, apresenta o achado **mais sutil e revelador** do estudo. A análise das três principais métricas relacionadas mostra um padrão paradoxal:
+
+| Métrica | Input | Output | Delta |
+| :--- | :---: | :---: | :---: |
+| Listeners Mediano por **Artista** | 59,042 | 48,406 | **−18.0%** |
+| Listeners Mediano por **Track** | 1,223 | 6,179 | **+405.2%** |
+| n. Artistas Únicos | 27 | 90 | +233.3% |
+
+À primeira leitura, a queda de −18% nos listeners por artista parece sugerir que o algoritmo **respeita o nicho** de Sofia. Entretanto, a explosão de **+405% nos listeners por *track*** revela um padrão diferente: **o algoritmo respeita o nicho a nível de artista, mas dentro desses artistas, prefere as faixas mais conhecidas**. Em outras palavras, ao invés de recomendar *deep cuts* obscuros (que era exatamente o comportamento de escuta declarado de Sofia, com média de 7.41 faixas por artista), o sistema recomenda os **singles mais expostos** dos mesmos artistas indie.
+
+A Figura 4.5 evidencia esse padrão pela distribuição de listeners por *track*:
+
+![KDE Era Musical Input vs Output](reports/comparison/kde_era_musical_in_vs_out.png)
+
+> **Figura 4.5 — Distribuição temporal das faixas por persona (KDE, sobreposição Input/Output).** Sofia mantém a distribuição temporal estável, mas sob a superfície a composição interna da bolha mudou drasticamente.
+
+Adicionalmente, a expansão do leque de artistas (**+233.3%**, de 27 para 90 artistas únicos) sugere que o algoritmo **fragmentou o consumo profundo de Sofia**: em vez de deixá-la imersa em discografias completas (S.Maharba, Eterna, Patch+, com 15+ faixas cada no input), abriu o leque para artistas adicionais com poucas faixas cada — comportamento típico de "playlist exploratória" ao invés de "escuta de álbum".
+
+> **Conclusão para Sofia:** O algoritmo aplica um **viés de hit dentro da Cauda Longa**: respeita aparentemente o nicho (artistas igualmente obscuros), mas força um padrão de escuta de "singles" sobre o gosto declarado de "obras completas". Adicionalmente, **fragmenta o consumo vertical** (poucos artistas, muitas faixas cada) em direção ao consumo horizontal (muitos artistas, poucas faixas cada). Este achado refina a hipótese inicial: a "gentrificação do nicho" não acontece no eixo *artista* (como hipotetizado), mas no eixo *faixa* — uma forma mais sutil de viés que apenas a granularidade *track-level* da fonte Last.fm permitiu capturar.
+
+### 4.4.4 Ricardo (Nostálgico) — Pulverização da Fidelidade Canônica
+
+A persona Ricardo, projetada como consumidor saudosista (Album-Oriented Rock + MPB clássica, 18 artistas com 11.11 faixas/artista em média), exibe os **maiores deltas de todo o estudo** em três das métricas de diversidade:
+
+- **n. Artistas Únicos: 18 → 126 (+600.0%)** — o maior delta absoluto em qualquer métrica/persona.
+- **Shannon Entropy: 4.10 → 6.61 (+61.4%)** — a maior variação relativa de entropia.
+- **Coeficiente de Gini: 0.18 → 0.37 (+110.8%)** — duplicação da desigualdade.
+
+Estes números indicam uma **pulverização sistemática da fidelidade canônica** declarada por Ricardo. Ao invés de respeitar o comportamento de "escuta de discografia profunda" (mergulho vertical em poucos ídolos consagrados), o algoritmo **expandiu o leque de artistas em sete vezes** — recomendando muitos artistas novos com poucas faixas cada, em vez de mais faixas dos mesmos 18 artistas que Ricardo já declarou consumir.
+
+A Figura 4.6 ilustra a transformação no Top 10 de tags:
+
+![Tags Side by Side](reports/comparison/tags_side_by_side.png)
+
+> **Figura 4.6 — Top 10 Tags por Persona, lado a lado: Input (azul) vs Output (vermelho).** Ricardo mantém o domínio de `rock`, `classic rock`, `hard rock`, mas o output introduz tags novas como `british`, `progressive rock` e `90s`, ampliando o espectro temático.
+
+Surpreendentemente, **os listeners e playcount medianos por artista CAEM** (−33.6% e −59.4%, respectivamente). Isso decorre matematicamente da expansão do leque: os 18 artistas originais de Ricardo (Metallica, Beatles, Queen, etc.) têm milhões de listeners; os 108 novos artistas introduzidos pelo algoritmo são em média menos consagrados — abaixando a mediana global, mesmo que cada um individualmente seja popular.
+
+A análise da **Era de Carreira** revela um deslocamento sutil mas significativo: a mediana sobe de **1965 para 1970.5 (+5 anos)**. O algoritmo, mesmo respeitando a temporalidade geral do perfil (Ano Médio do *release* permanece em 1985), **modernizou de cinco anos a janela formativa dos artistas** recomendados. Em outras palavras: ao invés de Beatles (carreira iniciada em 1960), o algoritmo introduz Bon Jovi (1983); ao invés de Rolling Stones (1962), introduz Bryan Adams (1976). O perfil "saudosista" continua, mas é discretamente puxado em direção ao final dos anos 1970 e 80.
+
+> **Conclusão para Ricardo:** Confirma-se a hipótese de **violação ativa do "Legacy Control"** (formulada em §3.2.4). O algoritmo **NÃO respeita o comportamento de fidelidade canônica** — ao contrário, ele força a substituição de "discografia profunda" por "exploração horizontal de artistas similares". Este achado tem implicações cruciais para o argumento sobre *bolha de filtro* da pesquisa: contraria a expectativa intuitiva de que perfis ultra-concentrados ficariam "presos" em loops temporais. **Na prática, o algoritmo faz o oposto: arromba a bolha vertical, fragmenta o gosto consolidado e empurra o usuário em direção a uma horizontalidade comum.**
+
+## 4.5 O Colapso de Contexto: Evidência da Homogeneização Algorítmica
+
+A análise integrada das quatro personas revela o **achado central deste estudo**: independentemente do perfil declarado no *input*, todos os *outputs* convergem para uma faixa estreita de Shannon Entropy. A Figura 4.7 sintetiza o fenômeno:
+
+![Bar Shannon Input vs Output](reports/comparison/bar_shannon_in_vs_out.png)
+
+> **Figura 4.7 — Shannon Entropy de Artistas, Input (azul) vs Output (vermelho), com delta % anotado.** A linha tracejada cinza marca a faixa de convergência observada (~6.5).
+
+A Tabela 4.4 quantifica o fenômeno:
+
+**Tabela 4.4 — Convergência da Shannon Entropy**
+
+| Persona | Shannon Input | Shannon Output | Δ absoluto | Δ relativo |
+| :--- | :---: | :---: | :---: | :---: |
+| Beatriz | 6.03 | 6.51 | +0.48 | +7.9% |
+| Daniel | 6.27 | 6.52 | +0.25 | +4.0% |
+| Ricardo | 4.10 | 6.61 | +2.52 | +61.4% |
+| Sofia | 4.43 | 6.07 | +1.63 | +37.1% |
+| **Pool dos 4 outputs** | — | **6.07–6.61** | — | — |
+
+A interpretação é direta: **o intervalo de Shannon dos *inputs* (4.10 a 6.27) tem amplitude de 2.17 bits**; o intervalo de Shannon dos *outputs* (6.07 a 6.61) tem amplitude de **apenas 0.54 bits — uma redução de 75% na variabilidade entre personas**. O algoritmo, por mecanismo não explicitado em sua documentação, **converge perfis distintos para uma "Shannon-alvo" próxima de 6.5 bits**.
+
+Este fenômeno opera em duas direções simultâneas:
+- **Para perfis verticais** (Ricardo, Sofia — Shannon baixa): o algoritmo *aumenta artificialmente* a entropia, pulverizando a fidelidade canônica.
+- **Para perfis horizontais** (Beatriz, Daniel — Shannon alta): o algoritmo *mantém* a entropia já elevada, sem expandi-la mais.
+
+A homogeneização é, portanto, **assimétrica e direcional**: opera contra perfis de profundidade vertical, "puxando-os" em direção ao centro horizontal. **Esta é a operacionalização matemática do Colapso de Contexto** anunciado nos objetivos específicos da pesquisa (§2.1) — o fenômeno hipotetizado se confirma empiricamente.
+
+## 4.6 Síntese dos Achados e Discussão
+
+A Tabela 4.5 consolida os achados centrais do estudo, mapeando-os contra as hipóteses formuladas no Capítulo 2:
+
+**Tabela 4.5 — Síntese dos Achados por Persona e Hipóteses Confirmadas**
+
+| Persona | Hipótese Original (§3.2) | Achado Empírico (§4.4) | Magnitude | Status |
+| :--- | :--- | :--- | :---: | :---: |
+| Beatriz | Feedback loop positivo blindando contra nicho | Mudanças tímidas, perfil mainstream preservado | Baixa (~5–8%) | ✅ Confirmada |
+| Daniel | Contaminação Pop dentro do nicho funcional | Listeners +131%, playcount +263%, % Solo +25% | Alta (~131–263%) | ✅ Confirmada |
+| Sofia | Gentrificação do nicho de Cauda Longa | Viés do hit *track-level* (+405%), fragmentação vertical | Extrema (no eixo *track*) | ✅ Confirmada e refinada |
+| Ricardo | Estagnamento de descoberta (loop temporal) | Pulverização (+600%) — oposto da hipótese | Extrema (em diversidade) | ⚠️ **Refutada e substituída** |
+
+A hipótese de Ricardo merece destaque: o estudo havia **antecipado** que o algoritmo poderia "ficar preso" em recomendações de eras passadas, gerando estagnamento de descoberta. **O resultado empírico aponta o oposto:** o algoritmo arromba ativamente a bolha vertical, introduzindo 108 novos artistas (+600%) e modernizando sutilmente a janela temporal (+5 anos na carreira mediana). Este achado é cientificamente mais valioso do que a hipótese original, pois revela uma **direcionalidade não-óbvia** do viés: o algoritmo prefere fragmentar profundidade do que respeitá-la.
+
+### 4.6.1 Os Quatro Achados Centrais
+
+**1. Homogeneização Algorítmica (§4.5).** O Spotify converge perfis distintos para uma "Shannon-alvo" estreita (~6.5 bits), reduzindo a variabilidade entre personas em 75%. **Este é o achado matemático mais robusto do estudo** e operacionaliza o Colapso de Contexto.
+
+**2. Viés de Popularidade Direcionalmente Dependente (§4.4.2 e §4.4.4).** Daniel (perfil moderado de nicho) é puxado *para cima* em listeners (+131%); Ricardo (perfil de superstars) é puxado *para baixo* (-34%). Em ambos os casos, a direção converge para **um patamar médio de visibilidade**, evidenciando uma "gravidade algorítmica" que repele os extremos.
+
+**3. Viés de Hit dentro da Cauda Longa (§4.4.3).** O algoritmo respeita a Cauda Longa **a nível de artista** (Sofia mantém artistas obscuros), mas força hits **a nível de faixa** (+405% listeners por *track*). Este achado tem implicações teóricas para a literatura sobre Cauda Longa: a fragmentação do *track-level* é uma forma de viés mais sutil que o eixo *artist-level* não captura.
+
+**4. Pulverização da Fidelidade Canônica (§4.4.4).** Perfis verticais (escuta de álbum) são sistematicamente fragmentados em horizontais (escuta de playlist). O algoritmo **prefere expansão de catálogo a profundidade discográfica**, mesmo quando o sinal de gosto declarado aponta no sentido oposto.
+
+### 4.6.2 Implicações Teóricas e Sociotécnicas
+
+Os quatro achados, considerados em conjunto, sustentam o argumento central da pesquisa: o algoritmo do Spotify, longe de ser um espelho neutro do gosto declarado, opera como **um prisma com geometria conhecida**. Sua geometria privilegia (i) horizontalidade sobre verticalidade, (ii) artistas medianos sobre extremos (superstars ou underground absolutos), e (iii) faixas reconhecíveis sobre *deep cuts* — em coerência com o modelo de negócio da Economia da Atenção (retenção via baixo risco), descrito na Introdução.
+
+A Onda 3 da restrição da API (§3.1.3 e §3.4.1.B) — que removeu silenciosamente os campos `popularity`, `followers` e `genres` durante a execução desta pesquisa — corrobora institucionalmente o argumento: a plataforma **opera para preservar opacidade** sobre exatamente as variáveis que permitem auditá-la externamente. Esta meta-evidência confere robustez epistemológica adicional aos achados quantitativos do presente capítulo.
+
+A Cauda Longa, central na literatura de economia digital (Anderson, 2006), revela-se **acessível apenas parcialmente**: o algoritmo permite ao usuário *visitar* artistas de nicho, mas o conduz pelos *singles consagrados* desses artistas — uma forma de "Cauda Longa Curada" que reproduz, em microescala, a lógica de *hit* dominante da indústria mainstream. Para o pesquisador interessado em diversidade cultural, este achado redefine a discussão: não basta perguntar *se* o algoritmo recomenda nicho; é preciso perguntar *como* ele recomenda nicho.
+
+### 4.6.3 Limitações Específicas dos Resultados deste Capítulo
+
+Além das limitações gerais já discutidas em §3.4.1, dois pontos específicos do presente capítulo merecem registro:
+
+- **Janela temporal única de coleta:** os *outputs* analisados refletem o estado dos *Daily Mixes* na semana de 28/04/2026; o algoritmo é dinâmico e estes valores podem variar em coletas longitudinais.
+- **Cobertura desigual de `mb_career_start`:** a métrica de Era de Carreira tem cobertura integral (100%) para Ricardo (artistas consagrados, totalmente catalogados em MusicBrainz), mas baixa cobertura (20%) para Daniel (produtores lo-fi obscuros frequentemente ausentes do catálogo institucional). A interpretação dessa métrica para perfis de nicho deve ser feita com cautela.
+
+Apesar dessas limitações, a triangulação metodológica adotada (Shannon, Gini, HHI, Listeners, Playcount, Era de Carreira, Tipo de Artista — sete famílias de métricas independentes) e o uso de duas fontes externas validadas (Last.fm + MusicBrainz) conferem ao conjunto de achados uma robustez que justifica os resultados aqui apresentados como **evidência empírica forte e auditável** da governança algorítmica do Spotify sobre a diversidade musical de seus usuários.

@@ -1,114 +1,239 @@
 # Pipeline de Execução: Auditoria Algorítmica Spotify
 
-Este pipeline descreve a ordem lógica e técnica de execução dos scripts para a realização da auditoria de "caixa-preta". O fluxo garante a neutralidade inicial da conta, a ingestão controlada de dados e a extração fidedigna dos resultados para análise acadêmica.
+> **Versão 2.0** — atualizado em 2026-04-28 após refatoração completa para fontes externas (Last.fm + MusicBrainz). Ver [PLANO_REFATORACAO.md](PLANO_REFATORACAO.md) e [PROGRESSO.md §2.7](PROGRESSO.md) para o contexto.
+
+Este pipeline descreve a ordem lógica e técnica de execução dos scripts para a realização da auditoria de "caixa-preta". O fluxo garante a neutralidade inicial das contas, a ingestão controlada de dados e a extração + enriquecimento dos resultados a partir de fontes externas (após restrições da Spotify Web API em 2024-2026).
 
 ---
 
-## 📋 Pré-requisitos Fundamentais (Geral)
-Antes de executar qualquer script das Fases 1, 2 ou 3, atente-se aos seguintes pontos:
-1. **Autenticação Ativa:** Você deve estar logado no navegador padrão na **Conta da Persona específica** (Beatriz, Daniel, Ricardo ou Sofia) que deseja manipular. O Spotipy abrirá uma janela de navegador para validar o Token OAuth na primeira execução de cada sessão.
-2. **Dashboard de Desenvolvedor:** As chaves `SPOTIPY_CLIENT_ID`, `SPOTIPY_CLIENT_SECRET` e `SPOTIPY_REDIRECT_URI` devem estar corretamente configuradas no arquivo `.env` na raiz do projeto.
-3. **Dependências:** O ambiente virtual (`venvtcc`) deve estar ativado e com as bibliotecas `spotipy`, `pandas`, `seaborn` e `python-dotenv` instaladas.
+## 📋 Pré-requisitos Fundamentais
+
+1. **Ambiente virtual ativo**: `source venvtcc/Scripts/activate`
+2. **`.env`** na raiz com:
+   - `SPOTIPY_CLIENT_ID` (do app de dev — owner deve ter Premium ativo)
+   - `SPOTIPY_CLIENT_SECRET`
+   - `SPOTIPY_REDIRECT_URI` (ex: `http://127.0.0.1:8000/callback`)
+   - `LASTFM_API_KEY` (gratuita em https://www.last.fm/api/account/create)
+3. **Dependências**: `spotipy`, `pandas`, `seaborn`, `matplotlib`, `numpy`, `python-dotenv`, `requests`.
+4. **User Management** do dev app no Spotify Developer Dashboard inclui as 4 personas como users autorizados.
 
 ---
 
-## Fase 1: Setup e Higienização (Tabula Rasa)
-**Objetivo:** Eliminar qualquer rastro de uso anterior da conta para evitar contaminação de dados (Cold Start Control).
+## Fase 1: Higienização (Tabula Rasa) — **uma vez por persona**
 
-### 1. `src/utils/clear_library.py`
-- **Ação:** Remove todas as músicas da biblioteca "Músicas Curtidas".
-- **Entrada:** Interação manual via terminal (Confirmação 'SIM') + Conexão com API.
-- **Saída:** Limpeza total da seção "Músicas Curtidas" da conta logada.
-- **Requisito:** Estar logado na conta da Persona que será resetada.
+> Garante cold start. Faça login na conta da persona alvo no navegador antes de rodar.
 
-### 2. `src/utils/clear_follows.py`
-- **Ação:** Deixa de seguir todos os artistas na conta.
-- **Entrada:** Interação manual via terminal (Confirmação 'SIM') + Conexão com API via Cursor.
-- **Saída:** Zera a contagem de "Seguindo" na conta logada.
+### 1.1 Limpar biblioteca
+```bash
+python src/utils/clear_library.py
+```
 
----
-
-## Fase 2: Alimentação e Ingestão (Training Input)
-**Objetivo:** Construir a identidade musical da Persona Sintética e fornecer os dados de treino para a IA do Spotify.
-
-### 3. `src/analysis/build_persona_raw_data.py`
-- **Ação:** Minera metadados de artistas a partir de playlists semente para definir o perfil.
-- **Entrada:** URLs de playlists curadas definidas no dicionário `PERSONAS`.
-- **Saída:** Arquivos CSV em `data/raw/` (ex: `artistas_indie_dados.csv`).
-- **Requisito:** Acesso à Internet (Usa *Client Credentials* - não requer login de usuário).
-
-### 4. `src/collectors/create_[persona]_playlist.py`
-- **Ação:** Injeta a carga de músicas de acordo com a lógica de cada persona para termos a melhor playlist curtida que represente suas personalidades.
-- **Entrada:** Arquivos CSV de `data/raw/`.
-- **Saída:** Criação de uma Playlist física no Spotify + "Likes" em massa (ex: 100 ou 200 músicas) na conta logada.
-- **Requisito:** Estar logado na conta correta da Persona no navegador.
-
-### 5. `src/collectors/sync_persona_follows.py`
-- **Ação:** Segue os artistas principais de cada faixa curtida (Geração de feedback explícito).
-- **Entrada:** Lista de "Músicas Curtidas" da própria conta (API `current_user_saved_tracks`).
-- **Saída:** Atualização da lista de artistas seguidos no perfil do Spotify.
-- **Requisito:** Executar somente **após** o script anterior ter populado as curtidas.
-
-
+### 1.2 Limpar artistas seguidos
+```bash
+python src/utils/clear_follows.py
+```
 
 ---
 
-## Fase 3: Extração de Auditoria (Data Collection)
-**Objetivo:** Coletar o "Output" gerado pelo sistema de recomendação após o período de treinamento.
+## Fase 2: Ingestão / Construção da Persona — **uma vez por persona**
 
-### 6. `src/analysis/extrair_dados_playlist.py`
-- **Ação:** Baixa o conteúdo das playlists geradas pela IA (Descobertas da Semana, Daily Mix, etc).
-- **Entrada:** URL da playlist gerada pelo Spotify para a Persona (configurada no script).
-- **Saída:** Datasets processados em `data/processed/` (ex: `dataset_Sofia_playlist.csv`).
-- **Requisito:** A playlist alvo deve estar visível/disponível na conta da Persona.
+### 2.1 Minerar metadata de artistas das playlists-semente
+```bash
+python src/analysis/build_persona_raw_data.py
+```
+Saída: 4 CSVs em `data/raw/`.
 
-### 7. `src/analysis/extrair_dados_artistas_seguidos.py`
-- **Ação:** Extrai metadados detalhados de todos os artistas que a conta passou a seguir.
-- **Entrada:** URLs das playlists semente (reutilizadas para identificar os IDs dos artistas originais).
-- **Saída:** Datasets de baseline em `data/processed/` (ex: `dataset_Sofia_artistas_seguidos.csv`).
+### 2.2 Criar playlist da persona + likes
+Estar logado como a persona alvo:
+```bash
+python src/collectors/create_beatriz_playlist.py
+python src/collectors/create_daniel_playlist.py
+python src/collectors/create_ricardo_playlist.py
+python src/collectors/create_sofia_playlist.py
+```
 
----
-
-## Fase 4: Processamento e Insights (Reporting)
-**Objetivo:** Transformar os dados brutos em relatórios estatísticos e visualizações gráficas para o TCC.
-
-### 8. `src/analysis/merge_datasets.py`
-- **Ação:** Consolida os dados de entrada (Input) e saída (Output) em um dataset unificado.
-- **Entrada:** Todos os arquivos CSV individuais da pasta `data/processed/`.
-- **Saída:** Arquivo mestre `data/processed/dataset_consolidada_input.csv`.
-
-### 9. `src/analysis/build_summaries.py`
-- **Ação:** Gera resumos estatísticos textuais (.txt) em `reports/summaries/`.
-- **Entrada:** Arquivos CSV processados de cada persona em `data/processed/`.
-- **Saída:** Relatórios `.txt` contendo médias de popularidade, gêneros e métricas temporais.
-
-### 10. `src/analysis/build_personal_graphs.py`
-- **Ação:** Gera os 5 insights gráficos individuais para cada persona.
-- **Entrada:** CSV individual de cada persona em `data/processed/`.
-- **Saída:** 5 arquivos PNG por persona em `reports/figures/[persona]/`.
-
-### 11. `src/analysis/build_cross_graphs.py`
-- **Ação:** Gera gráficos comparativos cruzando os dados das 4 personas.
-- **Entrada:** O dataset consolidado `dataset_consolidada_input.csv`.
-- **Saída:** Gráficos comparativos (Boxplots, Violin plots, Scatter plots) em `reports/figures/cross/`.
-
-
+### 2.3 Sincronizar follows
+```bash
+python src/collectors/sync_persona_follows.py
+```
 
 ---
 
-## 🛠️ Resumo de Fluxo de I/O (Input/Output)
+## Fase 3 (manual): Incubação Algorítmica
 
-| Script | Entrada (Input) | Saída (Output) |
-| :--- | :--- | :--- |
-| **build_persona_raw_data** | URL Playlist Semente (Spotify) | CSV (data/raw) |
-| **create_[persona]_playlist** | CSV (data/raw) | Playlist + Likes (Spotify Account) |
-| **sync_persona_follows** | Likes (Spotify Account) | Follows (Spotify Account) |
-| **extrair_dados_playlist** | URL Playlist Resultante (Spotify) | CSV (data/processed) |
-| **extrair_dados_artistas_seguidos** | IDs de Artistas (Spotify API) | CSV (data/processed) |
-| **merge_datasets** | CSVs individuais (Processed) | CSV Consolidado (Processed) |
-| **build_summaries** | CSVs (Processed) | Relatórios TXT (reports/summaries) |
-| **build_personal_graphs** | CSVs (Processed) | PNGs (reports/figures/[persona]) |
-| **build_cross_graphs** | CSV Consolidado (Processed) | PNGs (reports/figures/cross) |
+**~40 horas de Smart Shuffle por conta-persona**, escutando ativamente o conteúdo. Sem isso o Spotify NÃO gera os Daily Mixes (verificado empiricamente).
+
+Pré-requisito não-trivial documentado na seção 3.4 do README.
 
 ---
-**Observação Final:** O sucesso da auditoria depende do intervalo entre a **Fase 2** e a **Fase 3**. Recomenda-se um intervalo mínimo de 7 dias com interações diárias (escuta de rádio de artistas) para que o Spotify processe os dados e gere as playlists de recomendação.
+
+## Fase 4 (manual): Cópia das Daily Mixes para playlist espelho
+
+Para cada persona:
+1. Crie uma playlist nova chamada **"Geradas Spotify (daily mix) - <Persona>"** na conta da persona.
+2. Para cada um dos 6 Daily Mixes gerados pelo Spotify:
+   - Ctrl+A em todas as faixas → "Adicionar à playlist" → playlist espelho.
+   - Aceitar duplicatas se o Spotify avisar (vamos contar duplicatas em metadata).
+3. Anote a URL da playlist espelho.
+4. Atualize `CONFIG_RECOMMENDATIONS` em [src/analysis/extrair_dados_playlist.py](src/analysis/extrair_dados_playlist.py) com a URL.
+
+> **Por que cópia manual?** A Spotify Web API restringiu o acesso a Daily Mixes em 27/11/2024 para apps Dev Mode. As playlists espelho contornam isso (são playlists do usuário, leitura permitida via OAuth do dono).
+
+---
+
+## Fase 5: Extração via API (resiliente)
+
+Tem dois subfluxos: **--source=input** (playlists-semente) e **--source=output** (playlists espelho).
+
+### 5.1 Extrair INPUTS
+```bash
+# Para cada persona, faça login dela no browser ANTES (a playlist-semente é privada)
+python src/analysis/extrair_dados_playlist.py beatriz --source=input
+python src/analysis/extrair_dados_playlist.py daniel  --source=input
+python src/analysis/extrair_dados_playlist.py ricardo --source=input
+python src/analysis/extrair_dados_playlist.py sofia   --source=input
+```
+Saída: `data/inputs/dataset_<Persona>_input.csv`
+
+### 5.2 Extrair OUTPUTS
+```bash
+# Mesmo procedimento, mas para as playlists espelho. Cache OAuth por persona.
+python src/analysis/extrair_dados_playlist.py beatriz --source=output
+python src/analysis/extrair_dados_playlist.py daniel  --source=output
+python src/analysis/extrair_dados_playlist.py ricardo --source=output
+python src/analysis/extrair_dados_playlist.py sofia   --source=output
+```
+Saída: `data/outputs/dataset_<Persona>_output.csv`
+
+### Notas técnicas
+- **Endpoint usado**: `/playlists/{id}/items` (novo Feb/2026; spotipy ainda chama o `/tracks` deprecated → usamos requests direto).
+- **OAuth por persona**: cache OAuth separado em `.cache_<persona>`. Cada persona precisa logar uma vez.
+- **Resiliência**: se algum endpoint do Spotify retornar 403 (caso típico de Fev/2026 para `/artists`), o script salva o CSV com os campos vazios — serão preenchidos na Fase 6.
+
+---
+
+## Fase 6: Enriquecimento via Fontes Externas (Last.fm + MusicBrainz)
+
+Preenche os campos que a Spotify Web API removeu (popularity / followers / genres / track_popularity).
+
+```bash
+# Enriquecer todos os inputs
+python src/analysis/enrich_external.py todas --source=input
+
+# Enriquecer todos os outputs
+python src/analysis/enrich_external.py todas --source=output
+```
+
+### O que é adicionado a cada CSV
+
+| Coluna | Origem | Substitui |
+|--------|--------|-----------|
+| `lastfm_listeners` | Last.fm artist.getInfo | artist_followers |
+| `lastfm_playcount` | Last.fm artist.getInfo | artist_popularity (proxy histórico) |
+| `lastfm_tags` | Last.fm artist.getInfo | artist_genres (fallback) |
+| `mb_country`, `mb_area` | MusicBrainz | (novo, metadata geográfica) |
+| `mb_tags` | MusicBrainz | artist_genres (primário) |
+| `mb_score` | MusicBrainz | (confiança 0-100 do match) |
+| `lastfm_track_listeners` | Last.fm track.getInfo | track_popularity |
+| `lastfm_track_playcount` | Last.fm track.getInfo | (novo) |
+| `external_source` | derivada | (auditável: lastfm+mb / lastfm / mb / none) |
+
+### Cache
+`data/external_cache.json` é incremental e persistente. Se o script for interrompido, retomar continua de onde parou. Cobertura típica: >95% via Last.fm, >85% via MusicBrainz.
+
+### Performance
+- Last.fm: sem rate limit duro. ~0.1s por artista, ~0.1s por track.
+- MusicBrainz: 1 req/seg obrigatório. Gargalo principal (≈115 artistas → ~2 min/persona).
+
+---
+
+## Fase 7: Análise
+
+> Todos os scripts aceitam `--source=input|output`. Rode primeiro com `input`, depois com `output`, para gerar os dois conjuntos de relatórios.
+
+### 7.1 Consolidação
+```bash
+python src/analysis/merge_datasets.py --source=input
+python src/analysis/merge_datasets.py --source=output
+```
+Saída: `data/consolidated/consolidado_<source>.csv`
+
+### 7.2 Resumos textuais (.txt)
+```bash
+python src/analysis/build_summaries.py todas --source=input
+python src/analysis/build_summaries.py todas --source=output
+```
+Saída: `reports/<source>/summaries/summarie_<Persona>.txt`
+
+### 7.3 Insights por persona (6 PNGs + grid 3x2)
+```bash
+python src/analysis/build_personal_graphs.py todas --source=input
+python src/analysis/build_personal_graphs.py todas --source=output
+```
+Saída: `reports/<source>/figures/<persona>/`
+
+### 7.4 Gráficos cruzados (5 PNGs)
+```bash
+python src/analysis/build_cross_graphs.py --source=input
+python src/analysis/build_cross_graphs.py --source=output
+```
+Saída: `reports/<source>/figures/cross/`
+
+### 7.5 Métricas matemáticas
+```bash
+python src/analysis/build_diversity_metrics.py --source=input
+python src/analysis/build_diversity_metrics.py --source=output
+python src/analysis/build_market_metrics.py    --source=input
+python src/analysis/build_market_metrics.py    --source=output
+python src/analysis/build_similarity_matrix.py --source=input
+python src/analysis/build_similarity_matrix.py --source=output
+```
+Saída: `reports/<source>/summaries/tabela_*.csv` + `reports/<source>/figures/cross/matriz_similaridade_jaccard.png`
+
+### 7.6 Análises comparativas (Input vs Output)
+
+#### 7.6.1 Taxa de Overlap Interno dos Daily Mixes
+```bash
+python src/analysis/build_overlap_metrics.py
+```
+Mede quanto o algoritmo "insiste nas mesmas faixas" entre os 6 Daily Mixes da mesma persona.
+
+Saída: `reports/comparison/overlap_interno.csv`
+
+#### 7.6.2 Delta Algorítmico (Input → Output)
+```bash
+python src/analysis/build_delta_metrics.py
+```
+Compara TODAS as métricas entre input e output, persona por persona.
+
+Saída: `reports/comparison/delta_metrics.csv` + `delta_metrics_pivot.csv`
+
+---
+
+## 🛠️ Resumo de Fluxo I/O
+
+| Script | Fase | Entrada | Saída |
+|--------|------|---------|-------|
+| build_persona_raw_data | 2 | URLs sementes | data/raw/*.csv |
+| create_X_playlist | 2 | data/raw/*.csv | Spotify (playlists + likes) |
+| sync_persona_follows | 2 | Likes Spotify | Follows Spotify |
+| extrair_dados_playlist (input) | 5 | URLs playlists-semente | data/inputs/*.csv |
+| extrair_dados_playlist (output) | 5 | URLs playlists espelho | data/outputs/*.csv |
+| enrich_external | 6 | data/{inputs,outputs}/*.csv | data/{inputs,outputs}/*_enriched.csv |
+| merge_datasets | 7.1 | *_enriched.csv | data/consolidated/*.csv |
+| build_summaries | 7.2 | *_enriched.csv | reports/<src>/summaries/*.txt |
+| build_personal_graphs | 7.3 | *_enriched.csv | reports/<src>/figures/<persona>/*.png |
+| build_cross_graphs | 7.4 | consolidado_*.csv | reports/<src>/figures/cross/*.png |
+| build_diversity_metrics | 7.5 | *_enriched.csv | reports/<src>/summaries/tabela_diversidade*.csv |
+| build_market_metrics | 7.5 | *_enriched.csv | reports/<src>/summaries/tabela_mercado*.csv |
+| build_similarity_matrix | 7.5 | *_enriched.csv | reports/<src>/figures/cross/matriz_*.png |
+| build_overlap_metrics | 7.6 | data/outputs/*.csv | reports/comparison/overlap_interno.csv |
+| build_delta_metrics | 7.6 | input + output enriched | reports/comparison/delta_metrics*.csv |
+
+---
+
+## Limitações Documentadas
+
+- A coleta dos outputs depende da disposição do Spotify em gerar Daily Mixes (~40h de escuta — Fase 3).
+- Os campos quantitativos centrais (`popularity`, `followers`, `genres`) vêm de Last.fm + MusicBrainz, não da Spotify Web API. Apps em Extended Quota Mode poderiam usar Spotify, mas a aprovação para apps acadêmicos é improvável.
+- A "Taxa de Overlap Interno" assume pool bruto de 300 (6 mixes × ~50 faixas). Use `--raw=N` para ajustar se a contagem real for diferente.
