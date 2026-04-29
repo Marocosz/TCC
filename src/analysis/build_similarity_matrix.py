@@ -1,87 +1,76 @@
 """
 ================================================================================
-MÓDULO DE MATRIZ DE SIMILARIDADE (JACCARD INDEX)
+MATRIZ DE SIMILARIDADE — Indice de Jaccard entre Personas (Input ou Output)
 ================================================================================
 
 Objetivo:
-    Verificar matematicamente a sobreposição (overlap) entre as personas.
-    Prova que os perfis iniciais são distintos e isolados (Bolhas separadas).
+    Calcular o overlap (Jaccard) entre os conjuntos de artistas de cada persona.
+    Em modo input, prova a ortogonalidade dos perfis iniciais (cold start).
+    Em modo output, mede o "Colapso de Contexto" — convergência forçada pelo
+    algoritmo entre personas distintas.
 
-Métrica:
-    Índice de Jaccard: J(A,B) = |A ∩ B| / |A ∪ B|
-    Mede a porcentagem de artistas compartilhados entre dois perfis.
-
-Saída Visual:
-    Gera um Heatmap (Mapa de Calor) mostrando quem se parece com quem.
+Fonte:
+    Usa apenas primary_artist_name (sobreviveu à mudança de Fev/2026).
 
 Uso:
-    python src/analysis/build_similarity_matrix.py
+    python src/analysis/build_similarity_matrix.py --source=input
+    python src/analysis/build_similarity_matrix.py --source=output
 """
 
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
-import itertools
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _source_config import parse_source, csv_path_for, figures_dir_for, PERSONAS
+
 
 def calcular_jaccard(set_a, set_b):
-    """Calcula a similaridade de Jaccard entre dois conjuntos."""
-    interseccao = len(set_a.intersection(set_b))
-    uniao = len(set_a.union(set_b))
-    if uniao == 0: return 0
-    return interseccao / uniao
+    if not (set_a or set_b):
+        return 0
+    return len(set_a & set_b) / len(set_a | set_b)
+
 
 def main():
-    print("--- Gerando Matriz de Similaridade (Jaccard) ---")
-    
-    # Configuração de Caminhos
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(os.path.dirname(script_dir))
-    data_dir = os.path.join(project_root, 'data', 'processed')
-    output_img_dir = os.path.join(project_root, 'reports', 'figures', 'cross')
-    
-    personas = ['Beatriz', 'Daniel', 'Ricardo', 'Sofia']
-    
-    # Dicionário para guardar os conjuntos de artistas de cada um
-    sets_artistas = {}
-    
-    # 1. Carregar Conjuntos
-    for persona in personas:
-        try:
-            path = os.path.join(data_dir, f'dataset_{persona}_playlist.csv')
-            df = pd.read_csv(path)
-            # Cria um SET (conjunto único) de artistas
-            sets_artistas[persona] = set(df['primary_artist_name'].dropna().unique())
-            print(f"{persona}: {len(sets_artistas[persona])} artistas únicos carregados.")
-        except FileNotFoundError:
-            print(f"[Erro] CSV da {persona} não encontrado.")
-            return
+    source = parse_source()
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    label = "INPUT" if source == "input" else "OUTPUT"
 
-    # 2. Calcular Matriz Cruzada
-    matrix_data = []
-    
-    for p1 in personas:
-        row = []
-        for p2 in personas:
-            score = calcular_jaccard(sets_artistas[p1], sets_artistas[p2])
-            row.append(score)
-        matrix_data.append(row)
-    
-    # 3. Criar DataFrame da Matriz
-    df_matrix = pd.DataFrame(matrix_data, index=personas, columns=personas)
-    
-    # Mostra no terminal
-    print("\n--- MATRIZ DE SIMILARIDADE (INPUT) ---")
-    print(df_matrix.round(3))
-    
-    # 4. Gerar Heatmap Visual
+    print(f"\n=== JACCARD ({label}) ===\n")
+
+    sets_artistas = {}
+    for persona in PERSONAS:
+        path = csv_path_for(persona, project_root, source, enriched=True)
+        if not os.path.exists(path):
+            print(f"[!] {persona}: CSV não encontrado.")
+            return
+        df = pd.read_csv(path)
+        sets_artistas[persona.capitalize()] = set(df["primary_artist_name"].dropna().unique())
+        print(f"   {persona}: {len(sets_artistas[persona.capitalize()])} artistas únicos")
+
+    personas_cap = [p.capitalize() for p in PERSONAS]
+    matrix_data = [[calcular_jaccard(sets_artistas[a], sets_artistas[b])
+                    for b in personas_cap] for a in personas_cap]
+    df_matrix = pd.DataFrame(matrix_data, index=personas_cap, columns=personas_cap)
+
+    print(f"\n--- Matriz Jaccard ({label}) ---")
+    print(df_matrix.round(3).to_string())
+
+    output_dir = figures_dir_for(project_root, source)
+    os.makedirs(output_dir, exist_ok=True)
+
     plt.figure(figsize=(10, 8))
+    title = f"Sobreposição entre Personas — {label} (Indice de Jaccard)"
     sns.heatmap(df_matrix, annot=True, cmap="YlGnBu", vmin=0, vmax=1, fmt=".3f")
-    plt.title("Grau de Sobreposição entre Personas (Índice de Jaccard)", fontsize=14)
-    
-    save_path = os.path.join(output_img_dir, 'matriz_similaridade_jaccard.png')
-    plt.savefig(save_path)
-    print(f"\n[Visual] Heatmap salvo em: {save_path}")
+    plt.title(title, fontsize=14)
+
+    save_path = os.path.join(output_dir, "matriz_similaridade_jaccard.png")
+    plt.savefig(save_path, bbox_inches="tight", dpi=150)
+    plt.close()
+    print(f"\n[OK] Heatmap salvo em: {save_path}")
+
 
 if __name__ == "__main__":
     main()

@@ -1,20 +1,19 @@
 """
 ================================================================================
-MÓDULO DE CÁLCULO DE DIVERSIDADE E ENTROPIA (MATH METRICS)
+MÓDULO DE METRICAS DE DIVERSIDADE — Shannon Entropy + Gini Coefficient
 ================================================================================
 
 Objetivo:
-    Calcular índices matemáticos robustos para medir a diversidade de informação
-    dentro de cada playlist. Transforma "sensações" (ex: "é variado") em 
-    números exatos (ex: "Entropia 4.5").
+    Calcular indicadores matemáticos de diversidade (Shannon, Gini) e riqueza
+    (artistas únicos) sobre as 4 personas, em modo input ou output.
 
-Métricas:
-    1. Entropia de Shannon: Mede a incerteza/variedade da playlist.
-    2. Coeficiente de Gini: Mede a desigualdade/concentração de artistas.
-    3. Riqueza (Richness): Contagem simples de itens únicos.
+Fonte:
+    Estas métricas dependem APENAS do nome do artista (primary_artist_name),
+    portanto NÃO foram afetadas pela remoção dos campos do Spotify em Fev/2026.
 
 Uso:
-    python src/analysis/build_diversity_metrics.py
+    python src/analysis/build_diversity_metrics.py --source=input
+    python src/analysis/build_diversity_metrics.py --source=output
 """
 
 import pandas as pd
@@ -22,75 +21,64 @@ import numpy as np
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _source_config import parse_source, csv_path_for, summaries_dir_for, PERSONAS
+
+
 def shannon_entropy(series):
-    """Calcula a Entropia de Shannon (H = -sum(p * log(p)))."""
-    # Frequência relativa de cada item (probabilidade p)
     counts = series.value_counts()
     total = len(series)
+    if total == 0:
+        return 0
     probs = counts / total
-    
-    # Cálculo da entropia
-    entropy = -np.sum(probs * np.log2(probs))
-    return entropy
+    return float(-np.sum(probs * np.log2(probs)))
+
 
 def gini_coefficient(series):
-    """Calcula o Coeficiente de Gini (0 = igualdade total, 1 = desigualdade max)."""
     counts = series.value_counts().values
-    if len(counts) == 0: return 0
-    
-    # O Gini requer dados ordenados
+    if len(counts) == 0:
+        return 0
     sorted_counts = np.sort(counts)
     n = len(counts)
     index = np.arange(1, n + 1)
-    
-    return ((2 * index - n - 1) * sorted_counts).sum() / (n * sorted_counts.sum())
+    return float(((2 * index - n - 1) * sorted_counts).sum() / (n * sorted_counts.sum()))
+
 
 def main():
-    print("--- Calculando Métricas Matemáticas de Diversidade ---")
-    
-    # Configuração de Caminhos
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(os.path.dirname(script_dir))
-    data_dir = os.path.join(project_root, 'data', 'processed')
-    
-    personas = ['beatriz', 'daniel', 'ricardo', 'sofia']
+    source = parse_source()
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    label = "INPUT" if source == "input" else "OUTPUT"
+
+    print(f"\n=== DIVERSIDADE ({label}) ===\n")
+
     results = []
+    for persona in PERSONAS:
+        csv_path = csv_path_for(persona, project_root, source, enriched=True)
+        if not os.path.exists(csv_path):
+            print(f"[!] {persona}: CSV não encontrado.")
+            continue
 
-    for persona in personas:
-        csv_path = os.path.join(data_dir, f'dataset_{persona.capitalize()}_playlist.csv')
-        
-        try:
-            df = pd.read_csv(csv_path)
-            
-            # --- CÁLCULOS SOBRE ARTISTAS ---
-            # Quão concentrada é a playlist em termos de artistas?
-            col_artista = df['primary_artist_name']
-            
-            entropia = shannon_entropy(col_artista)
-            gini = gini_coefficient(col_artista)
-            riqueza = col_artista.nunique()
-            
-            results.append({
-                'Persona': persona.capitalize(),
-                'Entropia (Shannon)': round(entropia, 4),
-                'Desigualdade (Gini)': round(gini, 4),
-                'Riqueza (Artistas Únicos)': riqueza,
-                'Total Músicas': len(df)
-            })
-            
-        except FileNotFoundError:
-            print(f"Arquivo não encontrado para {persona}")
+        df = pd.read_csv(csv_path)
+        col = df["primary_artist_name"]
 
-    # --- EXIBIÇÃO E SALVAMENTO ---
-    df_results = pd.DataFrame(results)
-    
-    print("\n=== RESULTADOS FINAIS (MATRIZ DE DIVERSIDADE) ===")
-    print(df_results.to_string(index=False))
-    
-    # Salva em CSV para usar no TCC
-    output_path = os.path.join(project_root, 'reports', 'summaries', 'tabela_diversidade_matematica.csv')
-    df_results.to_csv(output_path, index=False)
-    print(f"\n[Sucesso] Tabela salva em: {output_path}")
+        results.append({
+            "Persona": persona.capitalize(),
+            "Source": label,
+            "Entropia (Shannon)": round(shannon_entropy(col), 4),
+            "Desigualdade (Gini)": round(gini_coefficient(col), 4),
+            "Riqueza (Artistas Unicos)": col.nunique(),
+            "Total Faixas": len(df),
+        })
+
+    df_out = pd.DataFrame(results)
+    print(df_out.to_string(index=False))
+
+    output_dir = summaries_dir_for(project_root, source)
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "tabela_diversidade_matematica.csv")
+    df_out.to_csv(output_path, index=False)
+    print(f"\n[OK] Tabela salva em: {output_path}")
+
 
 if __name__ == "__main__":
     main()

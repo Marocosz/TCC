@@ -1,132 +1,79 @@
-# TIPO DE ARQUIVO: RECEBE CSV
-# merge_datasets.py
-
 """
 ================================================================================
-MÓDULO DE CONSOLIDAÇÃO DE DADOS (MERGE)
+MÓDULO DE CONSOLIDAÇÃO DE DATASETS (MERGE) — Input ou Output
 ================================================================================
 
-Objetivo do Arquivo:
-    Unificar os datasets individuais de cada Persona em um único arquivo CSV mestre.
-    Isso é essencial para permitir análises comparativas e a geração de gráficos
-    que cruzam dados de diferentes perfis (ex: Boxplot comparativo).
+Objetivo:
+    Concatenar os CSVs enriched das 4 personas em um único arquivo consolidado,
+    com coluna 'persona' identificando a origem de cada linha. Esse consolidado
+    alimenta os scripts cross-persona (build_cross_graphs, build_diversity_metrics,
+    build_market_metrics, build_similarity_matrix).
 
-Parte do Sistema:
-    Analysis (Pipeline de Dados).
-
-Responsabilidades:
-    1. Leitura Múltipla: Iterar sobre uma lista de arquivos CSV de entrada.
-    2. Normalização: Adicionar uma coluna identificadora ('persona') para rastrear
-       a origem de cada linha no arquivo consolidado.
-    3. Fusão: Concatenar todos os registros em uma única estrutura tabular.
-    4. Persistência: Salvar o resultado como um novo CSV consolidado.
-
-Comunicação:
-    - Entrada: Lê múltiplos arquivos 'dataset_NOME.csv' de 'data/processed/'.
-    - Saída: Gera 'dataset_consolidada_input.csv' na mesma pasta.
-    - Consumidor: Este arquivo final é lido pelo script 'build_cross_graphs.py'.
+Schema:
+    Lê CSVs em data/inputs/ ou data/outputs/ (modo --source) e escreve em
+    data/consolidated/ (consolidado_input.csv ou consolidado_output.csv).
 
 Uso:
-    python src/analysis/merge_datasets.py
+    python src/analysis/merge_datasets.py --source=input
+    python src/analysis/merge_datasets.py --source=output
 """
 
 import csv
 import os
+import sys
 
-def consolidar_csvs_de_personas(arquivos_de_entrada: dict, arquivo_de_saida: str):
-    """
-    Processa e funde múltiplos arquivos CSV em um só.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _source_config import (
+    parse_source, get_paths, csv_path_for, consolidated_path_for, PERSONAS
+)
 
-    Lógica de Negócio:
-        - O arquivo consolidado DEVE ter uma coluna extra chamada 'persona'.
-        - Essa coluna serve como chave categórica (Hue) para os gráficos do Seaborn.
-        - Se um arquivo de entrada não existir, o script avisa mas não quebra,
-          continuando com os outros (tolerância a falhas parciais).
 
-    Args:
-        arquivos_de_entrada (dict): Dicionário { 'nome_persona': 'caminho_arquivo.csv' }.
-        arquivo_de_saida (str): Caminho onde o CSV consolidado será salvo.
-    """
-    print("--- Iniciando a consolidação dos arquivos CSV ---")
-    
+def consolidar(source, project_root):
+    paths = get_paths(project_root, source)
+    print(f"\n=== MERGE DATASETS — Modo: {paths['label']} ===\n")
+
     dados_consolidados = []
-    headers = [] # Armazena o cabeçalho do primeiro arquivo válido encontrado
-    
-    for persona, nome_arquivo in arquivos_de_entrada.items():
-        print(f"Processando o arquivo da persona '{persona}': {nome_arquivo}")
-        
-        # Validação de existência do arquivo (Evita Crash)
+    headers = []
+
+    for persona in PERSONAS:
+        nome_arquivo = csv_path_for(persona, project_root, source, enriched=True)
+        print(f"   Lendo {persona:<10} <- {os.path.basename(nome_arquivo)}", end=" ")
+
         if not os.path.exists(nome_arquivo):
-            print(f"  AVISO: O arquivo '{nome_arquivo}' não foi encontrado. Pulando...")
+            print("[NAO ENCONTRADO]")
             continue
-            
+
         try:
-            with open(nome_arquivo, 'r', newline='', encoding='utf-8') as f:
+            with open(nome_arquivo, "r", encoding="utf-8", newline="") as f:
                 reader = csv.DictReader(f)
-                
-                # Captura os cabeçalhos apenas na primeira iteração bem-sucedida
-                if not dados_consolidados and not headers:
-                    headers = reader.fieldnames
-                
-                # Iteração linha a linha para enriquecimento
+                if not headers:
+                    headers = list(reader.fieldnames or [])
+                count = 0
                 for linha in reader:
-                    # Regra de Negócio: Injeção da coluna identificadora
-                    linha['persona'] = persona
+                    linha["persona"] = persona
                     dados_consolidados.append(linha)
-            
-            print(f"  Sucesso! Arquivo processado.")
-            
+                    count += 1
+            print(f"[OK, {count} linhas]")
         except Exception as e:
-            print(f"  ERRO ao processar o arquivo '{nome_arquivo}': {e}")
+            print(f"[ERRO: {e}]")
 
-    # Verificação de segurança: Não gerar arquivo vazio
     if not dados_consolidados:
-        print("Nenhum dado foi coletado. O arquivo consolidado não será criado.")
+        print("\n[!] Nenhum dado coletado. Consolidado não será gerado.")
         return
-        
-    # Reorganização de colunas: Força 'persona' a ser a primeira coluna (melhor leitura)
-    # headers pode ser None se o arquivo estiver vazio, então usamos um fallback
-    cols_originais = headers if headers else list(dados_consolidados[0].keys())
-    # Remove 'persona' se ela já existir por algum motivo para evitar duplicação
-    cols_originais = [h for h in cols_originais if h != 'persona']
-    
-    cabecalhos_finais = ['persona'] + cols_originais
 
-    print(f"\nSalvando um total de {len(dados_consolidados)} registros no arquivo '{arquivo_de_saida}'...")
-    
-    try:
-        # Garante que a pasta de destino exista
-        os.makedirs(os.path.dirname(arquivo_de_saida), exist_ok=True)
+    cabecalhos = ["persona"] + [h for h in headers if h != "persona"]
 
-        with open(arquivo_de_saida, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=cabecalhos_finais)
-            writer.writeheader()
-            writer.writerows(dados_consolidados)
-        
-        print(f"\n--- SUCESSO! Arquivo '{arquivo_de_saida}' criado com todos os dados consolidados. ---")
-        
-    except Exception as e:
-        print(f"  ERRO ao salvar o arquivo consolidado: {e}")
+    arquivo_saida = consolidated_path_for(project_root, source)
+    os.makedirs(os.path.dirname(arquivo_saida), exist_ok=True)
+    with open(arquivo_saida, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=cabecalhos, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(dados_consolidados)
 
-# --- SEÇÃO PRINCIPAL (CONFIGURAÇÃO E EXECUÇÃO) ---
-if __name__ == '__main__':
-    # Define caminhos dinâmicos baseados na localização atual do script
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
-    data_processed_dir = os.path.join(project_root, 'data', 'processed')
+    print(f"\n[OK] {len(dados_consolidados)} linhas -> {arquivo_saida}")
 
-    # Mapeamento de Entrada:
-    # Define quais arquivos compõem o estudo.
-    ARQUIVOS_DAS_PERSONAS = {
-        'beatriz': os.path.join(data_processed_dir, 'dataset_Beatriz_playlist.csv'),
-        'daniel': os.path.join(data_processed_dir, 'dataset_Daniel_playlist.csv'),
-        'ricardo': os.path.join(data_processed_dir, 'dataset_Ricardo_playlist.csv'),
-        'sofia': os.path.join(data_processed_dir, 'dataset_Sofia_playlist.csv')
-    }
-    
-    # Arquivo de Saída:
-    # O arquivo consolidado é salvo na mesma pasta dos processados.
-    ARQUIVO_FINAL = os.path.join(data_processed_dir, "dataset_consolidada_input.csv")
-    
-    # Execução
-    consolidar_csvs_de_personas(ARQUIVOS_DAS_PERSONAS, ARQUIVO_FINAL)
+
+if __name__ == "__main__":
+    source = parse_source()
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    consolidar(source, project_root)

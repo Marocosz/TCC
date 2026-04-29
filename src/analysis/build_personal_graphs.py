@@ -1,365 +1,232 @@
-# TIPO DE ARQUIVO: RECEBE CSV
-# build_personal_graphs.py
-
 """
 ================================================================================
-MÓDULO DE GERAÇÃO DE INSIGHTS VISUAIS POR PERSONA
+GERACAO DE INSIGHTS GRAFICOS POR PERSONA — Input ou Output
 ================================================================================
 
-Objetivo do Arquivo:
-    Gerar um conjunto detalhado de gráficos estatísticos INDIVIDUAIS para cada
-    Persona. Ao contrário do 'build_cross_graphs.py' que compara todos juntos,
-    este script foca na análise profunda e isolada de cada perfil.
+Objetivo:
+    Gerar 6 insights gráficos individuais para cada persona, em modo input
+    ou output. Os insights cobrem alcance, gênero, época, concentração,
+    perfil de fama e duração.
 
-Parte do Sistema:
-    Analysis (Visualização de Dados).
+Insights gerados:
+    1. Distribuição de Listeners por Track (Last.fm) — substitui track_popularity
+    2. Top 10 Gêneros (mb_tags + fallback lastfm_tags + fallback artist_genres)
+    3. Era Musical (Histograma de release_year)
+    4. Concentração de Artistas (Top 15 por volume)
+    5. Quadrante de Fama: Listeners x Playcount do artista (escala log)
+    6. Duração das Faixas (Histograma)
+    + Grid Final 3x2 com os 6 insights consolidados
 
-Responsabilidades:
-    1. Leitura de Dados: Carregar os Datasets processados de cada Persona.
-    2. Processamento Estatístico: Calcular frequências e distribuições.
-    3. Visualização: Gerar 5 tipos de gráficos específicos (Histogramas, Barras).
-    4. Persistência de Relatórios: Salvar as imagens PNG.
-
-Comunicação:
-    - Entrada: CSVs de 'data/processed/'.
-    - Saída: Salva imagens PNG em 'reports/figures/[persona]/'.
-
-Gráficos Gerados:
-    1. Popularidade (Histograma)
-    2. Top Gêneros (Bar Chart)
-    3. Era Musical (Histograma)
-    4. Concentração Artistica (Bar Chart)
-    5. Scatter Popularidade vs Seguidores
+Fonte de dados (após Spotify Fev/2026):
+    - Listeners/playcount/tags ← Last.fm + MusicBrainz
+    - release_date / duration ← Spotify (não foram afetados)
 
 Uso:
-    python src/analysis/build_personal_graphs.py [nome_persona]
-    python src/analysis/build_personal_graphs.py all
+    python src/analysis/build_personal_graphs.py beatriz --source=input
+    python src/analysis/build_personal_graphs.py todas --source=output
 """
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from collections import Counter
 import os
 import sys
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import seaborn as sns
+from collections import Counter
 
-# Configurações visuais globais para o Seaborn (Estilo acadêmico/limpo)
-sns.set_theme(style="ticks", rc={"axes.labelsize": 14, "xtick.labelsize": 12, "ytick.labelsize": 12, "axes.grid": True})
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _source_config import parse_source, csv_path_for, figures_dir_for, PERSONAS
 
-def calcular_top_generos(series_generos, top_n=10):
-    """
-    Processa a coluna de gêneros (strings compostas) para ranking de frequência.
-    
-    O que faz:
-        - Remove valores nulos.
-        - Tokeniza strings separadas por ';' (ex: "pop; rock" -> ["pop", "rock"]).
-        - Conta ocorrências e retorna os Top N.
+sns.set_theme(style="ticks", rc={"axes.labelsize": 14, "xtick.labelsize": 11,
+                                 "ytick.labelsize": 11, "axes.grid": True})
 
-    Por que existe:
-        Permite analisar a diversidade real de gêneros, desagrupando termos compostos.
 
-    Quando é chamada:
-        Na geração do Gráfico 2 (Diversidade).
-        
-    Args:
-        series_generos (pd.Series): Coluna do DataFrame com gêneros.
-        top_n (int): Número de gêneros a retornar (Default: 10).
-        
-    Returns:
-        list: Lista de tuplas [('genero', contagem), ...].
-    """
-    generos_validos = series_generos.dropna().astype(str)
-    # List comprehension aninhada para flatten
-    lista_de_todos_os_generos = [genre.strip() for item in generos_validos for genre in item.split(';') if genre.strip()]
-    return Counter(lista_de_todos_os_generos).most_common(top_n)
+def get_genre_string(row):
+    """Prioridade: mb_tags > lastfm_tags > artist_genres."""
+    for col in ("mb_tags", "lastfm_tags", "artist_genres"):
+        v = row.get(col)
+        if isinstance(v, str) and v.strip():
+            return v
+    return ""
 
-def gerar_graficos_para_persona(persona, config):
-    """
-    Gera o pacote completo de gráficos para uma única persona.
 
-    O que faz:
-        Orquestra a leitura do CSV específico da persona e a plotagem de 5 visualizações.
-    
-    Por que existe:
-        Encapsula a lógica de plotagem para permitir execução modular (uma persona ou todas).
+def calcular_top_tags(df, top_n=10):
+    """Top N gêneros agregados de mb_tags+lastfm_tags+artist_genres."""
+    tags = []
+    for _, row in df.iterrows():
+        s = get_genre_string(row)
+        if s:
+            tags.extend([t.strip().lower() for t in s.split(";") if t.strip()])
+    return Counter(tags).most_common(top_n)
 
-    Args:
-        persona (str): Nome da persona (ex: 'beatriz').
-        config (dict): Dicionário contendo { 'csv_path': ..., 'output_folder': ... }.
-    """
-    print(f"\n{'='*20} GERANDO GRÁFICOS PARA: {persona.upper()} {'='*20}")
-    
-    csv_path = config['csv_path']
-    output_folder = config['output_folder']
 
-    # Garante que a pasta de destino exista antes de tentar salvar
-    os.makedirs(output_folder, exist_ok=True)
+def gerar_graficos(persona, csv_path, output_folder, source_label):
+    print(f"\n{'='*20} {persona.upper()} ({source_label}) {'='*20}")
+    print(f"   Lendo: {csv_path}")
 
-    try:
-        # Carregamento e Tratamento Inicial dos Dados
-        df = pd.read_csv(csv_path)
-        
-        # Conversão de Tipos (Essencial para plotagem correta)
-        df['album_release_year'] = pd.to_datetime(df['album_release_date'], errors='coerce').dt.year
-        for col in ['track_popularity', 'artist_popularity', 'artist_followers']:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-        
-        print(f"Arquivo '{csv_path}' carregado com sucesso.")
-        
-    except FileNotFoundError:
-        print(f"ERRO: Arquivo '{csv_path}' não encontrado. Pulando esta persona.")
+    if not os.path.exists(csv_path):
+        print(f"   [ERRO] Arquivo não encontrado.")
         return
 
-    # ======================================================================
-    # GRÁFICO 1: ANÁLISE DE POPULARIDADE (Histograma)
-    # ----------------------------------------------------------------------
-    # Objetivo: Visualizar se a persona consome mais hits (curva à direita)
-    # ou músicas desconhecidas (curva à esquerda).
-    # ======================================================================
-    print("  - Gerando Gráfico 1: Popularidade...")
+    os.makedirs(output_folder, exist_ok=True)
+    df = pd.read_csv(csv_path)
+
+    df["album_release_year"] = pd.to_datetime(df["album_release_date"], errors="coerce").dt.year
+    for col in ["lastfm_listeners", "lastfm_playcount",
+                "lastfm_track_listeners", "lastfm_track_playcount"]:
+        df[col] = pd.to_numeric(df.get(col), errors="coerce").fillna(0)
+
+    persona_title = persona.capitalize()
+
+    # GRAFICO 1: Listeners por Track (escala log)
+    print("   1. Listeners por Track (Last.fm)")
     plt.figure(figsize=(10, 6))
-    sns.histplot(data=df, x='track_popularity', kde=True, bins=20, color='teal')
-    plt.title(f'Insight 1: Distribuição da Popularidade das Músicas ({persona.capitalize()})', fontsize=16)
-    plt.xlabel('Índice de Popularidade da Música')
-    plt.ylabel('Contagem')
-    plt.savefig(os.path.join(output_folder, 'insight_1_popularidade.png'))
-    plt.close() # Libera memória
-
-    # ======================================================================
-    # GRÁFICO 2: DIVERSIDADE DE GÊNEROS (Bar Chart Horizontal)
-    # ----------------------------------------------------------------------
-    # Objetivo: Identificar a "bolha" de gêneros da persona.
-    # ======================================================================
-    print("  - Gerando Gráfico 2: Gêneros...")
-    plt.figure(figsize=(12, 8))
-    
-    top_generos = calcular_top_generos(df['artist_genres'], top_n=10)
-    
-    if top_generos:
-        df_generos = pd.DataFrame(top_generos, columns=['genero', 'contagem'])
-        sns.barplot(data=df_generos, x='contagem', y='genero', orient='h', palette='mako')
-        plt.title(f'Insight 2: Top 10 Gêneros Musicais ({persona.capitalize()})', fontsize=16)
-        plt.xlabel('Contagem de Músicas')
-        plt.ylabel('Gênero')
-        plt.tight_layout()
-        plt.savefig(os.path.join(output_folder, 'insight_2_generos.png'))
-    plt.close()
-
-    # ======================================================================
-    # GRÁFICO 3: ANÁLISE TEMPORAL (Histograma)
-    # ----------------------------------------------------------------------
-    # Objetivo: Verificar o viés de recência ou nostalgia.
-    # ======================================================================
-    print("  - Gerando Gráfico 3: Época Musical...")
-    plt.figure(figsize=(10, 6))
-    # Filtra anos inválidos (NaN) para evitar erros no plot
-    sns.histplot(data=df.dropna(subset=['album_release_year']), x='album_release_year', kde=True, bins=25, color='indigo')
-    plt.title(f'Insight 3: A "Era Musical" da Playlist ({persona.capitalize()})', fontsize=16)
-    plt.xlabel('Ano de Lançamento do Álbum')
-    plt.ylabel('Contagem')
-    plt.savefig(os.path.join(output_folder, 'insight_3_era_musical.png'))
-    plt.close()
-
-    # ======================================================================
-    # GRÁFICO 4: CONCENTRAÇÃO DE ARTISTAS (Bar Chart)
-    # ----------------------------------------------------------------------
-    # Objetivo: Medir repetitividade. Se poucos artistas dominam o gráfico,
-    # indica baixa variedade.
-    # ======================================================================
-    print("  - Gerando Gráfico 4: Concentração de Artistas...")
-    plt.figure(figsize=(12, 8))
-    top_artistas = df['primary_artist_name'].value_counts().nlargest(15)
-    sns.barplot(x=top_artistas.values, y=top_artistas.index, orient='h', palette='magma')
-    plt.title(f'Insight 4: Top 15 Artistas Mais Frequentes ({persona.capitalize()})', fontsize=16)
-    plt.xlabel('Número de Músicas na Playlist')
-    plt.ylabel('Artista')
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_folder, 'insight_4_concentracao_artistas.png'))
-    plt.close()
-
-    # ======================================================================
-    # GRÁFICO 5: POPULARIDADE VS. SEGUIDORES (Scatter Plot Logarítmico)
-    # ----------------------------------------------------------------------
-    # Objetivo: Analisar o perfil dos artistas (Mainstream vs Indie).
-    # Escala Log usada no eixo Y para visualizar melhor a disparidade de seguidores.
-    # ======================================================================
-    print("  - Gerando Gráfico 5: Natureza da Fama...")
-    plt.figure(figsize=(12, 8))
-    # Remove duplicatas de artistas para não enviesar o gráfico com pontos repetidos
-    df_artists = df.drop_duplicates(subset=['primary_artist_name'])
-    
-    # Define os limites para os quadrantes (Mediana é mais robusta que Média aqui)
-    pop_median = df_artists['artist_popularity'].median()
-    followers_median = df_artists['artist_followers'].median()
-
-    g = sns.scatterplot(data=df_artists, x='artist_popularity', y='artist_followers', s=100, alpha=0.7, color='crimson')
-    g.set_yscale('log')
-    
-    # Linhas de Quadrante
-    plt.axvline(pop_median, color='gray', linestyle='--', alpha=0.5)
-    plt.axhline(followers_median, color='gray', linestyle='--', alpha=0.5)
-
-    # Anotações dos Quadrantes (Ajudam na interpretação do TCC)
-    plt.text(df_artists['artist_popularity'].max()*0.95, df_artists['artist_followers'].max()*0.5, "Superstars\n(Mainstream + Cult)", ha='right', fontsize=10, color='green')
-    plt.text(df_artists['artist_popularity'].min()*1.1, df_artists['artist_followers'].max()*0.5, "Lendas/Legado\n(Muita história, pouco hype hoje)", ha='left', fontsize=10, color='blue')
-    plt.text(df_artists['artist_popularity'].max()*0.95, df_artists['artist_followers'].min()*2, "Hypes do Momento\n(Virais, One-Hit Wonders)", ha='right', fontsize=10, color='orange')
-    plt.text(df_artists['artist_popularity'].min()*1.1, df_artists['artist_followers'].min()*2, "Nicho/Underground\n(Exploração)", ha='left', fontsize=10, color='gray')
-
-    plt.title(f'Insight 5: Perfil de Fama dos Artistas - Quadrantes de Influência ({persona.capitalize()})', fontsize=16)
-    plt.xlabel(f'Popularidade Atual (Mediana: {pop_median:.0f})')
-    plt.ylabel(f'Base de Seguidores (Escala Log) (Mediana: {followers_median:.0f})')
-    plt.grid(True, which="both", ls="--", alpha=0.3)
-    plt.savefig(os.path.join(output_folder, 'insight_5_pop_vs_followers.png'))
-    plt.close()
-    
-    print(f"  -> Gráficos básicos para {persona.upper()} gerados.")
-
-    # ======================================================================
-    # MELHORIA ESTÉTICA: PALETA DE CORES
-    # ----------------------------------------------------------------------
-    # Usaremos paletas distintas para dar identidade visual, mas sóbrias.
-    # ======================================================================
-    palette_choice = "viridis" 
-
-
-    # ======================================================================
-    # GRÁFICO 6: DURAÇÃO DAS MÚSICAS (Histograma)
-    # ----------------------------------------------------------------------
-    # Objetivo: Analisar "Attention Span".
-    # Requer conversão de string "min:seg" para segundos.
-    # ======================================================================
-    if 'duration_readable' in df.columns:
-        print("  - Gerando Gráfico 6: Duração das Faixas...")
-        
-        # Converte direto da string "MM:SS" do CSV para segundos (necessário para o eixo X numérico)
-        df['duration_seconds'] = df['duration_readable'].astype(str).apply(
-            lambda x: int(x.split(':')[0])*60 + int(x.split(':')[1]) if ':' in x else None
-        )
-        
-        plt.figure(figsize=(10, 6))
-        sns.histplot(data=df.dropna(subset=['duration_seconds']), x='duration_seconds', kde=True, bins=20, color='purple')
-        
-        # Adiciona linhas de média
-        mean_val = df['duration_seconds'].mean()
-        plt.axvline(mean_val, color='red', linestyle='--', label=f'Média: {int(mean_val // 60)}:{int(mean_val % 60):02d}')
-        
-        plt.title(f'Insight 6: Preferência de Duração das Músicas ({persona.capitalize()})', fontsize=16)
-        plt.xlabel('Duração em Segundos')
-        plt.ylabel('Contagem de Músicas')
+    track_l = df["lastfm_track_listeners"].replace(0, pd.NA).dropna()
+    if not track_l.empty:
+        sns.histplot(track_l, kde=True, bins=25, color="teal", log_scale=True)
+        plt.axvline(track_l.median(), color="red", linestyle="--",
+                    label=f"Mediana: {track_l.median():,.0f}")
         plt.legend()
+    plt.title(f"Insight 1: Listeners por Track no Last.fm ({persona_title})", fontsize=15)
+    plt.xlabel("Listeners (escala log)")
+    plt.ylabel("Faixas")
+    plt.savefig(os.path.join(output_folder, "insight_1_track_listeners.png"), bbox_inches="tight")
+    plt.close()
+
+    # GRAFICO 2: Top Tags
+    print("   2. Top 10 Tags / Gêneros")
+    top_tags = calcular_top_tags(df, top_n=10)
+    if top_tags:
+        df_t = pd.DataFrame(top_tags, columns=["tag", "count"])
+        plt.figure(figsize=(12, 8))
+        sns.barplot(data=df_t, x="count", y="tag", orient="h", palette="mako")
+        plt.title(f"Insight 2: Top 10 Tags/Gêneros ({persona_title})", fontsize=15)
+        plt.xlabel("Frequência")
+        plt.ylabel("Tag")
         plt.tight_layout()
-        plt.savefig(os.path.join(output_folder, 'insight_6_music_duration.png'))
+        plt.savefig(os.path.join(output_folder, "insight_2_generos.png"), bbox_inches="tight")
         plt.close()
 
-    print(f"  -> Todos os gráficos individuais para {persona.upper()} salvos em '{output_folder}'.")
+    # GRAFICO 3: Era Musical
+    print("   3. Era Musical")
+    plt.figure(figsize=(10, 6))
+    df_clean = df.dropna(subset=["album_release_year"])
+    if not df_clean.empty:
+        sns.histplot(df_clean["album_release_year"], kde=True, bins=25, color="indigo")
+    plt.title(f"Insight 3: Era Musical ({persona_title})", fontsize=15)
+    plt.xlabel("Ano de Lançamento")
+    plt.ylabel("Faixas")
+    plt.savefig(os.path.join(output_folder, "insight_3_era_musical.png"), bbox_inches="tight")
+    plt.close()
 
-    # ======================================================================
-    # RELATÓRIO VISUAL CONSOLIDADO (GRID FINAL 3x2)
-    # ----------------------------------------------------------------------
-    # Objetivo: Gerar uma única imagem de alta resolução (A4 friendly)
-    # contendo todos os 6 insights para fácil inclusão no documento do TCC.
-    # ======================================================================
-    print("  - Gerando Grid Consolidado de Alta Resolução...")
-    
-    # Lista de arquivos esperados na ordem de leitura
+    # GRAFICO 4: Concentração de Artistas
+    print("   4. Top 15 Artistas")
+    top_a = df["primary_artist_name"].value_counts().nlargest(15)
+    plt.figure(figsize=(12, 8))
+    sns.barplot(x=top_a.values, y=top_a.index, orient="h", palette="magma")
+    plt.title(f"Insight 4: Top 15 Artistas ({persona_title})", fontsize=15)
+    plt.xlabel("Faixas na Playlist")
+    plt.ylabel("Artista")
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_folder, "insight_4_concentracao_artistas.png"), bbox_inches="tight")
+    plt.close()
+
+    # GRAFICO 5: Quadrante de Fama (Listeners × Playcount)
+    print("   5. Quadrante de Fama (Listeners × Playcount)")
+    df_artists = df.drop_duplicates(subset=["primary_artist_name"]).copy()
+    df_artists = df_artists[(df_artists["lastfm_listeners"] > 0) &
+                             (df_artists["lastfm_playcount"] > 0)]
+    plt.figure(figsize=(12, 8))
+    if not df_artists.empty:
+        median_l = df_artists["lastfm_listeners"].median()
+        median_p = df_artists["lastfm_playcount"].median()
+        g = sns.scatterplot(data=df_artists, x="lastfm_listeners", y="lastfm_playcount",
+                             s=80, alpha=0.7, color="crimson")
+        g.set_xscale("log")
+        g.set_yscale("log")
+        plt.axvline(median_l, color="gray", linestyle="--", alpha=0.5)
+        plt.axhline(median_p, color="gray", linestyle="--", alpha=0.5)
+        plt.title(f"Insight 5: Quadrante de Fama — Listeners x Plays ({persona_title})", fontsize=14)
+        plt.xlabel(f"Last.fm Listeners (mediana: {median_l:,.0f})")
+        plt.ylabel(f"Last.fm Playcount (mediana: {median_p:,.0f})")
+        plt.grid(True, which="both", ls="--", alpha=0.3)
+    plt.savefig(os.path.join(output_folder, "insight_5_pop_vs_followers.png"), bbox_inches="tight")
+    plt.close()
+
+    # GRAFICO 6: Duração
+    print("   6. Duração das Faixas")
+    if "duration_readable" in df.columns:
+        df["duration_seconds"] = df["duration_readable"].astype(str).apply(
+            lambda x: int(x.split(":")[0])*60 + int(x.split(":")[1]) if ":" in x else None
+        )
+        plt.figure(figsize=(10, 6))
+        clean = df.dropna(subset=["duration_seconds"])
+        if not clean.empty:
+            sns.histplot(clean["duration_seconds"], kde=True, bins=20, color="purple")
+            mean_v = clean["duration_seconds"].mean()
+            plt.axvline(mean_v, color="red", linestyle="--",
+                        label=f"Média: {int(mean_v//60)}:{int(mean_v%60):02d}")
+            plt.legend()
+        plt.title(f"Insight 6: Duração das Faixas ({persona_title})", fontsize=15)
+        plt.xlabel("Segundos")
+        plt.ylabel("Faixas")
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_folder, "insight_6_music_duration.png"), bbox_inches="tight")
+        plt.close()
+
+    # GRID FINAL 3x2
+    print("   Grid consolidado")
     graficos = [
-        ('insight_1_popularidade.png', 'Métrica 1: Popularidade'),
-        ('insight_2_generos.png', 'Métrica 2: Gêneros'),
-        ('insight_3_era_musical.png', 'Métrica 3: Era Musical'),
-        ('insight_4_concentracao_artistas.png', 'Métrica 4: Artistas'),
-        ('insight_5_pop_vs_followers.png', 'Métrica 5: Quadrantes de Fama'),
-        ('insight_6_music_duration.png', 'Métrica 6: Duração')
+        ("insight_1_track_listeners.png",       "Insight 1: Track Listeners"),
+        ("insight_2_generos.png",               "Insight 2: Top Tags"),
+        ("insight_3_era_musical.png",           "Insight 3: Era Musical"),
+        ("insight_4_concentracao_artistas.png", "Insight 4: Top Artistas"),
+        ("insight_5_pop_vs_followers.png",      "Insight 5: Quadrante Fama"),
+        ("insight_6_music_duration.png",        "Insight 6: Duração"),
     ]
 
-    # Criar figura gigante para alta resolução (Proporção similar a uma folha A4 vertical)
     fig_grid = plt.figure(figsize=(20, 24), constrained_layout=True)
-    fig_grid.suptitle(f"Perfil Analítico Musical: {persona.upper()}", fontsize=35, weight='bold', y=1.02)
-    
-    # GridSpec para layout flexível
+    fig_grid.suptitle(f"Perfil Analítico — {persona_title} ({source_label})",
+                      fontsize=32, weight="bold", y=1.02)
     gs = fig_grid.add_gridspec(3, 2)
-    
-    import matplotlib.image as mpimg
-
-    for idx, (filename, title) in enumerate(graficos):
+    for idx, (filename, _) in enumerate(graficos):
         filepath = os.path.join(output_folder, filename)
-        
-        # Subplot index logic (3 rows, 2 cols)
-        row = idx // 2
-        col = idx % 2
-        ax = fig_grid.add_subplot(gs[row, col])
-        
+        ax = fig_grid.add_subplot(gs[idx // 2, idx % 2])
         if os.path.exists(filepath):
-            img = mpimg.imread(filepath)
-            ax.imshow(img)
-            ax.axis('off') # Remove eixos da imagem (já tem eixos no próprio gráfico)
+            ax.imshow(mpimg.imread(filepath))
         else:
-            ax.text(0.5, 0.5, f"Imagem não encontrada:\n{filename}", 
-                    ha='center', va='center', fontsize=14, color='red')
-            ax.axis('off')
+            ax.text(0.5, 0.5, f"Faltando:\n{filename}", ha="center", va="center",
+                    fontsize=14, color="red")
+        ax.axis("off")
 
-    output_grid_path = os.path.join(output_folder, 'final_summary_grid.png')
-    plt.savefig(output_grid_path, dpi=300, bbox_inches='tight') # DPI 300 = Qualidade de Impressão
+    grid_path = os.path.join(output_folder, "final_summary_grid.png")
+    plt.savefig(grid_path, dpi=200, bbox_inches="tight")
     plt.close()
-    
-    print(f"  -> IMAGEM FINAL GERADA: '{output_grid_path}' (DPI 300)")
+    print(f"   [OK] Salvos em {output_folder}")
+
 
 def main():
-    """
-    Fluxo principal de geração de relatórios visuais.
-    Gerencia argumentos de CLI para decidir se gera para 'all' ou específica.
-    """
-    # --- 1. PAINEL DE CONTROLE (CONFIGURAÇÕES) ---
-    print("--- Iniciando a geração de insights individuais por persona ---")
-    
-    # Define a raiz do projeto dinamicamente
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
-    
-    # Caminhos base
-    data_processed_dir = os.path.join(project_root, 'data', 'processed')
-    reports_figures_dir = os.path.join(project_root, 'reports', 'figures')
+    source = parse_source()
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    label = "INPUT" if source == "input" else "OUTPUT"
 
-    # Mapeamento Central: Define onde buscar os dados e onde salvar os gráficos.
-    ARQUIVOS_DAS_PERSONAS = {
-        'beatriz': {
-            'csv_path': os.path.join(data_processed_dir, 'dataset_Beatriz_playlist.csv'),
-            'output_folder': os.path.join(reports_figures_dir, 'beatriz')
-        },
-        'daniel': {
-            'csv_path': os.path.join(data_processed_dir, 'dataset_Daniel_playlist.csv'),
-            'output_folder': os.path.join(reports_figures_dir, 'daniel')
-        },
-        'ricardo': {
-            'csv_path': os.path.join(data_processed_dir, 'dataset_Ricardo_playlist.csv'),
-            'output_folder': os.path.join(reports_figures_dir, 'ricardo')
-        },
-        'sofia': {
-            'csv_path': os.path.join(data_processed_dir, 'dataset_Sofia_playlist.csv'),
-            'output_folder': os.path.join(reports_figures_dir, 'sofia')
-        }
-    }
-
-    # --- 2. CONTROLE DE EXECUÇÃO (Argumentos CLI) ---
-    if len(sys.argv) < 2:
-        print("\n[!] Uso: python build_personal_graphs.py [nome_persona | all]")
-        print("    Ex: python build_personal_graphs.py beatriz")
-        return
-
-    argumento = sys.argv[1].lower()
-
-    if argumento == "all":
-        print("Modo: Gerar gráficos para TODAS as personas.")
-        for persona, config in ARQUIVOS_DAS_PERSONAS.items():
-            gerar_graficos_para_persona(persona, config)
+    if len(sys.argv) < 2 or sys.argv[1].startswith("--"):
+        alvo = "todas"
     else:
-        if argumento in ARQUIVOS_DAS_PERSONAS:
-            print(f"Modo: Gerar gráficos apenas para {argumento.upper()}.")
-            gerar_graficos_para_persona(argumento, ARQUIVOS_DAS_PERSONAS[argumento])
-        else:
-            print(f"ERRO: Persona '{argumento}' não encontrada.")
-            print(f"Opções válidas: {list(ARQUIVOS_DAS_PERSONAS.keys())} ou 'all'")
+        alvo = sys.argv[1].lower()
 
-    print(f"\n{'='*20} PROCESSO FINALIZADO {'='*20}")
+    if alvo in ("todas", "all"):
+        for persona in PERSONAS:
+            csv_path = csv_path_for(persona, project_root, source, enriched=True)
+            output_folder = figures_dir_for(project_root, source, persona=persona)
+            gerar_graficos(persona, csv_path, output_folder, label)
+    elif alvo in PERSONAS:
+        csv_path = csv_path_for(alvo, project_root, source, enriched=True)
+        output_folder = figures_dir_for(project_root, source, persona=alvo)
+        gerar_graficos(alvo, csv_path, output_folder, label)
+    else:
+        print(f"[!] Persona inválida: {alvo}")
+
 
 if __name__ == "__main__":
     main()
