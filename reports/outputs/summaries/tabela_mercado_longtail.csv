@@ -1,0 +1,6 @@
+Persona,Source,HHI Generos,% Superstars (>P75),% Medios (P25-P75),% Cauda Longa (<=P25)
+Beatriz,OUTPUT,0.0332,0.8,86.0,13.2
+Daniel,OUTPUT,0.0812,0.0,71.3,28.7
+Ricardo,OUTPUT,0.0486,87.3,11.9,0.8
+Sofia,OUTPUT,0.0182,2.2,27.8,70.0
+_THRESHOLDS_,OUTPUT,,"P75=633,642",,"P25=93,137"

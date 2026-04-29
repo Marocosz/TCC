@@ -1,0 +1,90 @@
+=============== RESUMO (INPUT): RICARDO ===============
+
+--- METRICAS GERAIS ---
+Total de Faixas: 200
+Artistas Únicos: 18
+Faixas/Artista (média): 11.11
+
+--- ALCANCE (Last.fm artist listeners) ---
+Mediana de Listeners por Artista: 4,412,516
+Média de Listeners por Artista:   3,800,344
+Listeners Acumulados (soma):      68,406,196
+
+--- POPULARIDADE HISTORICA (Last.fm artist playcount) ---
+Mediana de Playcount por Artista: 144,558,091
+Média de Playcount por Artista:   249,064,629
+
+--- TRACK-LEVEL (Last.fm track) ---
+Mediana de Listeners por Track:   311,105
+Média de Listeners por Track:     540,895
+Plays Acumulados de Tracks:       829,119,181
+
+--- METRICAS TEMPORAIS ---
+Ano Médio: 1985
+Faixa Etária: 1963 a 2021
+Décadas Dominantes:
+  - Anos 1970s: 30.6%
+  - Anos 1980s: 30.1%
+  - Anos 1990s: 21.2%
+
+--- ESTRUTURA (Duração) ---
+Duração Média: 4:33
+Variação: 2:02 a 8:35
+
+--- COBERTURA DE FONTES EXTERNAS ---
+  lastfm+mb: 200 faixas (100.0%)
+
+--- ERA DE CARREIRA DO ARTISTA (MusicBrainz life-span) ---
+Cobertura: 18 de 18 artistas únicos
+Mediana de inicio de carreira: 1965
+Range: 1942 a 1983
+Décadas dominantes (de início):
+  - Anos 1940s: 6 artistas
+  - Anos 1960s: 5 artistas
+  - Anos 1970s: 5 artistas
+
+--- TIPO DE ARTISTA (MusicBrainz) ---
+  Group: 12 (66.7%)
+  Person: 6 (33.3%)
+
+--- TOP 20 TAGS/GENEROS (mb_tags + lastfm_tags) ---
+  1. rock (149)
+  2. heavy metal (68)
+  3. pop (64)
+  4. 80s (53)
+  5. progressive rock (52)
+  6. mpb (51)
+  7. metal (39)
+  8. british (35)
+  9. band (34)
+  10. political (30)
+  11. alternative rock (30)
+  12. singer-songwriter (26)
+  13. uk (26)
+  14. 70s (24)
+  15. folk (24)
+  16. american (23)
+  17. samba (16)
+  18. latin (16)
+  19. sophisti-pop (16)
+  20. blues (16)
+
+--- TOP 20 ARTISTAS (volume) ---
+  - Djavan: 16 faixa(s)
+  - Metallica: 16 faixa(s)
+  - The Rolling Stones: 16 faixa(s)
+  - Led Zeppelin: 15 faixa(s)
+  - Bon Jovi: 15 faixa(s)
+  - U2: 14 faixa(s)
+  - The Beatles: 13 faixa(s)
+  - Maria Bethânia: 12 faixa(s)
+  - Alceu Valença: 10 faixa(s)
+  - Dire Straits: 10 faixa(s)
+  - AC/DC: 9 faixa(s)
+  - Caetano Veloso: 9 faixa(s)
+  - Elton John: 9 faixa(s)
+  - Scorpions: 8 faixa(s)
+  - Queen: 8 faixa(s)
+  - Pink Floyd: 8 faixa(s)
+  - Eagles: 8 faixa(s)
+  - Gal Costa: 4 faixa(s)

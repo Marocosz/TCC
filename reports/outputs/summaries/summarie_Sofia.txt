@@ -1,0 +1,96 @@
+=============== RESUMO (OUTPUT): SOFIA ===============
+
+--- METRICAS GERAIS ---
+Total de Faixas: 264
+Artistas Únicos: 90
+Faixas/Artista (média): 2.93
+
+--- ALCANCE (Last.fm artist listeners) ---
+Mediana de Listeners por Artista: 48,406
+Média de Listeners por Artista:   92,637
+Listeners Acumulados (soma):      8,337,375
+
+--- POPULARIDADE HISTORICA (Last.fm artist playcount) ---
+Mediana de Playcount por Artista: 393,624
+Média de Playcount por Artista:   2,060,800
+
+--- TRACK-LEVEL (Last.fm track) ---
+Mediana de Listeners por Track:   6,178
+Média de Listeners por Track:     16,197
+Plays Acumulados de Tracks:       20,305,720
+
+--- METRICAS TEMPORAIS ---
+Ano Médio: 2023
+Faixa Etária: 1997 a 2026
+Décadas Dominantes:
+  - Anos 2020s: 91.7%
+  - Anos 2010s: 5.5%
+  - Anos 2000s: 2.4%
+
+--- ESTRUTURA (Duração) ---
+Duração Média: 3:03
+Variação: 1:01 a 5:40
+
+--- COBERTURA DE FONTES EXTERNAS ---
+  lastfm+mb: 229 faixas (86.7%)
+  lastfm: 29 faixas (11.0%)
+  mb: 6 faixas (2.3%)
+
+--- ERA DE CARREIRA DO ARTISTA (MusicBrainz life-span) ---
+Cobertura: 39 de 90 artistas únicos
+Mediana de inicio de carreira: 1981
+Range: 1931 a 2020
+Décadas dominantes (de início):
+  - Anos 1970s: 8 artistas
+  - Anos 1980s: 8 artistas
+  - Anos 1960s: 6 artistas
+
+--- TIPO DE ARTISTA (MusicBrainz) ---
+  Person: 40 (52.6%)
+  Group: 34 (44.7%)
+  Character: 1 (1.3%)
+  Orchestra: 1 (1.3%)
+
+--- TOP 20 TAGS/GENEROS (mb_tags + lastfm_tags) ---
+  1. electronic (61)
+  2. dream pop (50)
+  3. ambient (45)
+  4. experimental (40)
+  5. rock (38)
+  6. indie (37)
+  7. american (27)
+  8. singer-songwriter (23)
+  9. indie rock (23)
+  10. folk (22)
+  11. pop (21)
+  12. shoegaze (21)
+  13. art pop (19)
+  14. metal (18)
+  15. indie pop (17)
+  16. classical (16)
+  17. lo-fi (15)
+  18. alternative (14)
+  19. neo-psychedelia (14)
+  20. alternative rock (13)
+
+--- TOP 20 ARTISTAS (volume) ---
+  - Deer park: 13 faixa(s)
+  - Florence Sinclair: 10 faixa(s)
+  - Eterna: 9 faixa(s)
+  - Stina Nordenstam: 9 faixa(s)
+  - Samba Jean-Baptiste: 8 faixa(s)
+  - ML Buch: 8 faixa(s)
+  - Chanel Beads: 7 faixa(s)
+  - NINA: 7 faixa(s)
+  - Patch +: 6 faixa(s)
+  - Mori Mori: 6 faixa(s)
+  - Fine: 6 faixa(s)
+  - Quiet Light: 6 faixa(s)
+  - You'll Never Get to Heaven: 6 faixa(s)
+  - bar italia: 6 faixa(s)
+  - Car Culture: 5 faixa(s)
+  - Jabu: 5 faixa(s)
+  - Rockie Rode: 5 faixa(s)
+  - Angel Investor: 5 faixa(s)
+  - The Furniture Group: 4 faixa(s)
+  - Yorck Street: 4 faixa(s)

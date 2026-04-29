@@ -1,0 +1,94 @@
+=============== RESUMO (INPUT): SOFIA ===============
+
+--- METRICAS GERAIS ---
+Total de Faixas: 200
+Artistas Únicos: 27
+Faixas/Artista (média): 7.41
+
+--- ALCANCE (Last.fm artist listeners) ---
+Mediana de Listeners por Artista: 59,042
+Média de Listeners por Artista:   121,230
+Listeners Acumulados (soma):      3,273,216
+
+--- POPULARIDADE HISTORICA (Last.fm artist playcount) ---
+Mediana de Playcount por Artista: 565,579
+Média de Playcount por Artista:   4,089,079
+
+--- TRACK-LEVEL (Last.fm track) ---
+Mediana de Listeners por Track:   1,223
+Média de Listeners por Track:     7,520
+Plays Acumulados de Tracks:       6,477,738
+
+--- METRICAS TEMPORAIS ---
+Ano Médio: 2021
+Faixa Etária: 1999 a 2026
+Décadas Dominantes:
+  - Anos 2020s: 77.0%
+  - Anos 2010s: 20.9%
+  - Anos 1990s: 2.0%
+
+--- ESTRUTURA (Duração) ---
+Duração Média: 2:57
+Variação: 0:06 a 7:04
+
+--- COBERTURA DE FONTES EXTERNAS ---
+  lastfm+mb: 169 faixas (84.5%)
+  lastfm: 16 faixas (8.0%)
+  mb: 15 faixas (7.5%)
+
+--- ERA DE CARREIRA DO ARTISTA (MusicBrainz life-span) ---
+Cobertura: 11 de 27 artistas únicos
+Mediana de inicio de carreira: 1984
+Range: 1931 a 2020
+Décadas dominantes (de início):
+  - Anos 1930s: 2 artistas
+  - Anos 2000s: 2 artistas
+  - Anos 1970s: 1 artistas
+
+--- TIPO DE ARTISTA (MusicBrainz) ---
+  Person: 14 (60.9%)
+  Group: 9 (39.1%)
+
+--- TOP 20 TAGS/GENEROS (mb_tags + lastfm_tags) ---
+  1. folk (38)
+  2. dream pop (37)
+  3. experimental (30)
+  4. indie rock (29)
+  5. art pop (27)
+  6. electronic (25)
+  7. hypnagogic pop (23)
+  8. indie (23)
+  9. classical (19)
+  10. neo-psychedelia (18)
+  11. shoegaze (17)
+  12. psychedelic (16)
+  13. trip-hop (16)
+  14. abstract hip-hop (16)
+  15. hip-hop (16)
+  16. american (16)
+  17. power metal (15)
+  18. progressive metal (15)
+  19. christian metal (15)
+  20. white metal (15)
+
+--- TOP 20 ARTISTAS (volume) ---
+  - S.Maharba: 16 faixa(s)
+  - Eterna: 15 faixa(s)
+  - Patch +: 15 faixa(s)
+  - Camille Keller: 12 faixa(s)
+  - Lee Ikari: 12 faixa(s)
+  - bar italia: 12 faixa(s)
+  - mark william lewis: 11 faixa(s)
+  - Taraneh: 11 faixa(s)
+  - Samba Jean-Baptiste: 10 faixa(s)
+  - NINA: 9 faixa(s)
+  - Double Virgo: 9 faixa(s)
+  - Ydegirl: 8 faixa(s)
+  - untitled (halo): 8 faixa(s)
+  - Michael Angelo: 8 faixa(s)
+  - Dean Blunt: 8 faixa(s)
+  - Chanel Beads: 7 faixa(s)
+  - Inga Copeland: 6 faixa(s)
+  - Joanne Robertson: 6 faixa(s)
+  - X & Yde: 5 faixa(s)
+  - spirit blue: 3 faixa(s)

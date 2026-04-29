@@ -1,0 +1,92 @@
+=============== RESUMO (OUTPUT): DANIEL ===============
+
+--- METRICAS GERAIS ---
+Total de Faixas: 281
+Artistas Únicos: 115
+Faixas/Artista (média): 2.44
+
+--- ALCANCE (Last.fm artist listeners) ---
+Mediana de Listeners por Artista: 184,082
+Média de Listeners por Artista:   210,039
+Listeners Acumulados (soma):      24,154,546
+
+--- POPULARIDADE HISTORICA (Last.fm artist playcount) ---
+Mediana de Playcount por Artista: 1,266,167
+Média de Playcount por Artista:   1,970,483
+
+--- TRACK-LEVEL (Last.fm track) ---
+Mediana de Listeners por Track:   14,377
+Média de Listeners por Track:     22,908
+Plays Acumulados de Tracks:       17,099,293
+
+--- METRICAS TEMPORAIS ---
+Ano Médio: 2023
+Faixa Etária: 2020 a 2026
+Décadas Dominantes:
+  - Anos 2020s: 100.0%
+
+--- ESTRUTURA (Duração) ---
+Duração Média: 2:25
+Variação: 1:27 a 3:44
+
+--- COBERTURA DE FONTES EXTERNAS ---
+  lastfm+mb: 277 faixas (98.6%)
+  lastfm: 4 faixas (1.4%)
+
+--- ERA DE CARREIRA DO ARTISTA (MusicBrainz life-span) ---
+Cobertura: 28 de 115 artistas únicos
+Mediana de inicio de carreira: 1991
+Range: 1923 a 2013
+Décadas dominantes (de início):
+  - Anos 1990s: 11 artistas
+  - Anos 2000s: 5 artistas
+  - Anos 1970s: 4 artistas
+
+--- TIPO DE ARTISTA (MusicBrainz) ---
+  Person: 94 (87.9%)
+  Group: 12 (11.2%)
+  Other: 1 (0.9%)
+
+--- TOP 20 TAGS/GENEROS (mb_tags + lastfm_tags) ---
+  1. hip hop (178)
+  2. instrumental (156)
+  3. downtempo (149)
+  4. lo-fi (149)
+  5. boom bap (97)
+  6. lo-fi hip hop (83)
+  7. instrumental hip hop (64)
+  8. chillwave (62)
+  9. rock (17)
+  10. electronic (17)
+  11. jazz (16)
+  12. pop (14)
+  13. house (12)
+  14. classical (12)
+  15. folk rock (10)
+  16. alternative (9)
+  17. ambient (9)
+  18. british (8)
+  19. soundtrack (7)
+  20. dance (7)
+
+--- TOP 20 ARTISTAS (volume) ---
+  - Pierson Booth: 10 faixa(s)
+  - fnonose: 9 faixa(s)
+  - Dosi: 7 faixa(s)
+  - slowburn: 7 faixa(s)
+  - ENRA: 7 faixa(s)
+  - Towerz: 6 faixa(s)
+  - Krynoze: 6 faixa(s)
+  - Bert: 6 faixa(s)
+  - Hevi: 6 faixa(s)
+  - LUQĘT: 5 faixa(s)
+  - idylla: 5 faixa(s)
+  - Kainbeats: 5 faixa(s)
+  - ornaut: 5 faixa(s)
+  - Juliàn: 4 faixa(s)
+  - Blue Fox: 4 faixa(s)
+  - No Spirit: 4 faixa(s)
+  - Laffey: 4 faixa(s)
+  - Hoogway: 4 faixa(s)
+  - Julián Aponte: 4 faixa(s)
+  - lusha: 4 faixa(s)

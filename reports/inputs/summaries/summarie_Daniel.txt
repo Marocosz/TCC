@@ -1,0 +1,93 @@
+=============== RESUMO (INPUT): DANIEL ===============
+
+--- METRICAS GERAIS ---
+Total de Faixas: 200
+Artistas Únicos: 99
+Faixas/Artista (média): 2.02
+
+--- ALCANCE (Last.fm artist listeners) ---
+Mediana de Listeners por Artista: 79,595
+Média de Listeners por Artista:   199,809
+Listeners Acumulados (soma):      19,781,113
+
+--- POPULARIDADE HISTORICA (Last.fm artist playcount) ---
+Mediana de Playcount por Artista: 348,630
+Média de Playcount por Artista:   5,431,486
+
+--- TRACK-LEVEL (Last.fm track) ---
+Mediana de Listeners por Track:   18,824
+Média de Listeners por Track:     26,825
+Plays Acumulados de Tracks:       15,872,108
+
+--- METRICAS TEMPORAIS ---
+Ano Médio: 2024
+Faixa Etária: 2017 a 2026
+Décadas Dominantes:
+  - Anos 2020s: 98.5%
+  - Anos 2010s: 1.5%
+
+--- ESTRUTURA (Duração) ---
+Duração Média: 2:17
+Variação: 1:30 a 3:47
+
+--- COBERTURA DE FONTES EXTERNAS ---
+  lastfm+mb: 181 faixas (90.5%)
+  lastfm: 19 faixas (9.5%)
+
+--- ERA DE CARREIRA DO ARTISTA (MusicBrainz life-span) ---
+Cobertura: 20 de 99 artistas únicos
+Mediana de inicio de carreira: 1987
+Range: 1916 a 2022
+Décadas dominantes (de início):
+  - Anos 2000s: 5 artistas
+  - Anos 1990s: 4 artistas
+  - Anos 1950s: 2 artistas
+
+--- TIPO DE ARTISTA (MusicBrainz) ---
+  Person: 50 (70.4%)
+  Group: 17 (23.9%)
+  Other: 4 (5.6%)
+
+--- TOP 20 TAGS/GENEROS (mb_tags + lastfm_tags) ---
+  1. lo-fi (93)
+  2. hip hop (83)
+  3. downtempo (78)
+  4. instrumental (77)
+  5. boom bap (36)
+  6. chillwave (24)
+  7. lo-fi beats (22)
+  8. rock (20)
+  9. instrumental hip hop (20)
+  10. lo-fi hip hop (20)
+  11. pop (16)
+  12. house (15)
+  13. alternative (14)
+  14. classical (13)
+  15. electronic (11)
+  16. british (9)
+  17. dance (9)
+  18. soundtrack (9)
+  19. alternative rock (8)
+  20. post-punk (8)
+
+--- TOP 20 ARTISTAS (volume) ---
+  - Dosi: 11 faixa(s)
+  - Juliàn: 7 faixa(s)
+  - Lil Leaf: 6 faixa(s)
+  - Hoogway: 5 faixa(s)
+  - Phlocalyst: 5 faixa(s)
+  - No Spirit: 5 faixa(s)
+  - amies: 5 faixa(s)
+  - Oroshi: 5 faixa(s)
+  - Goson: 5 faixa(s)
+  - lilibu: 5 faixa(s)
+  - xander.: 4 faixa(s)
+  - loutwo: 4 faixa(s)
+  - Hevi: 4 faixa(s)
+  - Towerz: 4 faixa(s)
+  - slowburn: 4 faixa(s)
+  - Leavv: 4 faixa(s)
+  - Mondo Loops: 3 faixa(s)
+  - cxlt.: 3 faixa(s)
+  - Lenny Loops: 3 faixa(s)
+  - Mujo: 3 faixa(s)

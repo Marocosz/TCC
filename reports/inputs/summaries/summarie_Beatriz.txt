@@ -1,0 +1,94 @@
+=============== RESUMO (INPUT): BEATRIZ ===============
+
+--- METRICAS GERAIS ---
+Total de Faixas: 200
+Artistas Únicos: 94
+Faixas/Artista (média): 2.13
+
+--- ALCANCE (Last.fm artist listeners) ---
+Mediana de Listeners por Artista: 194,228
+Média de Listeners por Artista:   326,118
+Listeners Acumulados (soma):      30,655,135
+
+--- POPULARIDADE HISTORICA (Last.fm artist playcount) ---
+Mediana de Playcount por Artista: 3,434,708
+Média de Playcount por Artista:   23,653,411
+
+--- TRACK-LEVEL (Last.fm track) ---
+Mediana de Listeners por Track:   51,879
+Média de Listeners por Track:     86,113
+Plays Acumulados de Tracks:       146,656,612
+
+--- METRICAS TEMPORAIS ---
+Ano Médio: 2023
+Faixa Etária: 2001 a 2026
+Décadas Dominantes:
+  - Anos 2020s: 84.9%
+  - Anos 2010s: 14.6%
+  - Anos 2000s: 0.5%
+
+--- ESTRUTURA (Duração) ---
+Duração Média: 3:20
+Variação: 1:21 a 11:40
+
+--- COBERTURA DE FONTES EXTERNAS ---
+  lastfm+mb: 199 faixas (99.5%)
+  lastfm: 1 faixas (0.5%)
+
+--- ERA DE CARREIRA DO ARTISTA (MusicBrainz life-span) ---
+Cobertura: 48 de 94 artistas únicos
+Mediana de inicio de carreira: 1993
+Range: 1919 a 2023
+Décadas dominantes (de início):
+  - Anos 1990s: 13 artistas
+  - Anos 2000s: 12 artistas
+  - Anos 1980s: 7 artistas
+
+--- TIPO DE ARTISTA (MusicBrainz) ---
+  Person: 51 (61.4%)
+  Group: 31 (37.3%)
+  Other: 1 (1.2%)
+
+--- TOP 20 TAGS/GENEROS (mb_tags + lastfm_tags) ---
+  1. sertanejo (64)
+  2. brazil (55)
+  3. brazilian (48)
+  4. pop (30)
+  5. sertanejo universitário (28)
+  6. latin (24)
+  7. funk (23)
+  8. country (15)
+  9. brasil (14)
+  10. trap (14)
+  11. samba (13)
+  12. hip hop (13)
+  13. singer-songwriter (12)
+  14. poetics (12)
+  15. latin pop (11)
+  16. rock (9)
+  17. brazilian funk (8)
+  18. pagode (7)
+  19. agronejo (6)
+  20. reggaeton (6)
+
+--- TOP 20 ARTISTAS (volume) ---
+  - Panda: 12 faixa(s)
+  - Henrique & Juliano: 10 faixa(s)
+  - Gusttavo Lima: 9 faixa(s)
+  - Matheus & Kauan: 9 faixa(s)
+  - Grupo Menos É Mais: 7 faixa(s)
+  - Zé Neto & Cristiano: 7 faixa(s)
+  - Jorge & Mateus: 6 faixa(s)
+  - DJ Japa NK: 5 faixa(s)
+  - Mc Lele JP: 5 faixa(s)
+  - Luis Fonsi: 5 faixa(s)
+  - Felipe e Rodrigo: 5 faixa(s)
+  - Diego & Victor Hugo: 5 faixa(s)
+  - PEDRO SAMPAIO: 4 faixa(s)
+  - Veigh: 4 faixa(s)
+  - Murilo Huff: 3 faixa(s)
+  - Anitta: 3 faixa(s)
+  - Felipe Amorim: 3 faixa(s)
+  - MC Tuto: 3 faixa(s)
+  - KayBlack: 3 faixa(s)
+  - Mc IG: 3 faixa(s)

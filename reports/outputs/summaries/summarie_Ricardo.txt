@@ -1,0 +1,92 @@
+=============== RESUMO (OUTPUT): RICARDO ===============
+
+--- METRICAS GERAIS ---
+Total de Faixas: 268
+Artistas Únicos: 126
+Faixas/Artista (média): 2.13
+
+--- ALCANCE (Last.fm artist listeners) ---
+Mediana de Listeners por Artista: 2,931,029
+Média de Listeners por Artista:   2,880,621
+Listeners Acumulados (soma):      362,958,275
+
+--- POPULARIDADE HISTORICA (Last.fm artist playcount) ---
+Mediana de Playcount por Artista: 58,733,457
+Média de Playcount por Artista:   133,128,112
+
+--- TRACK-LEVEL (Last.fm track) ---
+Mediana de Listeners por Track:   660,893
+Média de Listeners por Track:     888,996
+Plays Acumulados de Tracks:       2,002,424,593
+
+--- METRICAS TEMPORAIS ---
+Ano Médio: 1985
+Faixa Etária: 1963 a 2025
+Décadas Dominantes:
+  - Anos 1970s: 33.8%
+  - Anos 1980s: 28.2%
+  - Anos 1990s: 22.6%
+
+--- ESTRUTURA (Duração) ---
+Duração Média: 4:14
+Variação: 2:01 a 9:23
+
+--- COBERTURA DE FONTES EXTERNAS ---
+  lastfm+mb: 268 faixas (100.0%)
+
+--- ERA DE CARREIRA DO ARTISTA (MusicBrainz life-span) ---
+Cobertura: 126 de 126 artistas únicos
+Mediana de inicio de carreira: 1970
+Range: 1908 a 2001
+Décadas dominantes (de início):
+  - Anos 1970s: 32 artistas
+  - Anos 1940s: 27 artistas
+  - Anos 1980s: 22 artistas
+
+--- TIPO DE ARTISTA (MusicBrainz) ---
+  Group: 89 (70.6%)
+  Person: 37 (29.4%)
+
+--- TOP 20 TAGS/GENEROS (mb_tags + lastfm_tags) ---
+  1. rock (206)
+  2. alternative rock (78)
+  3. pop (75)
+  4. american (75)
+  5. british (61)
+  6. heavy metal (59)
+  7. metal (48)
+  8. 80s (42)
+  9. mpb (39)
+  10. progressive rock (30)
+  11. punk (30)
+  12. singer-songwriter (29)
+  13. uk (23)
+  14. hard rock (23)
+  15. 70s (22)
+  16. blues (20)
+  17. electronic (20)
+  18. grunge (19)
+  19. 90s (17)
+  20. folk (16)
+
+--- TOP 20 ARTISTAS (volume) ---
+  - The Police: 9 faixa(s)
+  - Pearl Jam: 9 faixa(s)
+  - Black Sabbath: 9 faixa(s)
+  - Nirvana: 8 faixa(s)
+  - The Rolling Stones: 7 faixa(s)
+  - Queen: 7 faixa(s)
+  - Led Zeppelin: 5 faixa(s)
+  - KISS: 5 faixa(s)
+  - Red Hot Chili Peppers: 5 faixa(s)
+  - Fleetwood Mac: 5 faixa(s)
+  - Alceu Valença: 5 faixa(s)
+  - Caetano Veloso: 5 faixa(s)
+  - Aerosmith: 4 faixa(s)
+  - David Bowie: 4 faixa(s)
+  - Deep Purple: 4 faixa(s)
+  - Creed: 4 faixa(s)
+  - Belchior: 4 faixa(s)
+  - Bon Jovi: 3 faixa(s)
+  - Guns N' Roses: 3 faixa(s)
+  - Scorpions: 3 faixa(s)
