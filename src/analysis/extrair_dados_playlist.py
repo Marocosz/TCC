@@ -33,12 +33,60 @@ Uso:
 import spotipy
 import sys
 import os
+import requests
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 from dotenv import load_dotenv
 import csv
 
 # Carrega as credenciais do ambiente (CLIENT_ID, CLIENT_SECRET)
 load_dotenv()
+
+
+def fetch_playlist_items_v2(access_token, playlist_id):
+    """
+    Lê os itens de uma playlist usando o endpoint NOVO `/items` (Feb/2026).
+
+    Por que existe:
+        Em fevereiro/2026 a Spotify Web API depreciou o endpoint
+        `/playlists/{id}/tracks` (que ainda é o usado pelo spotipy.playlist_items()
+        em versões antigas) e o substituiu por `/playlists/{id}/items`. O endpoint
+        antigo retorna 403 Forbidden mesmo para o owner, enquanto o novo funciona.
+
+    Como funciona:
+        Faz chamadas paginadas ao endpoint novo via requests, e ADAPTA a resposta
+        para o schema antigo (cada item passa a ter chave 'track' em vez de 'item'),
+        de modo que o resto do código que assume `item['track']` continua funcional.
+
+    Args:
+        access_token (str): Token OAuth do usuário (que precisa ser dono ou
+            colaborador da playlist desde a mudança de Feb/2026).
+        playlist_id (str): ID da playlist (sem prefixo "spotify:playlist:").
+
+    Returns:
+        list[dict]: Lista de itens no schema antigo, cada um com chave 'track'.
+    """
+    items = []
+    offset = 0
+    limit = 100
+    headers = {"Authorization": f"Bearer {access_token}"}
+    while True:
+        url = (
+            f"https://api.spotify.com/v1/playlists/{playlist_id}/items"
+            f"?limit={limit}&offset={offset}"
+        )
+        r = requests.get(url, headers=headers)
+        r.raise_for_status()
+        data = r.json()
+        for raw in data.get("items", []):
+            # Schema novo usa 'item'; schema antigo usa 'track'. Padroniza pro antigo
+            # pra manter o resto do pipeline (montagem CSV) funcional sem refatorar.
+            track = raw.get("item") or raw.get("track")
+            if track:
+                items.append({"track": track})
+        if not data.get("next"):
+            break
+        offset += limit
+    return items
 
 # ==============================================================================
 # CONFIGURAÇÃO CENTRAL (MAPA DE DATASETS)
@@ -50,24 +98,51 @@ load_dotenv()
 script_dir = os.path.dirname(os.path.abspath(__file__)) # src/analysis
 project_root = os.path.dirname(os.path.dirname(script_dir)) # TCC root
 
-CONFIG_DATASETS = {
+# Config dos INPUTS (playlists-semente das personas, privadas).
+# Output CSVs em data/inputs/, schema raw (será enriquecido depois).
+CONFIG_INPUTS = {
     "beatriz": {
-        "url": "https://open.spotify.com/playlist/50QfqvGmUpcIBmLpvKwYia?si=64567674fe704edc", 
-        "output": os.path.join(project_root, "data", "processed", "dataset_Beatriz_playlist.csv")
+        "url": "https://open.spotify.com/playlist/50QfqvGmUpcIBmLpvKwYia?si=64567674fe704edc",
+        "output": os.path.join(project_root, "data", "inputs", "dataset_Beatriz_input.csv")
     },
     "daniel": {
         "url": "https://open.spotify.com/playlist/4is9L43Z54V47i317eEU34?si=b6f80876aebf45fa",
-        "output": os.path.join(project_root, "data", "processed", "dataset_Daniel_playlist.csv")
+        "output": os.path.join(project_root, "data", "inputs", "dataset_Daniel_input.csv")
     },
     "ricardo": {
         "url": "https://open.spotify.com/playlist/0M4gzc0tsCbCfZokdXgV7n?si=1997b691d05c4ede",
-        "output": os.path.join(project_root, "data", "processed", "dataset_Ricardo_playlist.csv")
+        "output": os.path.join(project_root, "data", "inputs", "dataset_Ricardo_input.csv")
     },
     "sofia": {
         "url": "https://open.spotify.com/playlist/38A45UlLoWNhgJqOOp1Prb?si=0e3c6e1e938b4961",
-        "output": os.path.join(project_root, "data", "processed", "dataset_Sofia_playlist.csv")
+        "output": os.path.join(project_root, "data", "inputs", "dataset_Sofia_input.csv")
     }
 }
+
+# Config dos OUTPUTS (playlists espelho dos Daily Mixes, criadas em 2026-04-28
+# após 40h de Smart Shuffle por persona, com duplicatas removidas).
+# Cada persona é dona da própria → exige OAuth dela para ler /items.
+CONFIG_RECOMMENDATIONS = {
+    "beatriz": {
+        "url": "https://open.spotify.com/playlist/0GJo96dZ1uXkcPU1YeOI89?si=3034ba22eb614e7f",
+        "output": os.path.join(project_root, "data", "outputs", "dataset_Beatriz_output.csv")
+    },
+    "daniel": {
+        "url": "https://open.spotify.com/playlist/0V7TjiOtU4wh2Ye0L4iwCd?si=88ca14da64474d51",
+        "output": os.path.join(project_root, "data", "outputs", "dataset_Daniel_output.csv")
+    },
+    "ricardo": {
+        "url": "https://open.spotify.com/playlist/5Gzczx57X6akiCW9wMzoIW?si=4a77d8be49ae435a",
+        "output": os.path.join(project_root, "data", "outputs", "dataset_Ricardo_output.csv")
+    },
+    "sofia": {
+        "url": "https://open.spotify.com/playlist/2pQuNqpp8xCDOKjZowmo0G?si=8abc6fdc7d984ae2",
+        "output": os.path.join(project_root, "data", "outputs", "dataset_Sofia_output.csv")
+    }
+}
+
+# Alias retrocompatível
+CONFIG_DATASETS = CONFIG_INPUTS
 
 # --- Função Auxiliar ---
 def ms_para_min_seg(ms):
@@ -97,12 +172,12 @@ def ms_para_min_seg(ms):
     return f"{minutos}:{segundos:02}"
 
 # --- Função Principal ---
-def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str):
+def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str, use_oauth: bool = True, cache_path: str = ".cache"):
     """
     Executa o fluxo ETL (Extract, Transform, Load) para uma playlist específica.
 
     O que faz:
-        1. Conecta ao Spotify como Usuário para ler a playlist (mesmo privada).
+        1. Conecta ao Spotify (OAuth de usuário OU Client Credentials) e lê a playlist.
         2. Itera por todas as páginas (paginação) para coletar URIs.
         3. Conecta como App para baixar detalhes de artistas em lote (Performance).
         4. Compila metadados (popularidade, genres, dates) e salva em CSV.
@@ -116,35 +191,46 @@ def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str):
     Args:
         playlist_url (str): Link completo da playlist.
         output_csv_file (str): Caminho absoluto de destino do arquivo.
+        use_oauth (bool): Se True, usa OAuth (necessário para playlists privadas
+            das próprias personas). Se False, usa Client Credentials — funciona
+            apenas para playlists públicas (caso das playlists espelho de output).
     """
-    print(f"\n--- Iniciando extração de dados: {output_csv_file.split('/')[-1]} ---")
-    
+    print(f"\n--- Iniciando extração de dados: {os.path.basename(output_csv_file)} ---")
+
     # Validação simples para evitar execução com URLs não configuradas
     if "INSIRA" in playlist_url or not playlist_url:
-        print("   [!] ERRO: URL não configurada no dicionário CONFIG_DATASETS.")
+        print("   [!] ERRO: URL não configurada.")
         return
 
     try:
         # ----------------------------------------------------------------------
-        # ETAPA 1: BUSCAR MÚSICAS (Auth de Usuário)
+        # ETAPA 1: BUSCAR MÚSICAS
         # ----------------------------------------------------------------------
-        # Usa escopo 'playlist-read-private' para garantir leitura irrestrita.
+        # Para playlists privadas (inputs): OAuth com scope playlist-read-private.
+        # Para playlists públicas (outputs/mirrors): Client Credentials, sem login.
         print("Buscando todas as músicas da playlist...")
-        
-        scope = "playlist-read-private"
-        sp_user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
-        
+
+        if use_oauth:
+            # Cache por persona evita conflito de tokens (cada persona faz seu
+            # próprio OAuth). show_dialog=True força a tela de seleção de conta
+            # toda vez (impede auto-autorização com conta logada anteriormente).
+            scope = "playlist-read-private"
+            auth_manager = SpotifyOAuth(scope=scope, cache_path=cache_path, show_dialog=True)
+            print(f"   [i] Cache OAuth: {cache_path}")
+            user_access_token = auth_manager.get_access_token(as_dict=False)
+        else:
+            print("   [i] Modo público (Client Credentials, sem OAuth).")
+            cc_manager = SpotifyClientCredentials()
+            user_access_token = cc_manager.get_access_token(as_dict=False)
+
         # Extração do ID da Playlist a partir da URL (remove query params)
         playlist_id = playlist_url.split('/')[-1].split('?')[0]
-        
-        # Paginação Automática:
-        # O Spotify entrega max 100 itens por request.
-        resultados = sp_user.playlist_items(playlist_id)
-        itens_playlist = resultados['items']
-        while resultados['next']:
-            resultados = sp_user.next(resultados)
-            itens_playlist.extend(resultados['items'])
-            
+
+        # Endpoint NOVO /items (Feb/2026). Spotipy.playlist_items() ainda chama
+        # o /tracks deprecated → 403 Forbidden. Por isso usamos a função custom
+        # fetch_playlist_items_v2 que faz a chamada via requests + paginação.
+        itens_playlist = fetch_playlist_items_v2(user_access_token, playlist_id)
+
         print(f"Total de {len(itens_playlist)} itens encontrados na playlist.")
         
         # Filtragem: Remove itens que não são músicas (ex: episódios de podcast ou nulos)
@@ -153,29 +239,33 @@ def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str):
         # ----------------------------------------------------------------------
         # ETAPA 2: BUSCAR DETALHES DOS ARTISTAS (Auth de Aplicativo)
         # ----------------------------------------------------------------------
-        # Troca para Client Credentials Flow.
-        # Motivo: Dados de artistas são públicos e esse método tem limites maiores.
-        print("Buscando detalhes dos artistas em lote...")
-        
+        # Em fevereiro/2026 a Spotify Web API removeu os campos `popularity`,
+        # `followers` e `genres` da resposta de /artists tanto via singular
+        # quanto batch, para apps em Development Mode. Tentamos mesmo assim
+        # (em apps com Extended Quota Mode ainda funciona); se falhar com 403
+        # ou retornar campos vazios, o pipeline degrada graciosamente — os
+        # dados desses 3 campos serão preenchidos depois via fontes externas
+        # (MusicBrainz/Last.fm) pelo script enrich_external.py.
+        print("Buscando detalhes dos artistas em lote (best-effort)...")
+
         sp_app = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
-        # Deduplicação:
         artist_ids = list(set(
             artist['id'] for track in tracks for artist in track['artists'] if artist and artist.get('id')
         ))
-        
+
         artist_details_map = {}
-        
-        # Processamento em Lote (Batching):
-        # API permite até 50 IDs por request.
-        for i in range(0, len(artist_ids), 50):
-            batch_ids = artist_ids[i:i+50]
-            artist_results = sp_app.artists(batch_ids)
-            for artist in artist_results['artists']:
-                # Mapa de acesso rápido (ID -> Objeto Artista)
-                artist_details_map[artist['id']] = artist
-        
-        print(f"Detalhes obtidos para {len(artist_details_map)} artistas.")
+        try:
+            for i in range(0, len(artist_ids), 50):
+                batch_ids = artist_ids[i:i+50]
+                artist_results = sp_app.artists(batch_ids)
+                for artist in artist_results['artists']:
+                    if artist:
+                        artist_details_map[artist['id']] = artist
+            print(f"   [✓] Detalhes obtidos via Spotify para {len(artist_details_map)} artistas.")
+        except Exception as e:
+            print(f"   [!] Spotify bloqueou enriquecimento de artistas (esperado em Dev Mode Feb/2026): {str(e)[:120]}")
+            print(f"   [i] Será necessário rodar enrich_external.py para preencher popularity/followers/genres.")
 
         # ----------------------------------------------------------------------
         # ETAPA 3: MONTAR DADOS E NORMALIZAR
@@ -194,15 +284,19 @@ def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str):
             primary_artist_details = artist_details_map.get(primary_artist_id, {})
             all_artist_names = "; ".join([artist['name'] for artist in track['artists']])
 
-            # Estrutura da Linha (Schema do CSV)
+            # Estrutura da Linha (Schema do CSV).
+            # Campos perdidos pela mudança Feb/2026 da Web API (popularity da
+            # track, popularity/followers/genres do artista) ficam vazios aqui
+            # e serão preenchidos por enrich_external.py via fontes externas.
+            followers_obj = primary_artist_details.get('followers') or {}
             linha = {
-                'track_name': track['name'],
-                'track_popularity': track['popularity'],
+                'track_name': track.get('name', ''),
+                'track_popularity': track.get('popularity') if track.get('popularity') is not None else '',
                 'primary_artist_name': primary_artist_info.get('name', 'N/A'),
-                'artist_popularity': primary_artist_details.get('popularity', 0), # Métrica chave para análise de mainstream
-                'artist_followers': primary_artist_details.get('followers', {}).get('total', 0), # Métrica chave para análise de nicho
+                'artist_popularity': primary_artist_details.get('popularity', ''),
+                'artist_followers': followers_obj.get('total', '') if isinstance(followers_obj, dict) else '',
                 'all_artists': all_artist_names,
-                'artist_genres': "; ".join(primary_artist_details.get('genres', [])), # Gêneros vêm do Artista
+                'artist_genres': "; ".join(primary_artist_details.get('genres', [])),
                 'album_name': track['album']['name'],
                 'album_release_date': track['album']['release_date'],
                 'duration_readable': ms_para_min_seg(track.get('duration_ms')),
@@ -244,31 +338,69 @@ def extrair_e_salvar_dados(playlist_url: str, output_csv_file: str):
 def main():
     """
     Ponto de entrada do script.
-    Lê os argumentos do terminal e decide se executa para uma persona ou para todas.
+
+    Argumentos:
+        sys.argv[1]: nome da persona ou 'todas'/'all'.
+        sys.argv[2] (opcional): '--source=input' (default) ou '--source=output'.
+
+    Modo input: usa CONFIG_INPUTS, lê playlists-semente privadas via OAuth.
+    Modo output: usa CONFIG_RECOMMENDATIONS, lê playlists espelho públicas via
+        Client Credentials (não exige login por persona).
     """
-    # Verifica se o usuário passou argumentos
     if len(sys.argv) < 2:
         print("\nUso correto:")
-        print("  python extrair_dados_playlist.py [nome_da_persona]")
-        print("  Exemplo: python extrair_dados_playlist.py beatriz")
-        print("  Para todas: python extrair_dados_playlist.py todas")
-        print("\nPersonas configuradas:", ", ".join(CONFIG_DATASETS.keys()))
+        print("  python extrair_dados_playlist.py [persona|todas] [--source=input|output]")
+        print("  Ex (input):  python extrair_dados_playlist.py todas")
+        print("  Ex (output): python extrair_dados_playlist.py todas --source=output")
+        print("\nPersonas configuradas:", ", ".join(CONFIG_INPUTS.keys()))
         return
 
     argumento = sys.argv[1].lower()
 
-    # Lógica de decisão: Todas vs Individual
-    if argumento == "all" or argumento == "todas":
-        print(">>> INICIANDO EXTRAÇÃO EM LOTE (TODAS AS PERSONAS)")
-        for persona, config in CONFIG_DATASETS.items():
-            extrair_e_salvar_dados(config["url"], config["output"])
+    # Determina source pelo segundo argumento (default = input)
+    source = "input"
+    for arg in sys.argv[2:]:
+        if arg.startswith("--source="):
+            source = arg.split("=", 1)[1].lower()
+
+    if source == "output":
+        config_map = CONFIG_RECOMMENDATIONS
+        # Em fevereiro/2026 a Spotify Web API passou a exigir que o usuário
+        # autenticado seja DONO ou COLABORADOR da playlist para ler seus tracks.
+        # Como cada playlist espelho é de uma persona diferente, precisamos
+        # autenticar como cada persona individualmente. Cache por persona.
+        use_oauth = True
+        print(">>> MODO OUTPUT (playlists espelho dos Daily Mixes)")
+        print(">>> ATENÇÃO: cada persona faz seu próprio OAuth (4 logins).")
+        print(">>> Use janelas anônimas separadas pra trocar de conta entre personas.")
     else:
-        # Busca configuração da persona específica
-        config = CONFIG_DATASETS.get(argumento)
+        config_map = CONFIG_INPUTS
+        use_oauth = True
+        print(">>> MODO INPUT (playlists-semente / training)")
+
+    def cache_for(persona_name):
+        """Caminho de cache OAuth distinto por persona (evita conflito de tokens)."""
+        if source == "output":
+            return f".cache_{persona_name}"
+        return ".cache"
+
+    # Lógica de decisão: Todas vs Individual
+    if argumento in ("all", "todas"):
+        print(">>> INICIANDO EXTRAÇÃO EM LOTE (TODAS AS PERSONAS)")
+        for persona, config in config_map.items():
+            extrair_e_salvar_dados(
+                config["url"], config["output"],
+                use_oauth=use_oauth, cache_path=cache_for(persona)
+            )
+    else:
+        config = config_map.get(argumento)
         if config:
-            extrair_e_salvar_dados(config["url"], config["output"])
+            extrair_e_salvar_dados(
+                config["url"], config["output"],
+                use_oauth=use_oauth, cache_path=cache_for(argumento)
+            )
         else:
-            print(f"ERRO: Persona '{argumento}' não encontrada na configuração.")
+            print(f"ERRO: Persona '{argumento}' não encontrada na configuração ({source}).")
 
 if __name__ == '__main__':
     main()
