@@ -58,6 +58,21 @@ def main():
     print(f"\n--- Matriz Jaccard ({label}) ---")
     print(df_matrix.round(3).to_string())
 
+    # Jaccard médio dos 6 pares (triângulo superior, fora da diagonal) — métrica
+    # direta do Colapso de Contexto (#6): input ~0 (perfis ortogonais) deve subir
+    # no output se houver convergência cross-persona forçada pelo algoritmo.
+    n = len(personas_cap)
+    pairs = [df_matrix.iloc[i, j] for i in range(n) for j in range(i + 1, n)]
+    jaccard_medio = float(sum(pairs) / len(pairs))
+    print(f"\n[i] Jaccard MÉDIO dos {len(pairs)} pares ({label}): {jaccard_medio:.4f}")
+
+    # Persistir a matriz + média em reports/comparison/ para uso no Cap. 4
+    comparison_dir = os.path.join(project_root, "reports", "comparison")
+    os.makedirs(comparison_dir, exist_ok=True)
+    matrix_csv = os.path.join(comparison_dir, f"jaccard_matrix_{source}.csv")
+    df_matrix.round(6).to_csv(matrix_csv)
+    print(f"[OK] Matriz Jaccard salva em: {matrix_csv}")
+
     output_dir = figures_dir_for(project_root, source)
     os.makedirs(output_dir, exist_ok=True)
 
