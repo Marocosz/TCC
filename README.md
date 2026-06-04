@@ -22,6 +22,34 @@ Algorithmic recommender systems have become the main mediators between musical w
 
 **Keywords:** Algorithm auditing. Recommender systems. Spotify. Music diversity. Popularity bias.
 
+# LISTA DE FIGURAS
+
+> *Os números de página são gerados automaticamente no template (Word/Docs). As figuras exploratórias por persona do Capítulo 3 (gráficos de "insight" e visualizações cruzadas) devem receber numeração formal (Figura 3.x) e curadoria na versão final.*
+
+Figura 4.1 — Heatmap do Delta Algorítmico Percentual
+Figura 4.2 — Distribuição de Listeners por Artista, Input vs Output (KDE, escala log)
+Figura 4.3 — Mediana de Listeners por Artista, Input vs Output (escala log)
+Figura 4.4 — Distribuição percentual de Solo vs Grupo entre artistas únicos
+Figura 4.5 — Distribuição temporal das faixas por persona (KDE, Input/Output)
+Figura 4.6 — Top 10 Tags por Persona, Input vs Output
+Figura 4.7 — Shannon Entropy de Artistas, Input vs Output
+
+# LISTA DE TABELAS
+
+Tabela 3.1 — Correspondência entre métricas do Spotify e substitutos externos (Last.fm/MusicBrainz)
+Tabela 3.2 — Indicadores quantitativos do perfil Beatriz (input)
+Tabela 3.3 — Indicadores quantitativos do perfil Daniel (input)
+Tabela 3.4 — Indicadores quantitativos do perfil Sofia (input)
+Tabela 3.5 — Indicadores quantitativos do perfil Ricardo (input)
+Tabela 3.6 — Métricas de diversidade dos inputs (Shannon, Pielou, Gini, riqueza)
+Tabela 3.7 — Distribuição de Cauda Longa dos inputs (régua única de listeners)
+Tabela 4.1 — Volume e cobertura dos Outputs
+Tabela 4.2 — Taxa de Overlap Interno entre os Daily Mixes
+Tabela 4.3 — Delta Algorítmico Percentual (Input → Output)
+Tabela 4.4 — Jaccard médio cross-persona (6 pares) vs. nulo de permutação
+Tabela 4.5 — Convergência da Shannon Entropy (e a evenness de Pielou)
+Tabela 4.6 — Síntese dos Achados por Persona e Hipóteses Confirmadas
+
 # Sumário
 
 - [AUDITORIA DE SISTEMAS DE INTELIGÊNCIA ARTIFICIAL EM PLATAFORMAS DE STREAMING: UM ESTUDO EXPERIMENTAL SOBRE VIESES E RECOMENDAÇÃO MUSICAL NO SPOTIFY](#auditoria-de-sistemas-de-inteligência-artificial-em-plataformas-de-streaming-um-estudo-experimental-sobre-vieses-e-recomendação-musical-no-spotify)
@@ -210,7 +238,9 @@ A perda dos campos `track_popularity`, `artist_popularity`, `artist_followers` e
 
 - **[MusicBrainz](https://musicbrainz.org/doc/MusicBrainz_API)** — banco de dados aberto que fornece metadados ricos sobre artistas: gêneros (*tags* crowdsourced), país de origem, área geográfica, ano de início de carreira (*life-span begin*), tipo de artista (*Person*, *Group*, *Choir*, *Orchestra*) e gênero (*Male*, *Female*, *Other*).
 
-A correspondência semântica entre as métricas migradas é descrita na tabela abaixo:
+A correspondência semântica entre as métricas migradas é descrita na Tabela 3.1:
+
+**Tabela 3.1 — Correspondência entre métricas do Spotify e substitutos externos (Last.fm/MusicBrainz)**
 
 | Métrica original (Spotify) | Substituto adotado (Externo) | Justificativa metodológica |
 | :--- | :--- | :--- |
@@ -246,6 +276,8 @@ Em termos estruturais, a playlist reflete o formato radiofônico padrão, com Du
 A diversidade aparente de gêneros (HHI 0.035 sobre tags de MusicBrainz) revela, na prática, uma concentração temática brasileira: as tags `sertanejo` (64), `brazil`/`brazilian` (103 combinadas), `pop` (30) e `funk` (23) dominam o repertório, refletindo fielmente os *charts* nacionais. A dispersão de artistas (94 únicos, média de 2.13 faixas por artista) confirma um comportamento de escuta passiva, focado em hits diversos em vez de discografias profundas.
 
 #### 3.2.1.1 Tabela de indicadores
+
+**Tabela 3.2 — Indicadores quantitativos do perfil Beatriz (input)**
 
 | Indicador | Valor Obtido | Interpretação |
 | :--- | :--- | :--- |
@@ -285,6 +317,8 @@ A análise de tags revela um **mono-cluster temático**: as marcas `lo-fi` (93 o
 
 #### 3.2.2.1 Tabela de indicadores
 
+**Tabela 3.3 — Indicadores quantitativos do perfil Daniel (input)**
+
 | Indicador | Valor Obtido | Interpretação Científica |
 | :--- | :--- | :--- |
 | Listeners Mediano por Artista (Last.fm) | 79,595 | Zona de Cauda Longa: artistas com base de fãs ativa baixa (alguns milhares), mas com plays altos via consumo passivo. |
@@ -322,6 +356,8 @@ O comportamento de consumo de Sofia é profundamente focado e leal, evidenciado 
 Temporalmente, ela compartilha o viés de contemporaneidade (Ano Médio 2021, com 77% das faixas na década de 2020), mas com um propósito diferente: ela busca a vanguarda experimental atual, não os sucessos de rádio. A distribuição de tags valida sua formação em design e gosto por atmosferas: há predominância de estilos baseados em textura e colagem sonora — `shoegaze`, `plunderphonics`, `cloud rap`, `IDM`, `lo-fi indie` — gêneros complexos que exigem análise de conteúdo de áudio (timbre/ritmo) mais apurada do que a simples filtragem colaborativa. A composição **61% solo, 39% grupos** (MusicBrainz) reflete a predominância individual típica de cenas independentes contemporâneas.
 
 #### 3.2.3.1 Tabela de indicadores
+
+**Tabela 3.4 — Indicadores quantitativos do perfil Sofia (input)**
 
 | Indicador | Valor Obtido | Interpretação Científica |
 | :--- | :--- | :--- |
@@ -361,6 +397,8 @@ Temporalmente, o input é deslocado para o século passado, com Ano Médio de La
 
 #### 3.2.4.1 Tabela de indicadores
 
+**Tabela 3.5 — Indicadores quantitativos do perfil Ricardo (input)**
+
 | Indicador | Valor Obtido | Interpretação Científica |
 | :--- | :--- | :--- |
 | Listeners Mediano por Artista (Last.fm) | **4,412,516** | Zona de consagração histórica; o mais alto do estudo. Lendas globais com bases de fãs ativas de milhões. |
@@ -395,6 +433,8 @@ Esta validação estabelece a **Linha de Base** (*Baseline*) do experimento. A c
 
 A aplicação de indicadores de diversidade revela as diferenças estruturais na "dieta informacional" de cada persona. A Tabela abaixo apresenta a Entropia de Shannon (incerteza/variedade), a **Evenness de Pielou** ($J = H/\log_2 S$, que normaliza a Shannon pelo seu teto teórico e isola a *uniformidade* da *riqueza*; PIELOU, 1966), o Coeficiente de Gini (desigualdade de atenção) e a Riqueza (artistas únicos, $S$). Estas métricas dependem apenas da contagem de artistas únicos e suas frequências, não foram afetadas pela transição de fonte e mantêm os valores originalmente computados.
 
+**Tabela 3.6 — Métricas de diversidade dos inputs (Shannon, Pielou, Gini, riqueza)**
+
 | Persona | Entropia (Shannon) | Evenness (Pielou) | Desigualdade (Gini) | Riqueza ($S$) | Interpretação Estrutural |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Beatriz** | 6.03 (Alta) | 0.92 | 0.42 (Média) | 94 | **Consumo Exploratório/Caótico**; reflete a natureza do ouvinte de *hits*, com alta rotatividade e baixa fidelidade a álbuns específicos. |
@@ -407,6 +447,8 @@ A aplicação de indicadores de diversidade revela as diferenças estruturais na
 ### 3.3.2 Distribuição de Mercado (Cauda Longa)
 
 A análise da estratificação econômica dos artistas valida a hipótese de polarização entre "Cabeça" (*Head*) e "Cauda" (*Tail*) da distribuição de Pareto. Os limiares de classificação foram **calibrados via percentis sobre um pool único** que combina os oito conjuntos do estudo (quatro *inputs* + quatro *outputs*, deduplicados por artista: 557 artistas), resultando em **P25 = 65.376** e **P75 = 474.962** *listeners* no Last.fm. Essa **régua única** — idêntica para *input* e *output* — substitui os limiares absolutos baseados em *followers* do Spotify (deprecados em 02/2026) e torna os *tiers* diretamente comparáveis entre estímulo e recomendação; calibrá-los separadamente por *source* produziria classificações incomparáveis.
+
+**Tabela 3.7 — Distribuição de Cauda Longa dos inputs (régua única de listeners)**
 
 | Persona | % Superstars (>P75) | % Médios (P25–P75) | % Cauda Longa (≤P25) | Perfil Econômico |
 | :--- | :--- | :--- | :--- | :--- |
