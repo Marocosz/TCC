@@ -60,6 +60,37 @@ def get_genre_string(row):
     return ""
 
 
+def unified_thresholds(project_root):
+    """
+    Calcula P25/P75 de listeners UMA ÚNICA VEZ sobre o pool unificado de TODOS
+    os 8 CSVs enriched (4 personas × input+output), com deduplicação global por
+    artista (cada artista entra uma vez, com seu valor de listeners).
+
+    Correção do problema C1/M3 (#3): antes, os percentis eram calibrados DENTRO
+    de cada source (`--source`), produzindo réguas diferentes para input
+    (P75≈320k) e output (P75≈634k) — tornando incomparável o "% Superstars input
+    vs output". Com uma régua única aplicada às duas sources, os tiers passam a
+    ser diretamente comparáveis (apples-to-apples).
+
+    Retorna (p25, p75, n_artistas_no_pool).
+    """
+    artist_listeners = {}
+    for src in ("input", "output"):
+        for persona in PERSONAS:
+            path = csv_path_for(persona, project_root, src, enriched=True)
+            if not os.path.exists(path):
+                continue
+            df = pd.read_csv(path)
+            df["lastfm_listeners"] = pd.to_numeric(df["lastfm_listeners"], errors="coerce").fillna(0)
+            for name, val in zip(df["primary_artist_name"], df["lastfm_listeners"]):
+                # dedup global por artista; mantém o primeiro valor visto
+                if name not in artist_listeners:
+                    artist_listeners[name] = val
+
+    pool = pd.Series(list(artist_listeners.values()))
+    return pool.quantile(0.25), pool.quantile(0.75), len(pool)
+
+
 def main():
     source = parse_source()
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -86,11 +117,10 @@ def main():
         print("[!] Nenhum dado encontrado.")
         return
 
-    # ETAPA 2: calibrar thresholds por percentil 25 e 75 sobre o pool unificado
-    pool = pd.Series(all_artists_listeners)
-    p25 = pool.quantile(0.25)
-    p75 = pool.quantile(0.75)
-    print(f"[i] Thresholds calibrados (percentis sobre {len(pool)} artistas únicos):")
+    # ETAPA 2: régua ÚNICA — P25/P75 sobre o pool unificado dos 8 CSVs
+    # (input+output), idêntica para as duas sources → tiers comparáveis (#3).
+    p25, p75, n_pool = unified_thresholds(project_root)
+    print(f"[i] Régua ÚNICA input+output (percentis sobre {n_pool} artistas únicos globais):")
     print(f"    Cauda Longa  : <= {p25:>15,.0f} listeners (P25)")
     print(f"    Médios       :    {p25:>15,.0f} < x <= {p75:,.0f} (P25-P75)")
     print(f"    Superstars   :  > {p75:>15,.0f} listeners (P75)\n")
