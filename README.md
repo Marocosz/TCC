@@ -506,7 +506,7 @@ $$\text{Overlap Interno} = \frac{300 - N}{300}$$
 | Ricardo | 268 | 32 | 10.67% | Redundância média (catálogo clássico tem repertório finito de "lendas") |
 | **Sofia** | **264** | **36** | **12.00%** | **Maior redundância** — bolha mais estreita |
 
-> **Achado:** O perfil **Sofia** (consumidora de nicho/underground) apresenta a **maior taxa de redundância** entre as quatro personas. Esse resultado sinaliza que, quando o algoritmo dispõe de **menos diversidade no input declarado** (Sofia tem só 27 artistas únicos contra 99 de Daniel), ele tende a **repetir as mesmas faixas entre clusters distintos**, configurando uma bolha de filtro mais estreita justamente para o perfil que **mais valoriza descoberta**. Esta observação é metodologicamente relevante: contradiz a expectativa de que o algoritmo "amplie o leque" para usuários que demonstram apetite exploratório.
+> **Indicador exploratório (com ressalvas):** O perfil **Sofia** apresenta a maior taxa de redundância entre as quatro personas, sugerindo que, com menos diversidade no *input* declarado (27 artistas únicos contra 99 de Daniel), o algoritmo tende a repetir faixas entre *clusters*. Esta leitura deve ser tomada como **indicador exploratório, e não como achado consolidado**, por duas limitações estruturais: (i) a métrica é uma transformação determinística e decrescente do número de faixas únicas — fixado o pool em 300, $(300-N)/300$ não acrescenta informação independente do próprio $N$; e (ii) a deduplicação entre os seis *Daily Mixes* foi feita automaticamente pelo cliente do Spotify *antes* da contagem (§4.1), de modo que o valor bruto do pool (estimado em 6 × 50 = 300) é uma suposição não verificável e o overlap real não é recuperável. A amplitude observada é estreita (6,33% a 12,00%) e majoritariamente explicada pelo menor número de faixas únicas de Sofia; evita-se, portanto, qualquer leitura causal forte de "bolha de filtro" a partir deste indicador, reservando-se a evidência de estreitamento às métricas de Jaccard cross-persona (§4.5).
 
 ## 4.3 O Delta Algorítmico — Visão Geral
 
@@ -536,6 +536,8 @@ A Tabela 4.3 sintetiza os deltas percentuais (também disponíveis em `reports/c
 | Duração Média | -0.2% | +5.2% | -6.9% | +3.1% |
 
 A leitura horizontal (por métrica) revela quais aspectos do consumo o algoritmo mais distorce; a leitura vertical (por persona) mostra quais perfis sofrem maior interferência.
+
+> **Nota sobre incerteza (tratamento inferencial, §3.1.2.1).** Cada delta "manchete" deste capítulo é acompanhado de sua medida de incerteza, computada em `build_significance.py`. Para as medianas de audiência, reportam-se intervalos de confiança de 95% por *bootstrap* e, quando se comparam distribuições *track-level*, o p-valor de Mann-Whitney U. Por exemplo: Daniel, listeners/artista 79.595 → 184.082 (**+131,3%**), IC95% *input* [64.290; 111.322] vs. *output* [146.972; 221.535] — sem sobreposição; Sofia, listeners/track 1.223 → 6.178 (**+405,2%**), Mann-Whitney **p ≈ 1,3 × 10⁻¹⁶**; Ricardo, listeners/track 311.105 → 660.893 (**+112%**), **p ≈ 2,1 × 10⁻⁷**. As variações de riqueza (ex.: Ricardo +600%) são qualificadas pela rarefação (§4.5). Nenhuma afirmação numérica forte é, portanto, apresentada como estimativa pontual desacompanhada de incerteza.
 
 **Achado preliminar (visão geral):** A magnitude da distorção **cresce em ordem inversa ao alinhamento do perfil com o mainstream**. Beatriz (controle mainstream) mostra apenas mudanças tímidas; Daniel (funcional, mas comoditizado) mostra distorções moderadas; Sofia e Ricardo (perfis verticais e desviantes do mainstream) sofrem **distorções extremas em múltiplas dimensões**. Esta hierarquia será detalhada na análise persona por persona (§4.4).
 
@@ -568,6 +570,8 @@ Adicionalmente, a Figura 4.4 mostra a transformação na estrutura social do con
 > **Figura 4.4 — Distribuição percentual de Solo (Person) vs Grupo (Group) entre artistas únicos.** Daniel apresenta queda dramática de % Group (de ~24% para ~11%, **-53.2%**), com correspondente aumento de % Solo (+24.7%).
 
 Esta queda de bandas/grupos confirma uma característica estrutural do nicho lo-fi: **o ecossistema é dominado por *bedroom producers* individuais**. O algoritmo, ao "aprender" o perfil de Daniel, acentua essa característica social, recomendando ainda mais produtores solo do que o próprio *input* continha.
+
+> **Ressalva estatística.** A cobertura do campo de tipo de artista (`mb_artist_type`) é satisfatória para Daniel (71,7% no *input*, 93,0% no *output*); o cuidado necessário não é de cobertura, mas de **base absoluta**: a categoria "Grupo" repousa sobre poucos artistas (17 → 12 entre os tipados), e proporções sobre contagens pequenas têm alta variância. O IC de Wilson 95% do %grupo (*input* [15,5%; 35,0%] vs. *output* [6,5%; 18,6%]) **apresenta sobreposição**, de modo que o delta de −53% deve ser lido como *indício convergente*, e não como evidência isolada. A direção do achado é, porém, corroborada de forma mais robusta pelo **aumento de %solo (+24,7%)**, que se apoia sobre base amostral maior (50 → 94 artistas individuais únicos).
 
 > **Conclusão para Daniel:** Confirma-se a **hipótese de Contaminação Pop** (formulada em §3.2.2). O algoritmo, ao buscar manter Daniel engajado, recomenda **artistas mais conhecidos dentro do nicho lo-fi/instrumental** — produtores que migraram do anonimato para a "elite do nicho", evidenciando que a "Zona de Conforto Algorítmico" desloca o perfil em direção ao centro de gravidade da popularidade, mesmo dentro de um cluster funcional/comoditizado.
 
@@ -615,39 +619,53 @@ A análise da **Era de Carreira** revela um deslocamento sutil mas significativo
 
 > **Conclusão para Ricardo:** Confirma-se a hipótese de **violação ativa do "Legacy Control"** (formulada em §3.2.4). O algoritmo **NÃO respeita o comportamento de fidelidade canônica** — ao contrário, ele força a substituição de "discografia profunda" por "exploração horizontal de artistas similares". Este achado tem implicações cruciais para o argumento sobre *bolha de filtro* da pesquisa: contraria a expectativa intuitiva de que perfis ultra-concentrados ficariam "presos" em loops temporais. **Na prática, o algoritmo faz o oposto: arromba a bolha vertical, fragmenta o gosto consolidado e empurra o usuário em direção a uma horizontalidade comum.**
 
-## 4.5 O Colapso de Contexto: Evidência da Homogeneização Algorítmica
+## 4.5 Reconfiguração da Diversidade: Expansão de Riqueza com Manutenção de Silos
 
-A análise integrada das quatro personas revela o **achado central deste estudo**: independentemente do perfil declarado no *input*, todos os *outputs* convergem para uma faixa estreita de Shannon Entropy. A Figura 4.7 sintetiza o fenômeno:
+A análise integrada das quatro personas revela o **achado central deste estudo** — mais sutil e mais robusto do que a hipótese inicial de um "colapso de contexto" entendido como fusão dos perfis. Quando se decompõe a noção de "convergência" em três níveis distintos (conteúdo, tema e magnitude de diversidade), os dados **refutam a homogeneização de conteúdo** e revelam um fenômeno estratificado: o algoritmo expande a riqueza interna de cada perfil e os aproxima *tematicamente*, mas mantém os **repertórios de artistas rigidamente separados**.
+
+#### Nível 1 — Conteúdo (artistas): silos preservados, não colapso
+
+A métrica direta da convergência entre personas é o Índice de Jaccard cross-persona sobre os conjuntos de artistas. O resultado é inequívoco: o Jaccard médio dos seis pares é **exatamente 0,000 tanto no *input* quanto no *output*** — os quatro conjuntos de artistas recomendados são integralmente disjuntos (união de 452 artistas, idêntica à soma dos tamanhos). Um teste de permutação (rótulos de persona reembaralhados sobre o universo combinado, mil reamostragens, correção de Phipson e Smyth (2010)) demonstra que essa separação é **significativamente maior do que a esperada ao acaso**: dado o tamanho dos conjuntos, esperar-se-ia um Jaccard de 0,142 (IC 95% [0,125; 0,161]) por mero sorteio, contra 0,000 observado (p < 0,001). Em vez de fundir os perfis, **o algoritmo preserva — e estatisticamente acentua — silos de repertório distintos**.
+
+#### Nível 2 — Tema (gêneros/tags): convergência parcial
+
+No nível temático, o quadro se inverte parcialmente: o Jaccard médio de *tags* sobe de **0,128 (input) para 0,154 (output)**, com aumento em todos os seis pares. Ou seja, embora os artistas permaneçam disjuntos, as recomendações aproximam tematicamente os perfis. Essa dissociação entre proximidade temática e disjunção de artistas é coerente com Anderson et al. (2020), cujo estudo na própria Spotify mede diversidade por proximidade sonora (*embeddings*) e não por riqueza de artistas — os achados tornam-se compatíveis quando se separa o eixo da *riqueza* do eixo da *proximidade*.
+
+**Tabela 4.4 — Jaccard médio cross-persona (6 pares) vs. nulo de permutação**
+
+| Nível de comparação | Jaccard Input | Jaccard Output | Esperado ao acaso (Output) | Veredito |
+| :--- | :---: | :---: | :---: | :--- |
+| **Artistas** (conteúdo) | 0.000 | 0.000 | 0.142 [0.125; 0.161] | Disjunção total; **mais segregado que o acaso** (p < 0.001) |
+| **Gêneros/tags** (tema) | 0.128 | 0.154 | 0.201 [0.182; 0.220] | Convergência temática parcial (+20%), porém ainda abaixo do acaso |
+
+#### Nível 3 — Magnitude da diversidade: convergência por expansão de riqueza
+
+Há, de fato, convergência da Entropia de Shannon para um patamar comum (~6,5), antes dispersa entre 4,10 e 6,27 — uma redução de ~75% na amplitude entre personas. A Figura 4.7 e a Tabela 4.5 sintetizam o fenômeno:
 
 ![Bar Shannon Input vs Output](reports/comparison/bar_shannon_in_vs_out.png)
 
 > **Figura 4.7 — Shannon Entropy de Artistas, Input (azul) vs Output (vermelho), com delta % anotado.** A linha tracejada cinza marca a faixa de convergência observada (~6.5).
 
-A Tabela 4.4 quantifica o fenômeno:
+**Tabela 4.5 — Convergência da Shannon Entropy (e a evenness de Pielou)**
 
-**Tabela 4.4 — Convergência da Shannon Entropy**
-
-| Persona | Shannon Input | Shannon Output | Δ absoluto | Δ relativo |
+| Persona | Shannon Input | Shannon Output | Δ relativo | Pielou Input → Output |
 | :--- | :---: | :---: | :---: | :---: |
-| Beatriz | 6.03 | 6.51 | +0.48 | +7.9% |
-| Daniel | 6.27 | 6.52 | +0.25 | +4.0% |
-| Ricardo | 4.10 | 6.61 | +2.52 | +61.4% |
-| Sofia | 4.43 | 6.07 | +1.63 | +37.1% |
-| **Pool dos 4 outputs** | — | **6.07–6.61** | — | — |
+| Beatriz | 6.03 | 6.51 | +7.9% | 0.92 → 0.94 |
+| Daniel | 6.27 | 6.52 | +4.0% | 0.95 → 0.95 |
+| Ricardo | 4.10 | 6.61 | **+61.4%** | 0.98 → 0.95 |
+| Sofia | 4.43 | 6.07 | **+37.1%** | 0.93 → 0.93 |
 
-A interpretação é direta: **o intervalo de Shannon dos *inputs* (4.10 a 6.27) tem amplitude de 2.17 bits**; o intervalo de Shannon dos *outputs* (6.07 a 6.61) tem amplitude de **apenas 0.54 bits — uma redução de 75% na variabilidade entre personas**. O algoritmo, por mecanismo não explicitado em sua documentação, **converge perfis distintos para uma "Shannon-alvo" próxima de 6.5 bits**.
+Contudo, **essa convergência não é homogeneização de entropia, e sim expansão de riqueza de catálogo**. A evidência é dupla. Primeiro, a evenness de Pielou permanece praticamente constante (0,92–0,98) — para Ricardo, ela inclusive *cai* levemente (0,98 → 0,95) enquanto a Shannon dispara, prova de que o ganho vem do número de artistas (18 → 126, +600%), não de maior uniformidade. Segundo, o controle por **rarefação** (subamostragem do *output* a N = 200 faixas, igual ao *input*; Gotelli e Colwell (2001)) confirma que o efeito não é artefato do maior número de faixas: a riqueza de Ricardo mantém-se em **108 artistas (IC 95% [102; 113])** mesmo sob esforço amostral padronizado, contra 18 no *input*. O efeito persiste com robustez para Ricardo e Sofia; para **Daniel**, ao contrário, o ganho de Shannon **perde significância após a rarefação** (IC 95% [6,25; 6,44], que contém o valor de *input*, 6,27), indicando que, nesse caso, parte do ganho era mero artefato amostral.
 
-Este fenômeno opera em duas direções simultâneas:
-- **Para perfis verticais** (Ricardo, Sofia — Shannon baixa): o algoritmo *aumenta artificialmente* a entropia, pulverizando a fidelidade canônica.
-- **Para perfis horizontais** (Beatriz, Daniel — Shannon alta): o algoritmo *mantém* a entropia já elevada, sem expandi-la mais.
+#### Síntese: a bolha não se funde, alarga-se por dentro
 
-A homogeneização é, portanto, **assimétrica e direcional**: opera contra perfis de profundidade vertical, "puxando-os" em direção ao centro horizontal. **Esta é a operacionalização matemática do Colapso de Contexto** anunciado nos objetivos específicos da pesquisa (§2.1) — o fenômeno hipotetizado se confirma empiricamente.
+Os três níveis, considerados em conjunto, sustentam um achado mais forte que o originalmente hipotetizado: **o algoritmo não homogeneíza o gosto entre usuários**. Ele expande a riqueza interna de cada perfil (arrombando bolhas verticais, como a de Ricardo) e os aproxima tematicamente, mas mantém repertórios de artistas rigidamente disjuntos. O "Colapso de Contexto" anunciado nos objetivos (§2.1) ocorre apenas no eixo temático e no de *magnitude* de diversidade — **não no eixo de conteúdo**. A bolha não se rompe nem se funde com as demais: ela se alarga internamente enquanto suas paredes de conteúdo permanecem de pé.
 
 ## 4.6 Síntese dos Achados e Discussão
 
-A Tabela 4.5 consolida os achados centrais do estudo, mapeando-os contra as hipóteses formuladas no Capítulo 2:
+A Tabela 4.6 consolida os achados centrais do estudo, mapeando-os contra as hipóteses formuladas no Capítulo 2:
 
-**Tabela 4.5 — Síntese dos Achados por Persona e Hipóteses Confirmadas**
+**Tabela 4.6 — Síntese dos Achados por Persona e Hipóteses Confirmadas**
 
 | Persona | Hipótese Original (§3.2) | Achado Empírico (§4.4) | Magnitude | Status |
 | :--- | :--- | :--- | :---: | :---: |
@@ -660,7 +678,7 @@ A hipótese de Ricardo merece destaque: o estudo havia **antecipado** que o algo
 
 ### 4.6.1 Os Quatro Achados Centrais
 
-**1. Homogeneização Algorítmica (§4.5).** O Spotify converge perfis distintos para uma "Shannon-alvo" estreita (~6.5 bits), reduzindo a variabilidade entre personas em 75%. **Este é o achado matemático mais robusto do estudo** e operacionaliza o Colapso de Contexto.
+**1. Expansão de Riqueza com Manutenção de Silos (§4.5).** O Spotify converge a *magnitude* de diversidade dos perfis para uma faixa estreita de Shannon (~6,5 bits), mas — como provam a evenness de Pielou plana e a rarefação — isso é **expansão de riqueza de catálogo**, não homogeneização de entropia. Crucialmente, no nível de **conteúdo** não há convergência alguma: o Jaccard cross-persona de artistas é 0,000, mais segregado que o acaso (p < 0,001). O algoritmo aproxima os perfis tematicamente (Jaccard de tags +20%) enquanto mantém os repertórios de artistas disjuntos. **Este é o achado mais robusto e contraintuitivo do estudo:** não um colapso/fusão dos perfis, mas o alargamento interno de cada bolha com a preservação de suas paredes de conteúdo.
 
 **2. Viés de Popularidade Direcionalmente Dependente (§4.4.2 e §4.4.4).** Daniel (perfil moderado de nicho) é puxado *para cima* em listeners (+131%); Ricardo (perfil de superstars) é puxado *para baixo* (-34%). Em ambos os casos, a direção converge para **um patamar médio de visibilidade**, evidenciando uma "gravidade algorítmica" que repele os extremos.
 
