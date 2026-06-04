@@ -48,7 +48,7 @@ Orientador: José Eduardo Ferreira Lopes
     - [4.4.2 Daniel (Lo-fi) — Confirmação do Viés de Popularidade](#442-daniel-lo-fi--confirmação-do-viés-de-popularidade)
     - [4.4.3 Sofia (Nicho) — Viés do Hit dentro da Cauda Longa](#443-sofia-nicho--viés-do-hit-dentro-da-cauda-longa)
     - [4.4.4 Ricardo (Nostálgico) — Pulverização da Fidelidade Canônica](#444-ricardo-nostálgico--pulverização-da-fidelidade-canônica)
-  - [4.5 O Colapso de Contexto: Evidência da Homogeneização Algorítmica](#45-o-colapso-de-contexto-evidência-da-homogeneização-algorítmica)
+  - [4.5 Reconfiguração da Diversidade: Expansão de Riqueza com Manutenção de Silos](#45-reconfiguração-da-diversidade-expansão-de-riqueza-com-manutenção-de-silos)
   - [4.6 Síntese dos Achados e Discussão](#46-síntese-dos-achados-e-discussão)
 
 # 1 INTRODUÇÃO
@@ -62,6 +62,8 @@ Sob a ótica da Gestão da Informação, essa transição caracteriza a ascensã
 A evolução dessas plataformas também impactou a economia do setor musical, consolidando modelos de negócios associados à chamada Economia da Atenção. Nesse modelo, o sucesso da plataforma depende da maximização da retenção do usuário, o que frequentemente leva os algoritmos a priorizarem conteúdos de baixo risco e alta aceitação estatística. Esse processo gera um ciclo de retroalimentação no qual o conteúdo popular tende a ganhar maior visibilidade, enquanto produções novas, experimentais ou de nicho permanecem marginalizadas.
 
 Diante desse cenário, emerge a motivação central desta pesquisa: investigar como os sistemas de recomendação influenciam a diversidade cultural. Ao priorizar padrões estatisticamente mais consumíveis, tais algoritmos podem induzir à homogeneização do gosto musical e ao fortalecimento de bolhas de filtro (filter bubbles), restringindo a descoberta de nichos e o acesso a artistas independentes. O risco de alienação do gosto musical mediado por vieses algorítmicos configura-se, assim, como um objeto crítico de análise da cultura digital contemporânea.
+
+É preciso, contudo, tratar a noção de "bolha de filtro" com rigor crítico. O conceito, popularizado por Pariser (2011), postula que a personalização algorítmica encerraria o usuário em um universo informacional autorreferente. Essa tese, entretanto, é objeto de controvérsia: Bruns (2019) argumenta que a evidência empírica robusta para bolhas de filtro é escassa e que o conceito, frequentemente, opera mais como pânico moral do que como fenômeno mensurado. Esta pesquisa posiciona-se justamente nesse debate, tomando a bolha de filtro não como pressuposto, mas como **hipótese a ser testada empiricamente** no domínio da recomendação musical — onde, como se verá no Capítulo 4, os próprios dados sugerem um comportamento mais sutil do que a metáfora clássica da bolha prevê (o algoritmo chega a *arrombar* a bolha vertical do perfil nostálgico, em vez de reforçá-la).
 
 Nesse contexto, torna-se fundamental a realização de Auditorias Algorítmicas, que investigam exogenamente o comportamento dos sistemas por meio da análise dos outputs gerados a partir de estímulos controlados. A auditoria de caixa-preta permite avaliar empiricamente o viés algorítmico sem acesso ao código-fonte, contornando desafios impostos pela volatilidade dos dados e pela complexidade das interações humanas.
 
@@ -107,10 +109,10 @@ Complementarmente à automação da curadoria, foi desenvolvida uma arquitetura 
 
 Para transcender a análise puramente qualitativa do gosto musical, esta pesquisa implementou um *pipeline* de engenharia de dados em Python, focado na extração de indicadores matemáticos de diversidade e concentração. Os dados brutos coletados via API foram processados utilizando as bibliotecas `pandas` para estruturação tabular e `numpy` para operações vetoriais, garantindo a reprodutibilidade dos cálculos.
 
-A fim de quantificar fenômenos subjetivos como "ecletismo", "bolha de filtro" e "viés de popularidade", foram adotadas quatro métricas estatísticas fundamentais, adaptadas da Teoria da Informação e da Economia da Cultura:
+A fim de quantificar fenômenos subjetivos como "ecletismo", "bolha de filtro" e "viés de popularidade", foram adotadas quatro métricas estatísticas fundamentais, adaptadas da Teoria da Informação e da Economia da Cultura e em diálogo com a literatura de métricas de diversidade e novidade para sistemas de recomendação (VARGAS; CASTELLS, 2011):
 
 **A) Entropia de Shannon (Diversidade Informacional)**
-Utilizada para mensurar o grau de imprevisibilidade e variedade na curadoria de artistas. No contexto deste estudo, a Entropia ($H$) calcula a distribuição de frequência dos artistas dentro de uma playlist.
+Originalmente formulada na Teoria da Informação (SHANNON, 1948), é utilizada aqui para mensurar o grau de imprevisibilidade e variedade na curadoria de artistas. No contexto deste estudo, a Entropia ($H$) calcula a distribuição de frequência dos artistas dentro de uma playlist.
 * **Fórmula:** $H(X) = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i)$
   * Onde $p(x_i)$ é a probabilidade (frequência relativa) de ocorrência do artista $i$.
 * **Implementação:** Calculada via script Python, onde valores mais altos indicam maior diversidade (playlist pulverizada) e valores baixos indicam alta repetição (playlist monótona).
@@ -121,7 +123,7 @@ Originalmente usado para medir desigualdade de renda, aqui o Coeficiente de Gini
 * **Implementação:** O algoritmo ordena os artistas por frequência e calcula a área sob a Curva de Lorenz, permitindo identificar perfis "Superfãs" (alto Gini) versus "Ouvintes Casuais" (baixo Gini).
 
 **C) Índice Herfindahl-Hirschman (HHI de Gêneros)**
-Métrica econômica utilizada para detectar monopólios de mercado. Neste estudo, o HHI avaliou a diversidade de gêneros musicais.
+Métrica econômica utilizada para detectar monopólios de mercado (RHOADES, 1993). Neste estudo, o HHI avaliou a diversidade de gêneros musicais.
 * **Fórmula:** $HHI = \sum_{i=1}^{N} s_i^2$
   * Onde $s_i$ é a participação de mercado (% do total) de cada gênero musical na biblioteca.
 * **Aplicação:** Diferentemente do HHI de mercado clássico — cujo limiar de concentração se situa em torno de 0,25 —, aqui o índice é calculado sobre a distribuição de centenas de *tags* explodidas por faixa, o que comprime sua escala por construção: os valores observados situam-se entre 0,02 e 0,08. A leitura é, portanto, **relativa** entre as personas (um HHI comparativamente mais alto indica maior concentração temática, como o *mono-cluster* lo-fi de Daniel) e não o cruzamento de um limiar absoluto de "bolha".
@@ -377,7 +379,7 @@ Esta validação estabelece a **Linha de Base** (*Baseline*) do experimento. A c
 
 ### 3.3.1 Métricas de Diversidade e Entropia da Informação
 
-A aplicação de indicadores de diversidade revela as diferenças estruturais na "dieta informacional" de cada persona. A Tabela abaixo apresenta a Entropia de Shannon (incerteza/variedade), a **Evenness de Pielou** ($J = H/\log_2 S$, que normaliza a Shannon pelo seu teto teórico e isola a *uniformidade* da *riqueza*), o Coeficiente de Gini (desigualdade de atenção) e a Riqueza (artistas únicos, $S$). Estas métricas dependem apenas da contagem de artistas únicos e suas frequências, não foram afetadas pela transição de fonte e mantêm os valores originalmente computados.
+A aplicação de indicadores de diversidade revela as diferenças estruturais na "dieta informacional" de cada persona. A Tabela abaixo apresenta a Entropia de Shannon (incerteza/variedade), a **Evenness de Pielou** ($J = H/\log_2 S$, que normaliza a Shannon pelo seu teto teórico e isola a *uniformidade* da *riqueza*; PIELOU, 1966), o Coeficiente de Gini (desigualdade de atenção) e a Riqueza (artistas únicos, $S$). Estas métricas dependem apenas da contagem de artistas únicos e suas frequências, não foram afetadas pela transição de fonte e mantêm os valores originalmente computados.
 
 | Persona | Entropia (Shannon) | Evenness (Pielou) | Desigualdade (Gini) | Riqueza ($S$) | Interpretação Estrutural |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -452,7 +454,7 @@ Durante o período de execução desta pesquisa (2025-2026), a Spotify Web API s
 2. **Onda 2 (Fev/2026):** exigência de Premium para o titular do app, limitação a 5 usuários autorizados, depreciação do endpoint `/playlists/{id}/tracks` e restrição de `/items` a apenas dono ou colaborador.
 3. **Onda 3 (Fev/2026, sem changelog público):** remoção sistemática dos campos `popularity`, `followers` e `genres` das respostas dos endpoints `/artists`, `/tracks`, `/albums` e `/search`.
 
-**A natureza progressiva, parcialmente não-anunciada e unilateral dessas restrições constitui em si um achado científico relevante** desta pesquisa. Ela ilustra empiricamente o argumento central da Introdução sobre a **opacidade e a governança algorítmica** das plataformas de streaming: o próprio instrumental técnico necessário à auditoria foi sendo obstruído **durante** a execução do experimento. Esta observação configura-se como **meta-evidência** da assimetria informacional entre plataformas de *streaming* e atores externos (incluindo pesquisadores acadêmicos), reforçando a urgência metodológica de estudos como este.
+**A natureza progressiva, parcialmente não-anunciada e unilateral dessas restrições constitui em si um achado científico relevante** desta pesquisa. Ela ilustra empiricamente o argumento central da Introdução sobre a **opacidade e a governança algorítmica** das plataformas de streaming: o próprio instrumental técnico necessário à auditoria foi sendo obstruído **durante** a execução do experimento. Esta observação configura-se como **meta-evidência** da assimetria informacional entre plataformas de *streaming* e atores externos (incluindo pesquisadores acadêmicos), reforçando a urgência metodológica de estudos como este. Tal opacidade e a estratégia de investigá-la "por dentro", mediante contas sintéticas, alinham-se ao método etnográfico-experimental de Eriksson et al. (2019) em *Spotify Teardown*, que já denunciava a resistência da plataforma ao escrutínio independente.
 
 #### C) Resposta Metodológica — Apples-to-Apples via Fontes Externas
 
@@ -463,6 +465,7 @@ A **cobertura empírica** alcançada foi de 100% das faixas com ao menos dados d
 #### D) Outras Limitações
 
 - **Cobertura do MusicBrainz para *bedroom producers*:** A análise de *life-span* (`mb_career_start`) cobre 100% dos artistas de Ricardo (todos consagrados), mas apenas 20% dos artistas de Daniel, refletindo a invisibilidade de produtores lo-fi obscuros nos catálogos institucionais. A métrica "Era de Carreira Mediana" deve ser interpretada com cautela para perfis de nicho.
+- **Viés geocultural do Last.fm:** as bases Last.fm e MusicBrainz subcontam artistas brasileiros (sertanejo, funk, indie nacional) frente ao repertório anglófono global, fenômeno documentado na literatura de vieses de fonte. Isso se manifesta nos próprios dados: a cobertura simultânea das duas fontes cai para 86,7% em Sofia (*underground* nacional/experimental), e a composição por país (`mb_country`) varia fortemente entre personas (de 0% de artistas BR identificados em Daniel a 61,8% em Beatriz no *input*). A consequência metodológica é que os *listeners*/tiers de artistas brasileiros podem estar subestimados por **artefato de cobertura**, e não por menor popularidade real. Por isso, os deltas *within-persona* (input → output do mesmo perfil) são mais defensáveis do que as comparações *cross-persona* de magnitude absoluta de audiência.
 - **Generalização limitada:** Os resultados refletem o comportamento do algoritmo do Spotify para perfis brasileiros configurados em abril de 2026; extensões para outros mercados ou momentos exigem replicação independente.
 - **Possível variabilidade temporal:** Os *Daily Mixes* são atualizados continuamente. A coleta foi feita em janela curta (mesma semana de 28/04/2026) para minimizar variabilidade, mas estudos longitudinais futuros seriam metodologicamente mais robustos.
 
@@ -573,7 +576,7 @@ Esta queda de bandas/grupos confirma uma característica estrutural do nicho lo-
 
 > **Ressalva estatística.** A cobertura do campo de tipo de artista (`mb_artist_type`) é satisfatória para Daniel (71,7% no *input*, 93,0% no *output*); o cuidado necessário não é de cobertura, mas de **base absoluta**: a categoria "Grupo" repousa sobre poucos artistas (17 → 12 entre os tipados), e proporções sobre contagens pequenas têm alta variância. O IC de Wilson 95% do %grupo (*input* [15,5%; 35,0%] vs. *output* [6,5%; 18,6%]) **apresenta sobreposição**, de modo que o delta de −53% deve ser lido como *indício convergente*, e não como evidência isolada. A direção do achado é, porém, corroborada de forma mais robusta pelo **aumento de %solo (+24,7%)**, que se apoia sobre base amostral maior (50 → 94 artistas individuais únicos).
 
-> **Conclusão para Daniel:** Confirma-se a **hipótese de Contaminação Pop** (formulada em §3.2.2). O algoritmo, ao buscar manter Daniel engajado, recomenda **artistas mais conhecidos dentro do nicho lo-fi/instrumental** — produtores que migraram do anonimato para a "elite do nicho", evidenciando que a "Zona de Conforto Algorítmico" desloca o perfil em direção ao centro de gravidade da popularidade, mesmo dentro de um cluster funcional/comoditizado.
+> **Conclusão para Daniel:** Confirma-se a **hipótese de Contaminação Pop** (formulada em §3.2.2). O algoritmo, ao buscar manter Daniel engajado, recomenda **artistas mais conhecidos dentro do nicho lo-fi/instrumental** — produtores que migraram do anonimato para a "elite do nicho", evidenciando que a "Zona de Conforto Algorítmico" desloca o perfil em direção ao centro de gravidade da popularidade, mesmo dentro de um cluster funcional/comoditizado. Este resultado é coerente com a literatura sobre *popularity bias* em recomendação musical, que documenta sistematicamente a sub-representação de itens de cauda e de usuários *beyond-mainstream* (BAUER; SCHEDL, 2019; KOWALD; SCHEDL; LEX, 2020).
 
 ### 4.4.3 Sofia (Nicho) — Viés do Hit dentro da Cauda Longa
 
@@ -692,7 +695,9 @@ Os quatro achados, considerados em conjunto, sustentam o argumento central da pe
 
 A Onda 3 da restrição da API (§3.1.3 e §3.4.1.B) — que removeu silenciosamente os campos `popularity`, `followers` e `genres` durante a execução desta pesquisa — corrobora institucionalmente o argumento: a plataforma **opera para preservar opacidade** sobre exatamente as variáveis que permitem auditá-la externamente. Esta meta-evidência confere robustez epistemológica adicional aos achados quantitativos do presente capítulo.
 
-A Cauda Longa, central na literatura de economia digital (Anderson, 2006), revela-se **acessível apenas parcialmente**: o algoritmo permite ao usuário *visitar* artistas de nicho, mas o conduz pelos *singles consagrados* desses artistas — uma forma de "Cauda Longa Curada" que reproduz, em microescala, a lógica de *hit* dominante da indústria mainstream. Para o pesquisador interessado em diversidade cultural, este achado redefine a discussão: não basta perguntar *se* o algoritmo recomenda nicho; é preciso perguntar *como* ele recomenda nicho.
+A Cauda Longa, central na literatura de economia digital (Anderson, 2006), revela-se **acessível apenas parcialmente**: o algoritmo permite ao usuário *visitar* artistas de nicho, mas o conduz pelos *singles consagrados* desses artistas — uma forma de "Cauda Longa Curada" que reproduz, em microescala, a lógica de *hit* dominante da indústria mainstream. Para o pesquisador interessado em diversidade cultural, este achado redefine a discussão: não basta perguntar *se* o algoritmo recomenda nicho; é preciso perguntar *como* ele recomenda nicho. Essa preocupação dialoga com a literatura de *fairness* para fornecedores e com a defesa de marketplaces equilibrados em plataformas de recomendação (MEHROTRA et al., 2018).
+
+**Diálogo com a literatura.** O achado de que a riqueza de artistas se expande enquanto os repertórios permanecem segregados (§4.5) precisa ser confrontado com o estudo da própria Spotify Research. Anderson et al. (2020) reportam que a personalização tende a *reduzir* a diversidade de consumo medida por *embeddings* (proximidade sonora) — aparente contradição com a elevação de diversidade aqui observada. Os resultados são, porém, **compatíveis** quando se distingue a *riqueza de artistas* (que sobe, por expansão de catálogo) da *proximidade no espaço sonoro* (que pode convergir): são eixos diferentes da mesma noção de "diversidade". O resultado também ressoa com Hosanagar et al. (2014), que, em outro domínio, observam que sistemas de recomendação podem *aumentar* a comunalidade entre usuários — aqui, essa comunalidade aparece no nível temático (Jaccard de tags ↑), mas não no de conteúdo (Jaccard de artistas = 0). Por fim, trabalhos recentes de auditoria e *fairness* em *streaming* musical (TURNBULL et al., 2022; MATROSOVA et al., 2024; SHAKESPEARE et al., 2025) confirmam a atualidade do problema e situam esta investigação em uma agenda contemporânea de pesquisa.
 
 ### 4.6.3 Limitações Específicas dos Resultados deste Capítulo
 
@@ -702,3 +707,55 @@ Além das limitações gerais já discutidas em §3.4.1, dois pontos específico
 - **Cobertura desigual de `mb_career_start`:** a métrica de Era de Carreira tem cobertura integral (100%) para Ricardo (artistas consagrados, totalmente catalogados em MusicBrainz), mas baixa cobertura (20%) para Daniel (produtores lo-fi obscuros frequentemente ausentes do catálogo institucional). A interpretação dessa métrica para perfis de nicho deve ser feita com cautela.
 
 Apesar dessas limitações, a triangulação metodológica adotada (Shannon, Gini, HHI, Listeners, Playcount, Era de Carreira, Tipo de Artista — sete famílias de métricas independentes) e o uso de duas fontes externas validadas (Last.fm + MusicBrainz) conferem ao conjunto de achados uma robustez que justifica os resultados aqui apresentados como **evidência empírica forte e auditável** da governança algorítmica do Spotify sobre a diversidade musical de seus usuários.
+
+# REFERÊNCIAS
+
+> *Nota: lista das obras citadas neste documento. As referências metodológicas e teóricas inseridas na revisão estatística/bibliográfica tiveram seus dados (autoria, ano, veículo, DOI) verificados em fonte primária. As referências pré-existentes do autor (p. ex. ROSS, 2007) devem ser conferidas e completadas conforme o template institucional.*
+
+ANDERSON, Ashton; MAYSTRE, Lucas; ANDERSON, Ian; MEHROTRA, Rishabh; LALMAS, Mounia. Algorithmic Effects on the Diversity of Consumption on Spotify. In: PROCEEDINGS OF THE WEB CONFERENCE 2020 (WWW '20), 2020, Taipei. New York: Association for Computing Machinery, 2020. p. 2155-2165. DOI: 10.1145/3366423.3380281.
+
+ANDERSON, Chris. The Long Tail: why the future of business is selling less of more. New York: Hyperion, 2006.
+
+BAUER, Christine; SCHEDL, Markus. Global and country-specific mainstreaminess measures: definitions, analysis, and usage for improving personalized music recommendation systems. PLoS ONE, v. 14, n. 6, e0217389, 2019. DOI: 10.1371/journal.pone.0217389.
+
+BRUNS, Axel. Filter bubble. Internet Policy Review, v. 8, n. 4, 2019. DOI: 10.14763/2019.4.1426.
+
+DATTA, Amit; TSCHANTZ, Michael Carl; DATTA, Anupam. Automated Experiments on Ad Privacy Settings: A Tale of Opacity, Choice, and Discrimination. Proceedings on Privacy Enhancing Technologies, v. 2015, n. 1, p. 92-112, 2015. DOI: 10.1515/popets-2015-0007.
+
+EFRON, Bradley; TIBSHIRANI, Robert J. An Introduction to the Bootstrap. New York: Chapman & Hall/CRC, 1993. (Monographs on Statistics and Applied Probability, 57). ISBN 978-0-412-04231-7.
+
+ERIKSSON, Maria; FLEISCHER, Rasmus; JOHANSSON, Anna; SNICKARS, Pelle; VONDERAU, Patrick. Spotify Teardown: inside the black box of streaming music. Cambridge, MA: MIT Press, 2019.
+
+GIL, Antônio Carlos. Como elaborar projetos de pesquisa. São Paulo: Atlas, 1991.
+
+GOTELLI, Nicholas J.; COLWELL, Robert K. Quantifying biodiversity: procedures and pitfalls in the measurement and comparison of species richness. Ecology Letters, v. 4, n. 4, p. 379-391, 2001. DOI: 10.1046/j.1461-0248.2001.00230.x.
+
+HOSANAGAR, Kartik; FLEDER, Daniel; LEE, Dokyun; BUJA, Andreas. Will the Global Village Fracture into Tribes? Recommender Systems and Their Effects on Consumer Fragmentation. Management Science, v. 60, n. 4, p. 805-823, 2014. DOI: 10.1287/mnsc.2013.1808.
+
+KOWALD, Dominik; SCHEDL, Markus; LEX, Elisabeth. The Unfairness of Popularity Bias in Music Recommendation: A Reproducibility Study. In: ADVANCES IN INFORMATION RETRIEVAL: 42nd European Conference on IR Research (ECIR 2020). Cham: Springer, 2020. (Lecture Notes in Computer Science, v. 12036). p. 35-42. DOI: 10.1007/978-3-030-45442-5_5.
+
+MANN, Henry B.; WHITNEY, Donald R. On a Test of Whether one of Two Random Variables is Stochastically Larger than the Other. The Annals of Mathematical Statistics, v. 18, n. 1, p. 50-60, 1947. DOI: 10.1214/aoms/1177730491.
+
+MATROSOVA, Kristina; MAREY, Lilian; SALHA-GALVAN, Guillaume; LOUAIL, Thomas; BODINI, Olivier; MOUSSALLAM, Manuel. Do recommender systems promote local music? A reproducibility study using music streaming data. arXiv:2408.16430, 2024. DOI: 10.48550/arXiv.2408.16430.
+
+MEHROTRA, Rishabh; McINERNEY, James; BOUCHARD, Hugues; LALMAS, Mounia; DIAZ, Fernando. Towards a Fair Marketplace: Counterfactual Evaluation of the Trade-off between Relevance, Fairness & Satisfaction in Recommendation Systems. In: PROCEEDINGS OF THE 27TH ACM INTERNATIONAL CONFERENCE ON INFORMATION AND KNOWLEDGE MANAGEMENT (CIKM '18), 2018, Torino. New York: Association for Computing Machinery, 2018. p. 2243-2251. DOI: 10.1145/3269206.3272027.
+
+PARISER, Eli. The filter bubble: what the internet is hiding from you. New York: Penguin Press, 2011.
+
+PHIPSON, Belinda; SMYTH, Gordon K. Permutation P-values Should Never Be Zero: Calculating Exact P-values When Permutations Are Randomly Drawn. Statistical Applications in Genetics and Molecular Biology, v. 9, n. 1, Article 39, 2010. DOI: 10.2202/1544-6115.1585.
+
+PIELOU, E. C. The measurement of diversity in different types of biological collections. Journal of Theoretical Biology, v. 13, p. 131-144, 1966. DOI: 10.1016/0022-5193(66)90013-0.
+
+RHOADES, Stephen A. The Herfindahl-Hirschman Index. Federal Reserve Bulletin, v. 79, n. 3, p. 188-189, mar. 1993.
+
+ROSS, Alex. The Rest Is Noise: listening to the twentieth century. New York: Farrar, Straus and Giroux, 2007. *(referência a confirmar pelo autor)*
+
+SANDVIG, Christian; HAMILTON, Kevin; KARAHALIOS, Karrie; LANGBORT, Cedric. Auditing Algorithms: Research Methods for Detecting Discrimination on Internet Platforms. In: DATA AND DISCRIMINATION: CONVERTING CRITICAL CONCERNS INTO PRODUCTIVE INQUIRY — pré-conferência do 64º Encontro Anual da International Communication Association (ICA). Seattle, 22 maio 2014.
+
+SHAKESPEARE, Dougal; CHAREYRON, Victor; ROTH, Camille. Reframing the filter bubble through diverse scale effects in online music consumption. Scientific Reports, v. 15, art. 4071, 2025. DOI: 10.1038/s41598-024-75967-0.
+
+SHANNON, Claude E. A Mathematical Theory of Communication. Bell System Technical Journal, v. 27, n. 3, p. 379-423, jul. 1948. DOI: 10.1002/j.1538-7305.1948.tb01338.x.
+
+TURNBULL, Douglas R.; McQUILLAN, Sean; CRABTREE, Vera; HUNTER, John; ZHANG, Sunny. Exploring popularity bias in music recommendation models and commercial streaming services. arXiv:2208.09517, 2022. DOI: 10.48550/arXiv.2208.09517.
+
+VARGAS, Saúl; CASTELLS, Pablo. Rank and Relevance in Novelty and Diversity Metrics for Recommender Systems. In: PROCEEDINGS OF THE FIFTH ACM CONFERENCE ON RECOMMENDER SYSTEMS (RecSys '11), 2011, Chicago. New York: ACM, 2011. p. 109-116. DOI: 10.1145/2043932.2043955.
