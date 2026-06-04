@@ -161,6 +161,19 @@ Média da duração das faixas em minutos e segundos.
 
 A automatização desses resumos garante que a caracterização das personas (apresentada na seção 3.2) seja fundamentada em dados quantitativos auditáveis, estabelecendo uma linha de base rigorosa para o experimento.
 
+#### 3.1.2.1 Tratamento Estatístico Inferencial
+
+Dado que os produtos algorítmicos auditados são intrinsecamente ruidosos e que o desenho experimental opera com um número reduzido de agentes sintéticos (n = 4 personas), seguindo a tradição da auditoria de caixa-preta por agentes-sonda (SANDVIG et al., 2014) — na qual a ferramenta AdFisher recorre a testes de permutação justamente porque a saída observada é estocástica (DATTA; TSCHANTZ; DATTA, 2015) —, adotou-se um tratamento inferencial complementar às estimativas pontuais, implementado em `src/analysis/build_significance.py` (semente aleatória fixa para reprodutibilidade).
+
+As ferramentas foram escolhidas conforme o nível de agregação de cada métrica, evitando seu uso indevido:
+
+- **Intervalos de confiança de 95% por *bootstrap* de percentis** (EFRON; TIBSHIRANI, 1993) para as **medianas de audiência** (*listeners* e *playcount*), reamostrando-se as faixas com reposição por mil iterações. O *bootstrap* com reposição não é aplicado às métricas de forma (Shannon, Pielou, Gini, riqueza), pois nelas é enviesado para baixo — a essas reserva-se a rarefação (ver adiante).
+- **Teste de Mann-Whitney U** (MANN; WHITNEY, 1947) para comparar as distribuições *track-level* de *listeners* entre *input* e *output*, por persona (amostras de n ≈ 200 contra n ≈ 270), reportando-se a estatística U, o p-valor bicaudal e o tamanho de efeito (probabilidade de superioridade).
+- **Rarefação por subamostragem sem reposição** (GOTELLI; COLWELL, 2001) para controlar o confundimento de tamanho amostral nas métricas de diversidade/riqueza: cada *output* é subamostrado ao tamanho do *input* (N = 200 faixas), mil vezes, recomputando-se riqueza, Shannon, Pielou e Gini.
+- **Teste de permutação** (rótulos de persona reembaralhados, com a correção de PHIPSON; SMYTH, 2010 para evitar p-valores nulos) para aferir a significância da (não) convergência cross-persona medida pelo Índice de Jaccard (§4.5).
+
+Esse arcabouço permite distinguir sinal de ruído amostral em cada afirmação quantitativa do Capítulo 4, conferindo ao estudo o estatuto de auditoria inferencialmente defensável, e não meramente descritiva. Os resultados completos estão em `reports/comparison/` (`significancia.csv`, `significancia_mannwhitney.csv`, `rarefacao.csv`, `jaccard_significancia.csv`).
+
 ### 3.1.3 Adaptação Metodológica: Migração para Fontes Externas (Last.fm + MusicBrainz)
 
 Durante a execução da pesquisa, observou-se que a Spotify Web API sofreu **três ondas progressivas de restrição** ao longo de 2024 e 2026, afetando diretamente os campos centrais utilizados na análise quantitativa do estudo. Este fato, longe de constituir apenas uma limitação operacional, revelou-se um achado original com valor científico próprio, evidenciando empiricamente o argumento central desta pesquisa sobre a opacidade e a governança algorítmica unilateral exercida por plataformas de streaming.
@@ -337,7 +350,7 @@ Temporalmente, o input é deslocado para o século passado, com Ano Médio de La
 | Listeners Mediano por Artista (Last.fm) | **4,412,516** | Zona de consagração histórica; o mais alto do estudo. Lendas globais com bases de fãs ativas de milhões. |
 | Playcount Mediano por Artista (Last.fm) | **144,558,091** | Histórico cumulativo enorme — décadas de plays acumulados. Validação canônica plena. |
 | Listeners Mediano por Track (Last.fm) | 311,105 | Singles consagrados; todas as faixas têm exposição internacional sustentada. |
-| Entropia de Shannon (Artistas) | **4.10 (Mínima do estudo)** | Fidelidade Monolítica (AOR); rejeição à "cultura do single", priorização de imersão em discografias. |
+| Entropia de Shannon (Artistas) | **4.10 (Mínima do estudo)** | Baixa **riqueza** (poucos artistas), não concentração: a evenness de Pielou (0,98) confirma distribuição uniforme. Fidelidade canônica via imersão em discografias, não monocultura. |
 | Coeficiente de Gini | **0.18 (Mínimo do estudo)** | Distribuição quase uniforme entre os 18 artistas — todos com 8-16 faixas. |
 | Riqueza (Artistas Únicos) | **18 (média 11.11 faixas/artista)** | Album-Oriented Rock — escuta de discografia, não de playlist. |
 | Era de Carreira Mediana (MB) | **1965 (cob. 100%)** | Era de Ouro da indústria fonográfica; cobertura integral confirma artistas plenamente documentados. |
@@ -364,16 +377,16 @@ Esta validação estabelece a **Linha de Base** (*Baseline*) do experimento. A c
 
 ### 3.3.1 Métricas de Diversidade e Entropia da Informação
 
-A aplicação de indicadores de diversidade revela as diferenças estruturais na "dieta informacional" de cada persona. A Tabela abaixo apresenta os cálculos de Entropia de Shannon (incerteza/variedade) e Coeficiente de Gini (desigualdade de atenção). Estas métricas dependem apenas da contagem de artistas únicos e suas frequências, não foram afetadas pela transição de fonte e mantêm os valores originalmente computados.
+A aplicação de indicadores de diversidade revela as diferenças estruturais na "dieta informacional" de cada persona. A Tabela abaixo apresenta a Entropia de Shannon (incerteza/variedade), a **Evenness de Pielou** ($J = H/\log_2 S$, que normaliza a Shannon pelo seu teto teórico e isola a *uniformidade* da *riqueza*), o Coeficiente de Gini (desigualdade de atenção) e a Riqueza (artistas únicos, $S$). Estas métricas dependem apenas da contagem de artistas únicos e suas frequências, não foram afetadas pela transição de fonte e mantêm os valores originalmente computados.
 
-| Persona | Entropia (Shannon) | Desigualdade (Gini) | Riqueza (Artistas Únicos) | Interpretação Estrutural |
-| :--- | :--- | :--- | :--- | :--- |
-| **Beatriz** | 6.03 (Alta) | 0.42 (Média) | 94 | **Consumo Exploratório/Caótico**; reflete a natureza do ouvinte de *hits*, com alta rotatividade e baixa fidelidade a álbuns específicos. |
-| **Daniel** | 6.27 (Máxima) | 0.37 (Baixa) | 99 | **Pulverização Funcional**; o consumo é focado na utilidade da "faixa" e não na identidade do "artista", gerando a maior entropia do grupo. |
-| **Ricardo** | 4.10 (Mínima) | 0.18 (Mínima) | 18 | **Fidelidade Canônica**; a baixa entropia e o Gini mínimo refletem um comportamento de "superfã" concentrado em poucas discografias profundas. |
-| **Sofia** | 4.43 (Baixa) | 0.36 (Baixa) | 27 | **Curadoria Seletiva**; foco em *Deep Cuts* de poucos artistas de nicho, indicando uma escuta vertical e investigativa. |
+| Persona | Entropia (Shannon) | Evenness (Pielou) | Desigualdade (Gini) | Riqueza ($S$) | Interpretação Estrutural |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Beatriz** | 6.03 (Alta) | 0.92 | 0.42 (Média) | 94 | **Consumo Exploratório/Caótico**; reflete a natureza do ouvinte de *hits*, com alta rotatividade e baixa fidelidade a álbuns específicos. |
+| **Daniel** | 6.27 (Máxima) | 0.95 | 0.37 (Baixa) | 99 | **Pulverização Funcional**; o consumo é focado na utilidade da "faixa" e não na identidade do "artista", gerando a maior entropia do grupo. |
+| **Ricardo** | 4.10 (Mínima) | **0.98** | 0.18 (Mínima) | 18 | **Baixa riqueza, alta uniformidade**; a Shannon mínima decorre do número reduzido de artistas (18), e *não* de concentração — a evenness de Pielou (0,98) e o Gini mínimo (0,18) mostram que os 18 artistas têm peso quase idêntico. |
+| **Sofia** | 4.43 (Baixa) | 0.93 | 0.36 (Baixa) | 27 | **Curadoria Seletiva**; foco em *Deep Cuts* de poucos artistas de nicho, indicando uma escuta vertical e investigativa. |
 
-> **Análise:** Observa-se uma clara dicotomia estrutural: enquanto Daniel e Beatriz apresentam alta entropia (consumo horizontal/playlist), Ricardo e Sofia apresentam baixa entropia (consumo vertical/álbum). Essa distinção valida a modelagem de diferentes profundidades de interação, essencial para testar se o algoritmo favorece a superficialidade em detrimento da imersão.
+> **Análise:** O ponto decisivo é que a **Evenness de Pielou é alta e praticamente plana (0,92–0,98) em todas as personas**. Isso significa que as grandes diferenças de Entropia de Shannon entre os perfis (4,10 a 6,27) **não decorrem de diferenças de uniformidade, mas de diferenças de riqueza** ($S$): Ricardo tem Shannon baixa porque consome *poucos* artistas (18), não porque os distribui de forma desigual — ao contrário, sua distribuição é a mais uniforme do estudo. Essa distinção entre riqueza e uniformidade é central para a leitura correta do Capítulo 4, onde se demonstra que a "convergência" da Shannon nos *outputs* é, na verdade, **expansão de riqueza de catálogo** com a evenness preservada, e não homogeneização de entropia.
 
 ### 3.3.2 Distribuição de Mercado (Cauda Longa)
 
