@@ -375,7 +375,7 @@ Temporalmente, o input é deslocado para o século passado, com Ano Médio de La
 
 Para assegurar a integridade da auditoria, é imperativo validar se as personas geradas representam, de fato, *clusters* comportamentais distintos e independentes. Esta etapa de **Validação Cruzada** (*Cross-Validation*) tem como objetivo demonstrar a ortogonalidade dos vetores de entrada: comprovar que os quatro perfis ocupam quadrantes separados no espaço vetorial de consumo, minimizando o risco de contaminação cruzada no estágio inicial (*Cold Start*).
 
-Esta validação estabelece a **Linha de Base** (*Baseline*) do experimento. A confirmação de que não há sobreposição significativa entre os conjuntos de dados iniciais é pré-requisito para a inferência causal futura: qualquer convergência observada nas recomendações (*Outputs*) poderá ser atribuída ao viés de homogeneização do sistema, e não à similaridade original dos usuários.
+Esta validação estabelece a **Linha de Base** (*Baseline*) do experimento. A confirmação de que não há sobreposição significativa entre os conjuntos de dados iniciais é pré-requisito para a inferência causal futura: qualquer convergência (ou divergência) observada nas recomendações (*Outputs*) — seja de conteúdo, de tema ou de magnitude de diversidade — poderá ser atribuída à interferência do algoritmo, e não à similaridade original dos usuários.
 
 ### 3.3.1 Métricas de Diversidade e Entropia da Informação
 
