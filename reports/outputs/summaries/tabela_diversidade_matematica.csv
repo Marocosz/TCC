@@ -1,5 +1,5 @@
-Persona,Source,Entropia (Shannon),Desigualdade (Gini),Riqueza (Artistas Unicos),Total Faixas
-Beatriz,OUTPUT,6.5116,0.3972,121,276
-Daniel,OUTPUT,6.5151,0.3668,115,281
-Ricardo,OUTPUT,6.6113,0.37,126,268
-Sofia,OUTPUT,6.0662,0.4191,90,264
+Persona,Source,Entropia (Shannon),Evenness (Pielou),Desigualdade (Gini),Riqueza (Artistas Unicos),Total Faixas
+Beatriz,OUTPUT,6.5116,0.9411,0.3972,121,276
+Daniel,OUTPUT,6.5151,0.9517,0.3668,115,281
+Ricardo,OUTPUT,6.6113,0.9476,0.37,126,268
+Sofia,OUTPUT,6.0662,0.9344,0.4191,90,264

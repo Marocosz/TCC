@@ -10,5 +10,6 @@ n_artistas_unicos,28.72,16.16,600.0,233.33
 n_faixas,38.0,40.5,34.0,32.0
 pct_artistas_grupo,1.88,-53.16,5.95,14.33
 pct_artistas_solo,-2.06,24.75,-11.9,-13.53
+pielou_evenness,2.25,0.71,-3.52,0.4
 playcount_med_artista,30.58,263.18,-59.37,-30.4
 shannon_artistas,7.94,3.99,61.43,37.08

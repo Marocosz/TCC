@@ -63,6 +63,15 @@ def gini(series):
     return float(((2 * idx - n - 1) * sorted_counts).sum() / (n * sorted_counts.sum()))
 
 
+def pielou(series):
+    """Evenness de Pielou J = H / log2(S). Isola uniformidade de riqueza (#2/#18).
+    Indefinida para S < 2 (NaN)."""
+    s = series.nunique()
+    if s < 2:
+        return float("nan")
+    return float(shannon(series) / np.log2(s))
+
+
 def hhi(series):
     if len(series) == 0:
         return 0
@@ -133,6 +142,7 @@ def compute_metrics(df):
 
     return {
         "shannon_artistas":         shannon(df["primary_artist_name"]),
+        "pielou_evenness":          pielou(df["primary_artist_name"]),
         "gini_artistas":            gini(df["primary_artist_name"]),
         "hhi_tags":                 hhi(pd.Series(all_tags)),
         "listeners_med_artista":    artists_df["lastfm_listeners"].median(),

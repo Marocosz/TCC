@@ -44,6 +44,22 @@ def gini_coefficient(series):
     return float(((2 * index - n - 1) * sorted_counts).sum() / (n * sorted_counts.sum()))
 
 
+def pielou_evenness(series):
+    """
+    Evenness de Pielou J = H / log2(S), onde H é a Entropia de Shannon e S o
+    número de categorias (artistas únicos). J normaliza a entropia pelo seu teto
+    teórico log2(S), isolando a UNIFORMIDADE da distribuição da RIQUEZA (S).
+
+    É a métrica-chave para o achado central (#2): como J é ~plana e alta nos 8
+    datasets, a subida da Shannon bruta é majoritariamente expansão de riqueza,
+    não homogeneização de entropia. Indefinida para S < 2 (retorna NaN).
+    """
+    s = series.nunique()
+    if s < 2:
+        return float("nan")
+    return float(shannon_entropy(series) / np.log2(s))
+
+
 def main():
     source = parse_source()
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -65,6 +81,7 @@ def main():
             "Persona": persona.capitalize(),
             "Source": label,
             "Entropia (Shannon)": round(shannon_entropy(col), 4),
+            "Evenness (Pielou)": round(pielou_evenness(col), 4),
             "Desigualdade (Gini)": round(gini_coefficient(col), 4),
             "Riqueza (Artistas Unicos)": col.nunique(),
             "Total Faixas": len(df),
