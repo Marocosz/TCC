@@ -81,13 +81,13 @@ Esta dissertação tem como objetivo geral auditar o comportamento dos sistemas 
   <br>
 - Validar estatisticamente a heterogeneidade e o isolamento dos perfis iniciais (inputs), utilizando métricas de similaridade de conjuntos (Índice de Jaccard) e dispersão de popularidade para estabelecer uma linha de base neutra (cold start).
   <br>
-- Coletar e Processar, via API do Spotify, os metadados técnicos e socioeconômicos das recomendações geradas (como "Descobertas da Semana"), estruturando um corpus de dados comparável entre os diferentes perfis.
+- Coletar e Processar, via API do Spotify, os metadados técnicos e socioeconômicos das recomendações geradas (os seis *Daily Mixes* de cada perfil), estruturando um corpus de dados comparável entre os diferentes perfis.
   <br>
 - Mensurar a diversidade e a concentração das sugestões algorítmicas, aplicando indicadores matemáticos como a Entropia de Shannon (variedade informacional), o Coeficiente de Gini (desigualdade de distribuição) e o Índice HHI (concentração de mercado/gênero).
   <br>
 - Analisar o viés de popularidade e econômico, verificando se o sistema promove a "gentrificação" de gostos de nicho ao recomendar desproporcionalmente artistas "Superstars" (Cauda Curta) em detrimento de artistas independentes (Cauda Longa).
   <br>
-- Avaliar o fenômeno de Colapso de Contexto, observando se, ao longo do tempo, as recomendações para perfis distintos convergem para um padrão homogêneo, reduzindo a distância vetorial entre as personas.
+- Avaliar o fenômeno de Colapso de Contexto, investigando se as recomendações para perfis distintos convergem entre si — distinguindo a convergência de *conteúdo* (sobreposição de artistas, via Índice de Jaccard), de *tema* (gêneros/tags) e de *magnitude* de diversidade (Entropia de Shannon) — em vez de pressupor uma homogeneização única e indiferenciada.
 
 # 3 METODOLOGIA
 
@@ -124,7 +124,7 @@ Originalmente usado para medir desigualdade de renda, aqui o Coeficiente de Gini
 Métrica econômica utilizada para detectar monopólios de mercado. Neste estudo, o HHI avaliou a diversidade de gêneros musicais.
 * **Fórmula:** $HHI = \sum_{i=1}^{N} s_i^2$
   * Onde $s_i$ é a participação de mercado (% do total) de cada gênero musical na biblioteca.
-* **Aplicação:** Um HHI alto (> 0.25) sinaliza uma "Bolha de Filtro" temática (ex: usuário que só ouve Lo-fi), enquanto um HHI baixo (< 0.15) indica um consumo cosmopolita e variado.
+* **Aplicação:** Diferentemente do HHI de mercado clássico — cujo limiar de concentração se situa em torno de 0,25 —, aqui o índice é calculado sobre a distribuição de centenas de *tags* explodidas por faixa, o que comprime sua escala por construção: os valores observados situam-se entre 0,02 e 0,08. A leitura é, portanto, **relativa** entre as personas (um HHI comparativamente mais alto indica maior concentração temática, como o *mono-cluster* lo-fi de Daniel) e não o cruzamento de um limiar absoluto de "bolha".
 
 **D) Índice de Jaccard (Similaridade de Conjuntos)**
 Empregado na etapa de validação cruzada para medir a sobreposição (*overlap*) entre as bibliotecas das diferentes personas.
@@ -192,9 +192,9 @@ A correspondência semântica entre as métricas migradas é descrita na tabela 
 | (não existia anteriormente) | MusicBrainz `life-span.begin` | Ano de início de carreira do artista — métrica nova que separa "legado" de "newcomers". |
 | (não existia anteriormente) | MusicBrainz `type` | Distinção solo (*Person*) vs. coletivo (*Group*) — métrica nova de estrutura social do consumo. |
 
-**Impacto na calibração das métricas:** os limiares utilizados na análise de Cauda Longa (*Long Tail*) foram recalibrados via **percentis dentro do conjunto unificado** (P25 e P75 do pool combinado de *inputs* e *outputs*), substituindo os limiares absolutos baseados em *followers* do Spotify (cujo intervalo de valores não é diretamente transferível para a escala de *listeners* do Last.fm). Esta abordagem aumenta a robustez da classificação a mudanças de fonte e é metodologicamente mais defensável academicamente.
+**Impacto na calibração das métricas:** os limiares utilizados na análise de Cauda Longa (*Long Tail*) foram recalibrados via **percentis sobre um pool único** que combina os oito conjuntos do estudo (quatro *inputs* + quatro *outputs*, deduplicados por artista), substituindo os limiares absolutos baseados em *followers* do Spotify (cujo intervalo de valores não é diretamente transferível para a escala de *listeners* do Last.fm). Essa régua única — idêntica para *input* e *output* — aumenta a robustez da classificação a mudanças de fonte e, sobretudo, garante que os *tiers* sejam diretamente comparáveis entre estímulo e recomendação.
 
-**Cobertura empírica do enriquecimento:** o processo cobriu 100% dos 996 artistas únicos identificados nos *inputs* e *outputs* combinados, com 98,6% obtendo dados de ambas as fontes (Last.fm + MusicBrainz) e 1,4% apenas de Last.fm. Os resultados foram persistidos em um cache JSON incremental (`data/external_cache.json`), garantindo reprodutibilidade integral e permitindo recolocação eficiente de artistas que aparecem em múltiplas personas.
+**Cobertura empírica do enriquecimento:** o conjunto combinado de *inputs* e *outputs* contém **557 artistas únicos** (contagem global por `primary_artist_name`, sem dupla-contagem entre personas). O enriquecimento alcançou **100% das faixas** com ao menos dados do Last.fm; a cobertura simultânea das *duas* fontes (Last.fm + MusicBrainz) varia por persona — de 86,7% para Sofia (perfil *underground*, menos catalogado no MusicBrainz) a 100% para Beatriz e Ricardo no *output* —, o que constitui, em si, indício do viés de cobertura discutido em §3.4. Os resultados foram persistidos em cache incremental para garantir reprodutibilidade.
 
 **Implicação epistemológica:** o fato de que o próprio instrumental técnico empregado em uma auditoria algorítmica tenha sido sistematicamente obstruído pela plataforma auditada — *durante* a execução da pesquisa, sem aviso público no caso da Onda 3 — constitui *meta-evidência* da assimetria informacional entre plataformas de *streaming* e atores externos (incluindo pesquisadores acadêmicos). Esta observação é retomada na seção de Limitações Metodológicas (§3.4) como achado central da pesquisa.
 
@@ -377,16 +377,16 @@ A aplicação de indicadores de diversidade revela as diferenças estruturais na
 
 ### 3.3.2 Distribuição de Mercado (Cauda Longa)
 
-A análise da estratificação econômica dos artistas valida a hipótese de polarização entre "Cabeça" (*Head*) e "Cauda" (*Tail*) da distribuição de Pareto. Os limiares de classificação foram **calibrados via percentis dentro do conjunto unificado** dos quatro *inputs* (P25 = 59.150 *listeners*, P75 = 320.097 *listeners* no Last.fm), substituindo os limiares absolutos baseados em *followers* do Spotify (deprecados em 02/2026). A escolha por percentis garante uma classificação relativa robusta a mudanças de fonte de dados.
+A análise da estratificação econômica dos artistas valida a hipótese de polarização entre "Cabeça" (*Head*) e "Cauda" (*Tail*) da distribuição de Pareto. Os limiares de classificação foram **calibrados via percentis sobre um pool único** que combina os oito conjuntos do estudo (quatro *inputs* + quatro *outputs*, deduplicados por artista: 557 artistas), resultando em **P25 = 65.376** e **P75 = 474.962** *listeners* no Last.fm. Essa **régua única** — idêntica para *input* e *output* — substitui os limiares absolutos baseados em *followers* do Spotify (deprecados em 02/2026) e torna os *tiers* diretamente comparáveis entre estímulo e recomendação; calibrá-los separadamente por *source* produziria classificações incomparáveis.
 
 | Persona | % Superstars (>P75) | % Médios (P25–P75) | % Cauda Longa (≤P25) | Perfil Econômico |
 | :--- | :--- | :--- | :--- | :--- |
-| **Beatriz** | 21.3% | 67.0% | 11.7% | **Consumidora de Massa**; concentração em Médios brasileiros (sertanejo, funk) com cauda inexpressiva. |
-| **Ricardo** | **100.0%** | 0.0% | 0.0% | **Consumidor de Legado**; foco exclusivo em gigantes consagrados (todos os 18 artistas no topo do ranking de *listeners*). |
-| **Daniel** | 21.2% | 43.4% | **35.4%** | **Consumidor Funcional Misto**; a fronteira entre *bedroom producers* nicho e produtores estabelecidos que viralizaram em playlists editoriais. |
-| **Sofia** | 3.7% | 44.4% | **51.9%** | **Consumidora Subcultural**; majoritariamente cauda longa, com algumas exceções de artistas indie já consolidados. |
+| **Beatriz** | 10.6% | 75.5% | 13.8% | **Consumidora de Massa**; concentração em Médios brasileiros (sertanejo, funk) com cauda inexpressiva. |
+| **Ricardo** | **94.4%** | 5.6% | 0.0% | **Consumidor de Legado**; foco quase exclusivo em gigantes consagrados (a quase totalidade dos 18 artistas no topo do ranking de *listeners*). |
+| **Daniel** | 5.1% | 54.5% | **40.4%** | **Consumidor Funcional Misto**; a fronteira entre *bedroom producers* nicho e produtores estabelecidos que viralizaram em playlists editoriais. |
+| **Sofia** | 3.7% | 40.7% | **55.6%** | **Consumidora Subcultural**; majoritariamente cauda longa, com algumas exceções de artistas indie já consolidados. |
 
-> **Análise:** O contraste absoluto entre Ricardo (100% Superstars) e Sofia (52% Cauda Longa) cria o cenário ideal para auditar o viés econômico: permitirá verificar se o algoritmo tenta forçar uma "gentrificação" do gosto de Sofia, empurrando-a em direção à média de mercado para maximizar a retenção. As diferenças com a versão preliminar (que usava *followers* do Spotify) ilustram como a transição metodológica reorganizou a paisagem de classificação — Daniel deixa de aparecer como 97% cauda longa porque o pool unificado tem agora artistas mais nichados (referencial mais baixo).
+> **Análise:** O contraste entre Ricardo (94,4% Superstars) e Sofia (55,6% Cauda Longa) cria o cenário ideal para auditar o viés econômico: permitirá verificar se o algoritmo tenta forçar uma "gentrificação" do gosto de Sofia, empurrando-a em direção à média de mercado para maximizar a retenção. O uso de uma régua única (input + output) também garante que qualquer deslocamento de *tier* observado no Capítulo 4 seja atribuível ao algoritmo, e não a uma diferença de calibração entre os conjuntos.
 
 ### 3.3.3 Análise Visual Cruzada e Topologia dos Dados
 
@@ -445,7 +445,7 @@ Durante o período de execução desta pesquisa (2025-2026), a Spotify Web API s
 
 Para preservar o rigor e a comparabilidade *Input vs. Output*, adotou-se a substituição das métricas comprometidas por dados de **fontes externas consagradas** (Last.fm + MusicBrainz), aplicadas consistentemente aos dois lados da auditoria. Esta solução transforma a limitação em oportunidade — a pesquisa passa a se ancorar em três bases de dados independentes (Spotify para *tracks*/álbuns/datas; Last.fm para audiência/gêneros; MusicBrainz para *life-span*/tipo/região), aumentando a triangulação metodológica e a robustez epistemológica.
 
-A **cobertura empírica** alcançada foi de 100% dos artistas únicos identificados, com 98,6% obtendo dados de ambas as fontes externas. Os limiares de classificação em Cauda Longa foram **recalibrados via percentis no pool unificado**, substituindo limiares absolutos não-transferíveis.
+A **cobertura empírica** alcançada foi de 100% das faixas com ao menos dados do Last.fm; a cobertura simultânea de ambas as fontes externas varia por persona (86,7% a 100%), sendo mais baixa para o perfil *underground* (Sofia) — fato que dialoga com o viés de cobertura geocultural discutido a seguir. Os limiares de classificação em Cauda Longa foram **recalibrados via percentis num pool único de *input* + *output***, substituindo limiares absolutos não-transferíveis.
 
 #### D) Outras Limitações
 
@@ -467,14 +467,14 @@ A Tabela 4.1 sintetiza o volume de dados coletados:
 
 **Tabela 4.1 — Volume e cobertura dos Outputs**
 
-| Persona | Faixas únicas (Output) | Faixas (Input) | Δ tamanho | Artistas únicos (Output) | Cobertura Last.fm + MB |
+| Persona | Faixas únicas (Output) | Faixas (Input) | Δ tamanho | Artistas únicos (Output) | Cobertura ambas as fontes (Last.fm + MB) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Beatriz | 276 | 200 | +38.0% | 121 | 99.6% |
+| Beatriz | 276 | 200 | +38.0% | 121 | 100.0% |
 | Daniel | 281 | 200 | +40.5% | 115 | 98.6% |
-| Ricardo | 268 | 200 | +34.0% | 126 | ~95% |
-| Sofia | 264 | 200 | +32.0% | 90 | ~96% |
+| Ricardo | 268 | 200 | +34.0% | 126 | 100.0% |
+| Sofia | 264 | 200 | +32.0% | 90 | 86.7% |
 
-> **Observação:** o tamanho dos *outputs* é sistematicamente maior que o dos *inputs* (200 faixas) — efeito direto dos seis *Daily Mixes* contendo aproximadamente 50 faixas cada (~300 faixas brutas, das quais 6-12% são duplicatas removidas). A cobertura média de enriquecimento via fontes externas supera 97% em todas as personas.
+> **Observação:** o tamanho dos *outputs* é sistematicamente maior que o dos *inputs* (200 faixas) — efeito direto dos seis *Daily Mixes* contendo aproximadamente 50 faixas cada (~300 faixas brutas, das quais 6-12% são duplicatas removidas). **100% das faixas** obtiveram ao menos dados do Last.fm; a coluna acima reporta a cobertura *simultânea* das duas fontes. A cobertura mais baixa de Sofia (86,7%) reflete a menor presença de artistas *underground* no MusicBrainz — viés de cobertura discutido em §3.4.
 
 ## 4.2 Taxa de Overlap Interno: Redundância Intra-Persona
 
