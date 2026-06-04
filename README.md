@@ -24,8 +24,36 @@ Algorithmic recommender systems have become the main mediators between musical w
 
 # LISTA DE FIGURAS
 
-> *Os números de página são gerados automaticamente no template (Word/Docs). As figuras exploratórias por persona do Capítulo 3 (gráficos de "insight" e visualizações cruzadas) devem receber numeração formal (Figura 3.x) e curadoria na versão final.*
+> *Os números de página são gerados automaticamente no template (Word/Docs).*
 
+Figura 3.1 — Beatriz (input): distribuição de listeners por faixa
+Figura 3.2 — Beatriz (input): distribuição de gêneros
+Figura 3.3 — Beatriz (input): distribuição temporal (era musical)
+Figura 3.4 — Beatriz (input): concentração de artistas (Curva de Lorenz)
+Figura 3.5 — Beatriz (input): popularidade vs. alcance
+Figura 3.6 — Beatriz (input): distribuição de duração das faixas
+Figura 3.7 — Daniel (input): distribuição de listeners por faixa
+Figura 3.8 — Daniel (input): distribuição de gêneros
+Figura 3.9 — Daniel (input): distribuição temporal (era musical)
+Figura 3.10 — Daniel (input): concentração de artistas (Curva de Lorenz)
+Figura 3.11 — Daniel (input): popularidade vs. alcance
+Figura 3.12 — Daniel (input): distribuição de duração das faixas
+Figura 3.13 — Sofia (input): distribuição de listeners por faixa
+Figura 3.14 — Sofia (input): distribuição de gêneros
+Figura 3.15 — Sofia (input): distribuição temporal (era musical)
+Figura 3.16 — Sofia (input): concentração de artistas (Curva de Lorenz)
+Figura 3.17 — Sofia (input): popularidade vs. alcance
+Figura 3.18 — Sofia (input): distribuição de duração das faixas
+Figura 3.19 — Ricardo (input): distribuição de listeners por faixa
+Figura 3.20 — Ricardo (input): distribuição de gêneros
+Figura 3.21 — Ricardo (input): distribuição temporal (era musical)
+Figura 3.22 — Ricardo (input): concentração de artistas (Curva de Lorenz)
+Figura 3.23 — Ricardo (input): popularidade vs. alcance
+Figura 3.24 — Ricardo (input): distribuição de duração das faixas
+Figura 3.25 — Matriz de Similaridade (Índice de Jaccard) entre as personas (input)
+Figura 3.26 — Mapeamento da Economia da Atenção: popularidade vs. alcance (input)
+Figura 3.27 — Cronologia do consumo: distribuição temporal por persona (input)
+Figura 3.28 — Concentração de artistas: Curva de Lorenz comparada (input)
 Figura 4.1 — Heatmap do Delta Algorítmico Percentual
 Figura 4.2 — Distribuição de Listeners por Artista, Input vs Output (KDE, escala log)
 Figura 4.3 — Mediana de Listeners por Artista, Input vs Output (escala log)
@@ -296,12 +324,23 @@ A diversidade aparente de gêneros (HHI 0.035 sobre tags de MusicBrainz) revela,
 
 #### 3.2.1.2 Gráficos
 
-![Insight 1 Track Listeners](reports/inputs/figures/beatriz/insight_1_track_listeners.png)
-![Insight 2 Generos](reports/inputs/figures/beatriz/insight_2_generos.png)
-![Insight 3 Era Musical](reports/inputs/figures/beatriz/insight_3_era_musical.png)
-![Insight 4 Concentracao Artistas](reports/inputs/figures/beatriz/insight_4_concentracao_artistas.png)
-![Insight 5 Pop vs Followers](reports/inputs/figures/beatriz/insight_5_pop_vs_followers.png)
-![Insight 6 Music Duration](reports/inputs/figures/beatriz/insight_6_music_duration.png)
+![Figura 3.1](reports/inputs/figures/beatriz/insight_1_track_listeners.png)
+> **Figura 3.1 — Beatriz (input): distribuição de listeners por faixa (Last.fm).**
+
+![Figura 3.2](reports/inputs/figures/beatriz/insight_2_generos.png)
+> **Figura 3.2 — Beatriz (input): distribuição de gêneros (top tags).**
+
+![Figura 3.3](reports/inputs/figures/beatriz/insight_3_era_musical.png)
+> **Figura 3.3 — Beatriz (input): distribuição temporal (era musical das faixas).**
+
+![Figura 3.4](reports/inputs/figures/beatriz/insight_4_concentracao_artistas.png)
+> **Figura 3.4 — Beatriz (input): concentração de artistas (Curva de Lorenz).**
+
+![Figura 3.5](reports/inputs/figures/beatriz/insight_5_pop_vs_followers.png)
+> **Figura 3.5 — Beatriz (input): popularidade vs. alcance dos artistas.**
+
+![Figura 3.6](reports/inputs/figures/beatriz/insight_6_music_duration.png)
+> **Figura 3.6 — Beatriz (input): distribuição de duração das faixas.**
 
 ### 3.2.2 Daniel (O Foco Instrumental/Lo-fi)
 
@@ -336,12 +375,23 @@ A análise de tags revela um **mono-cluster temático**: as marcas `lo-fi` (93 o
 
 #### 3.2.2.2 Gráficos
 
-![Insight 1 Track Listeners](reports/inputs/figures/daniel/insight_1_track_listeners.png)
-![Insight 2 Generos](reports/inputs/figures/daniel/insight_2_generos.png)
-![Insight 3 Era Musical](reports/inputs/figures/daniel/insight_3_era_musical.png)
-![Insight 4 Concentracao Artistas](reports/inputs/figures/daniel/insight_4_concentracao_artistas.png)
-![Insight 5 Pop vs Followers](reports/inputs/figures/daniel/insight_5_pop_vs_followers.png)
-![Insight 6 Music Duration](reports/inputs/figures/daniel/insight_6_music_duration.png)
+![Figura 3.7](reports/inputs/figures/daniel/insight_1_track_listeners.png)
+> **Figura 3.7 — Daniel (input): distribuição de listeners por faixa (Last.fm).**
+
+![Figura 3.8](reports/inputs/figures/daniel/insight_2_generos.png)
+> **Figura 3.8 — Daniel (input): distribuição de gêneros (top tags).**
+
+![Figura 3.9](reports/inputs/figures/daniel/insight_3_era_musical.png)
+> **Figura 3.9 — Daniel (input): distribuição temporal (era musical das faixas).**
+
+![Figura 3.10](reports/inputs/figures/daniel/insight_4_concentracao_artistas.png)
+> **Figura 3.10 — Daniel (input): concentração de artistas (Curva de Lorenz).**
+
+![Figura 3.11](reports/inputs/figures/daniel/insight_5_pop_vs_followers.png)
+> **Figura 3.11 — Daniel (input): popularidade vs. alcance dos artistas.**
+
+![Figura 3.12](reports/inputs/figures/daniel/insight_6_music_duration.png)
+> **Figura 3.12 — Daniel (input): distribuição de duração das faixas.**
 
 ### 3.2.3 Sofia (A Consumidora de Nicho)
 
@@ -376,12 +426,23 @@ Temporalmente, ela compartilha o viés de contemporaneidade (Ano Médio 2021, co
 
 #### 3.2.3.2 Gráficos
 
-![Insight 1 Track Listeners](reports/inputs/figures/sofia/insight_1_track_listeners.png)
-![Insight 2 Generos](reports/inputs/figures/sofia/insight_2_generos.png)
-![Insight 3 Era Musical](reports/inputs/figures/sofia/insight_3_era_musical.png)
-![Insight 4 Concentracao Artistas](reports/inputs/figures/sofia/insight_4_concentracao_artistas.png)
-![Insight 5 Pop vs Followers](reports/inputs/figures/sofia/insight_5_pop_vs_followers.png)
-![Insight 6 Music Duration](reports/inputs/figures/sofia/insight_6_music_duration.png)
+![Figura 3.13](reports/inputs/figures/sofia/insight_1_track_listeners.png)
+> **Figura 3.13 — Sofia (input): distribuição de listeners por faixa (Last.fm).**
+
+![Figura 3.14](reports/inputs/figures/sofia/insight_2_generos.png)
+> **Figura 3.14 — Sofia (input): distribuição de gêneros (top tags).**
+
+![Figura 3.15](reports/inputs/figures/sofia/insight_3_era_musical.png)
+> **Figura 3.15 — Sofia (input): distribuição temporal (era musical das faixas).**
+
+![Figura 3.16](reports/inputs/figures/sofia/insight_4_concentracao_artistas.png)
+> **Figura 3.16 — Sofia (input): concentração de artistas (Curva de Lorenz).**
+
+![Figura 3.17](reports/inputs/figures/sofia/insight_5_pop_vs_followers.png)
+> **Figura 3.17 — Sofia (input): popularidade vs. alcance dos artistas.**
+
+![Figura 3.18](reports/inputs/figures/sofia/insight_6_music_duration.png)
+> **Figura 3.18 — Sofia (input): distribuição de duração das faixas.**
 
 ### 3.2.4 Ricardo (O Consumidor Nostálgico)
 
@@ -416,12 +477,23 @@ Temporalmente, o input é deslocado para o século passado, com Ano Médio de La
 
 #### 3.2.4.2 Gráficos
 
-![Insight 1 Track Listeners](reports/inputs/figures/ricardo/insight_1_track_listeners.png)
-![Insight 2 Generos](reports/inputs/figures/ricardo/insight_2_generos.png)
-![Insight 3 Era Musical](reports/inputs/figures/ricardo/insight_3_era_musical.png)
-![Insight 4 Concentracao Artistas](reports/inputs/figures/ricardo/insight_4_concentracao_artistas.png)
-![Insight 5 Pop vs Followers](reports/inputs/figures/ricardo/insight_5_pop_vs_followers.png)
-![Insight 6 Music Duration](reports/inputs/figures/ricardo/insight_6_music_duration.png)
+![Figura 3.19](reports/inputs/figures/ricardo/insight_1_track_listeners.png)
+> **Figura 3.19 — Ricardo (input): distribuição de listeners por faixa (Last.fm).**
+
+![Figura 3.20](reports/inputs/figures/ricardo/insight_2_generos.png)
+> **Figura 3.20 — Ricardo (input): distribuição de gêneros (top tags).**
+
+![Figura 3.21](reports/inputs/figures/ricardo/insight_3_era_musical.png)
+> **Figura 3.21 — Ricardo (input): distribuição temporal (era musical das faixas).**
+
+![Figura 3.22](reports/inputs/figures/ricardo/insight_4_concentracao_artistas.png)
+> **Figura 3.22 — Ricardo (input): concentração de artistas (Curva de Lorenz).**
+
+![Figura 3.23](reports/inputs/figures/ricardo/insight_5_pop_vs_followers.png)
+> **Figura 3.23 — Ricardo (input): popularidade vs. alcance dos artistas.**
+
+![Figura 3.24](reports/inputs/figures/ricardo/insight_6_music_duration.png)
+> **Figura 3.24 — Ricardo (input): distribuição de duração das faixas.**
 
 ## 3.3 Análise Comparativa e Validação dos Estímulos (Inputs)
 
@@ -466,7 +538,8 @@ As visualizações a seguir sintetizam graficamente as diferenças estruturais e
 **A) Matriz de Similaridade (Índice de Jaccard)**
 Esta matriz atua como a prova definitiva do isolamento experimental. A predominância absoluta de valores nulos (0.00) ou próximos a zero nas interseções entre personas confirma que não há compartilhamento de repertório. Isso garante que o estado de *Cold Start* é único para cada agente, estabelecendo condições ideais de laboratório para verificar convergências futuras.
 
-![Matriz de Similaridade Jaccard](reports/inputs/figures/cross/matriz_similaridade_jaccard.png)
+![Figura 3.25](reports/inputs/figures/cross/matriz_similaridade_jaccard.png)
+> **Figura 3.25 — Matriz de Similaridade (Índice de Jaccard) entre as personas (input).**
 
 **B) Mapeamento da Economia da Atenção (Scatter Plot: Popularidade x Seguidores)**
 Este gráfico espacializa a Teoria da Cauda Longa (*The Long Tail*).
@@ -474,17 +547,20 @@ Este gráfico espacializa a Teoria da Cauda Longa (*The Long Tail*).
 * **Quadrante Inferior Esquerdo (Tail):** Ocupado por Sofia e Daniel, representando a zona de obscuridade e nicho.
 A clara separação visual valida a capacidade do experimento de auditar o viés algorítmico em diferentes estratos de poder econômico, testando se o sistema privilegia quem já possui fama.
 
-![Gráfico Pop vs Followers](reports/inputs/figures/cross/grafico_pop_vs_followers.png)
+![Figura 3.26](reports/inputs/figures/cross/grafico_pop_vs_followers.png)
+> **Figura 3.26 — Mapeamento da Economia da Atenção: popularidade vs. alcance, por persona (input).**
 
 **C) Cronologia do Consumo (Distribuição Temporal)**
 A visualização de densidade temporal (*KDE Plot*) valida o controle da variável "Tempo". Observa-se a sobreposição das curvas de Daniel, Beatriz e Sofia na extrema direita (anos 2020), enquanto a curva de Ricardo se isola à esquerda (século XX). Este gráfico serve como linha de base para medir o **Viés de Recência**: deslocamentos futuros da curva de Ricardo para a direita indicarão uma tentativa do sistema de impor novidades a um perfil conservador.
 
-![Gráfico Era Musical](reports/inputs/figures/cross/grafico_era_musical.png)
+![Figura 3.27](reports/inputs/figures/cross/grafico_era_musical.png)
+> **Figura 3.27 — Cronologia do consumo: distribuição temporal das faixas por persona (KDE, input).**
 
 **D) Curva de Lorenz (Concentração de Artistas)**
 O gráfico ilustra a desigualdade na distribuição de atenção. A curva de Ricardo (mais distante da diagonal perfeita) confirma visualmente sua fidelidade monástica a poucos artistas, enquanto a curva de Beatriz (mais próxima da diagonal) demonstra um consumo pulverizado. Essa métrica será essencial para auditar se o algoritmo respeita a profundidade de catálogo ou se tende a fragmentar a experiência de escuta.
 
-![Gráfico Concentração Artistas](reports/inputs/figures/cross/grafico_concentracao_artistas.png)
+![Figura 3.28](reports/inputs/figures/cross/grafico_concentracao_artistas.png)
+> **Figura 3.28 — Concentração de artistas: Curva de Lorenz comparada entre personas (input).**
 
 ## 3.4 Síntese Metodológica e Limitações
 
