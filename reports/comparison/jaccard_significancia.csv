@@ -1,0 +1,5 @@
+Nivel,Source,Jaccard_obs,Jaccard_nulo_media,Nulo_IC_inf,Nulo_IC_sup,p_obs_maior_que_acaso,p_obs_menor_que_acaso
+artista,INPUT,0.0,0.1059,0.0866,0.1268,1.0,0.0005
+artista,OUTPUT,0.0,0.1416,0.1241,0.1609,1.0,0.0005
+tag,INPUT,0.1283,0.1711,0.1514,0.1924,1.0,0.0005
+tag,OUTPUT,0.1544,0.2014,0.1816,0.2206,1.0,0.0005

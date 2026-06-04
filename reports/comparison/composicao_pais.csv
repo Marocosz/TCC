@@ -1,0 +1,9 @@
+Persona,Source,n_artistas,n_com_pais,pct_cobertura_pais,n_BR,pct_BR_entre_conhecidos,pct_nao_BR
+Beatriz,INPUT,94,76,80.9,47,61.8,38.2
+Daniel,INPUT,99,46,46.5,0,0.0,100.0
+Ricardo,INPUT,18,17,94.4,5,29.4,70.6
+Sofia,INPUT,27,13,48.1,1,7.7,92.3
+Beatriz,OUTPUT,121,100,82.6,75,75.0,25.0
+Daniel,OUTPUT,115,67,58.3,0,0.0,100.0
+Ricardo,OUTPUT,126,124,98.4,24,19.4,80.6
+Sofia,OUTPUT,90,50,55.6,2,4.0,96.0
