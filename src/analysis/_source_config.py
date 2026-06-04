@@ -31,14 +31,13 @@ ESTRUTURA NOVA DE DADOS (pós-refatoração de 2026-04-28):
     comparison/                             análises Delta Input vs Output
 
 CONVENÇÕES DE METRICA (após Spotify Fev/2026):
-  Os scripts NÃO devem mais ler artist_popularity / artist_followers / artist_genres
-  / track_popularity diretamente — esses campos foram removidos da Web API.
-  Em vez disso, usar as colunas externas via harmonize_row():
-    - _followers       ← lastfm_listeners
-    - _genres          ← mb_tags || lastfm_tags
-    - _popularity      ← lastfm_playcount (artista, histórico)
-    - _track_listeners ← lastfm_track_listeners (substitui track_popularity)
-    - _track_playcount ← lastfm_track_playcount
+  Os campos artist_popularity / artist_followers / artist_genres / track_popularity
+  foram removidos da Web API. Os scripts da Fase 4 leem DIRETAMENTE as colunas
+  externas dos CSVs enriched:
+    - lastfm_listeners        (alcance do artista; substitui artist_followers)
+    - lastfm_playcount        (popularidade histórica; substitui artist_popularity)
+    - lastfm_track_listeners  (alcance da faixa; substitui track_popularity)
+    - mb_tags || lastfm_tags  (gêneros; substitui artist_genres)
 
 Ver PROGRESSO.md §7 e PLANO_REFATORACAO.md para detalhes.
 """
@@ -136,57 +135,12 @@ def summaries_dir_for(project_root, source="input"):
 
 
 # ============================================================================
-# HARMONIZAÇÃO de schema — esconde a transição Spotify→Externo
-# ============================================================================
-# Os scripts da Fase 4 leem '_followers', '_genres', '_popularity', '_track_listeners',
-# '_track_playcount' independente da origem. Quando uma fonte externa não cobriu
-# o artista, valores ficam em 0/vazio (entram naturalmente como Cauda Longa).
+# UTILITÁRIOS
 # ============================================================================
 
 def safe_int(v, default=0):
-    """Converte para int tolerando valores vazios/string."""
+    """Converte para int tolerando valores vazios/string. Usado por build_summaries."""
     try:
         return int(float(v))
     except (TypeError, ValueError):
         return default
-
-
-def harmonize_row(row):
-    """
-    Adiciona colunas harmonizadas a uma linha de CSV.
-
-    Mapeamento:
-        - _followers       ← lastfm_listeners (proxy de seguidores)
-        - _popularity      ← lastfm_playcount (artista, histórico cumulativo)
-        - _genres          ← mb_tags || lastfm_tags || artist_genres
-        - _track_listeners ← lastfm_track_listeners (substitui track_popularity)
-        - _track_playcount ← lastfm_track_playcount
-
-    Por que existe:
-        Após a remoção dos campos Spotify (Fev/2026), todas as análises
-        passaram a depender de Last.fm + MusicBrainz. Esta função desacopla
-        os scripts de análise da fonte de dados subjacente.
-    """
-    row["_followers"] = safe_int(row.get("lastfm_listeners"), 0)
-    row["_popularity"] = safe_int(row.get("lastfm_playcount"), 0)
-    row["_track_listeners"] = safe_int(row.get("lastfm_track_listeners"), 0)
-    row["_track_playcount"] = safe_int(row.get("lastfm_track_playcount"), 0)
-
-    genres = (row.get("mb_tags") or "").strip()
-    if not genres:
-        genres = (row.get("lastfm_tags") or "").strip()
-    if not genres:
-        genres = (row.get("artist_genres") or "").strip()
-    row["_genres"] = genres
-
-    return row
-
-
-def load_enriched_csv(csv_path):
-    """Carrega um CSV enriched e harmoniza cada linha. Retorna lista de dicts."""
-    import csv as _csv
-    if not os.path.exists(csv_path):
-        return []
-    with open(csv_path, "r", encoding="utf-8", newline="") as f:
-        rows = list(_csv.DictReader(f))
-    return [harmonize_row(r) for r in rows]
