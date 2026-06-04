@@ -15,7 +15,7 @@ source venvtcc/Scripts/activate   # Windows Git Bash
 venvtcc\Scripts\activate          # Windows cmd
 
 # Install dependencies
-pip install spotipy pandas seaborn matplotlib python-dotenv
+pip install spotipy pandas seaborn matplotlib python-dotenv scipy
 ```
 
 Credentials are loaded from `.env` at the project root. OAuth tokens require logging into the correct persona's Spotify account in the browser before running collector scripts.
@@ -52,10 +52,13 @@ python src/analysis/merge_datasets.py
 python src/analysis/build_summaries.py
 python src/analysis/build_personal_graphs.py
 python src/analysis/build_cross_graphs.py
-python src/analysis/build_diversity_metrics.py    # Shannon entropy, Gini coefficient
-python src/analysis/build_similarity_matrix.py    # Jaccard index between personas
-python src/analysis/build_market_metrics.py       # HHI genre concentration
+python src/analysis/build_diversity_metrics.py    # Shannon entropy, Pielou evenness, Gini coefficient
+python src/analysis/build_similarity_matrix.py    # Jaccard index between personas (+ mean pairwise)
+python src/analysis/build_market_metrics.py       # HHI genre concentration; single P25/P75 ruler (input+output)
+python src/analysis/build_significance.py         # bootstrap CIs, Mann-Whitney, rarefaction, Jaccard permutation (needs scipy)
 ```
+
+The inferential outputs (`reports/comparison/significancia*.csv`, `rarefacao.csv`, `jaccard_significancia.csv`, `composicao_*.csv`) are reproducible via a fixed RNG seed in `build_significance.py`.
 
 ## Architecture
 
