@@ -83,8 +83,15 @@ Tabela 4.6 — Síntese dos Achados por Persona e Hipóteses Confirmadas
 - [AUDITORIA DE SISTEMAS DE INTELIGÊNCIA ARTIFICIAL EM PLATAFORMAS DE STREAMING: UM ESTUDO EXPERIMENTAL SOBRE VIESES E RECOMENDAÇÃO MUSICAL NO SPOTIFY](#auditoria-de-sistemas-de-inteligência-artificial-em-plataformas-de-streaming-um-estudo-experimental-sobre-vieses-e-recomendação-musical-no-spotify)
 - [Sumário](#sumário)
 - [1 INTRODUÇÃO](#1-introdução)
-- [2 OBJETIVOS](#2-objetivos)
-  - [2.1 Objetivos Específicos](#21-objetivos-específicos)
+  - [1.1 Objetivo Geral](#11-objetivo-geral)
+  - [1.2 Objetivos Específicos](#12-objetivos-específicos)
+- [2 REFERENCIAL TEÓRICO](#2-referencial-teórico)
+  - [2.1 Governança algorítmica, caixa-preta e economia da atenção](#21-governança-algorítmica-caixa-preta-e-economia-da-atenção)
+  - [2.2 Personalização e bolha de filtro: da hipótese à crítica](#22-personalização-e-bolha-de-filtro-da-hipótese-à-crítica)
+  - [2.3 Viés de popularidade e a teoria da cauda longa](#23-viés-de-popularidade-e-a-teoria-da-cauda-longa)
+  - [2.4 Diversidade da informação: métricas e suas armadilhas](#24-diversidade-da-informação-métricas-e-suas-armadilhas)
+  - [2.5 Auditoria algorítmica: métodos e instrumentos](#25-auditoria-algorítmica-métodos-e-instrumentos)
+  - [2.6 Estudos correlatos recentes](#26-estudos-correlatos-recentes)
 - [3 METODOLOGIA](#3-metodologia)
   - [3.1 Procedimento de Coleta e Preparação Técnica](#31-procedimento-de-coleta-e-preparação-técnica)
     - [3.1.1 Tratamento de Dados e Definição das Métricas de Auditoria](#311-tratamento-de-dados-e-definição-das-métricas-de-auditoria)
@@ -143,11 +150,11 @@ Dessa forma, o estudo utiliza Personas Sintéticas como objeto central de análi
 
 Ao analisar como o Spotify responde a essas quatro identidades musicais distintas, o estudo busca avaliar se o sistema respeita preferências musicais específicas ou se tende à padronização induzida pelo viés de popularidade. Assim, pretende-se compreender em que medida a plataforma atua como facilitadora de descobertas musicais autênticas ou como indutora de escolhas pré-determinadas pela lógica estatística do mercado global.
 
-# 2 OBJETIVOS
+## 1.1 Objetivo Geral
 
 Esta dissertação tem como objetivo geral auditar o comportamento dos sistemas de recomendação algorítmica da plataforma Spotify, utilizando a metodologia de Black-Box Auditing com personas sintéticas, a fim de mensurar quantitativamente o impacto das lógicas de curadoria automatizada na diversidade cultural, na concentração de popularidade e na formação de bolhas de filtro (filter bubbles).
 
-## 2.1 Objetivos Específicos
+## 1.2 Objetivos Específicos
 
 - Modelar e Implementar quatro arquétipos de consumo musical contrastantes (Mainstream, Funcional, Nostálgico e Underground), traduzindo perfis psicográficos em scripts de automação para a geração de datasets controlados.
   <br>
@@ -160,6 +167,42 @@ Esta dissertação tem como objetivo geral auditar o comportamento dos sistemas 
 - Analisar o viés de popularidade e econômico, verificando se o sistema promove a "gentrificação" de gostos de nicho ao recomendar desproporcionalmente artistas "Superstars" (Cauda Curta) em detrimento de artistas independentes (Cauda Longa).
   <br>
 - Avaliar o fenômeno de Colapso de Contexto, investigando se as recomendações para perfis distintos convergem entre si — distinguindo a convergência de *conteúdo* (sobreposição de artistas, via Índice de Jaccard), de *tema* (gêneros/tags) e de *magnitude* de diversidade (Entropia de Shannon) — em vez de pressupor uma homogeneização única e indiferenciada.
+
+# 2 REFERENCIAL TEÓRICO
+
+Este capítulo reúne os fundamentos teóricos que sustentam a auditoria conduzida, organizados em cinco eixos: a governança algorítmica e a economia da atenção; a controvérsia em torno da bolha de filtro; o viés de popularidade e a cauda longa; as métricas de diversidade da informação e suas armadilhas; e os métodos de auditoria algorítmica. Encerra-se com um panorama de estudos correlatos recentes.
+
+## 2.1 Governança algorítmica, caixa-preta e economia da atenção
+
+Sob a ótica da Gestão da Informação, as plataformas de *streaming* deixaram de ser meros repositórios para atuar como gestoras ativas de fluxos informacionais, exercendo o que se convencionou chamar de **governança algorítmica**: a mediação, em larga escala, das decisões de consumo cultural por sistemas automatizados de recomendação. Esses sistemas operam como **caixas-pretas** (*black boxes*), cujos critérios de seleção permanecem proprietários e opacos, gerando assimetria informacional entre a plataforma e o usuário — e também entre a plataforma e o pesquisador. Eriksson et al. (2019), em *Spotify Teardown*, evidenciam empiricamente essa opacidade e a resistência da plataforma ao escrutínio externo, justificando abordagens investigativas que operem "de fora para dentro".
+
+Essa lógica articula-se ao modelo de negócio da **economia da atenção**, no qual o sucesso da plataforma depende da maximização da retenção do usuário. Daí decorre uma tendência dos algoritmos a privilegiar conteúdos de baixo risco e alta aceitação estatística, instaurando um ciclo de retroalimentação (*feedback loop*) em que o popular ganha visibilidade enquanto produções novas, experimentais ou de nicho tendem a ser marginalizadas — pano de fundo para os vieses investigados neste trabalho.
+
+## 2.2 Personalização e bolha de filtro: da hipótese à crítica
+
+O conceito de **bolha de filtro** (*filter bubble*) foi popularizado por Pariser (2011), que postula que a personalização algorítmica encerraria o usuário em um universo informacional autorreferente, reduzindo a exposição ao diverso e ao contraditório. A tese, porém, é objeto de controvérsia. Bruns (2019) argumenta que a evidência empírica robusta para a existência de bolhas de filtro é escassa e que o conceito frequentemente opera mais como pânico moral do que como fenômeno mensurado, alertando para o risco de se atribuir à tecnologia efeitos que decorrem de dinâmicas sociais mais amplas.
+
+Esta pesquisa posiciona-se nesse debate tomando a bolha de filtro não como pressuposto, mas como **hipótese a ser testada empiricamente** no domínio da recomendação musical. Como se verá, os dados sugerem um comportamento mais sutil do que a metáfora clássica prevê, exigindo distinguir a convergência de conteúdo da convergência temática.
+
+## 2.3 Viés de popularidade e a teoria da cauda longa
+
+A teoria da **cauda longa** (ANDERSON, 2006) sustenta que a digitalização ampliaria o acesso a um vasto repertório de itens de nicho, antes inviável no varejo físico. A literatura de sistemas de recomendação, contudo, documenta um **viés de popularidade** (*popularity bias*) que tensiona essa promessa: os algoritmos tendem a sobre-representar itens já populares em detrimento da cauda, prejudicando especialmente usuários de gosto *beyond-mainstream* (BAUER; SCHEDL, 2019; KOWALD; SCHEDL; LEX, 2020). Esse viés tem implicações de *fairness* não só para o usuário, mas para os fornecedores (artistas), motivando propostas de avaliação de marketplaces mais equilibrados (MEHROTRA et al., 2018).
+
+No plano dos efeitos agregados, Hosanagar et al. (2014) investigam se os sistemas de recomendação fragmentam ou homogeneízam o consumo, encontrando evidências de que podem **aumentar a comunalidade** entre usuários. Tais achados situam a pergunta central deste trabalho — se o algoritmo do Spotify aproxima ou afasta perfis distintos — em uma tradição consolidada de pesquisa.
+
+## 2.4 Diversidade da informação: métricas e suas armadilhas
+
+A mensuração de diversidade apoia-se na Teoria da Informação. A **Entropia de Shannon** (SHANNON, 1948) quantifica a variedade de uma distribuição, mas é sensível tanto à *riqueza* (número de categorias) quanto à *uniformidade* (evenness). Para isolar a uniformidade, recorre-se à **evenness de Pielou** (PIELOU, 1966), que normaliza a entropia pelo seu teto teórico; e, para um tratamento unificado das ordens de diversidade, à formalização de Jost (2006). A distinção é crucial: como alertam Gotelli e Colwell (2001), comparar riqueza entre amostras de tamanhos diferentes é inválido sem padronização (rarefação), sob pena de confundir efeito real com artefato de esforço amostral — armadilha diretamente relevante a esta auditoria.
+
+Complementam o instrumental o **Coeficiente de Gini** (desigualdade de atenção entre artistas), o **Índice Herfindahl-Hirschman** (RHOADES, 1993), originário da análise de concentração de mercado, e o **Índice de Jaccard** (similaridade entre conjuntos). No campo dos sistemas de recomendação, Vargas e Castells (2011) sistematizam métricas de novidade e diversidade sensíveis a ranking, oferecendo a ponte entre a Teoria da Informação e a avaliação de recomendadores.
+
+## 2.5 Auditoria algorítmica: métodos e instrumentos
+
+A **auditoria algorítmica** investiga exogenamente o comportamento de sistemas opacos pela análise de seus *outputs* sob estímulos controlados. Sandvig et al. (2014) propõem cinco desenhos de auditoria, entre os quais o ***sock puppet audit*** — agentes-sonda que se passam por usuários reais —, desenho adotado neste estudo. Por operar sobre saídas ruidosas, esse paradigma exige rigor inferencial: a ferramenta AdFisher (DATTA; TSCHANTZ; DATTA, 2015) recorre a testes de permutação justamente para assegurar a validade estatística de seus achados. Essas referências fundamentam tanto o desenho experimental quanto o tratamento estatístico (§3.1.2.1) desta pesquisa.
+
+## 2.6 Estudos correlatos recentes
+
+No domínio específico do *streaming* musical, Anderson et al. (2020), em estudo da própria Spotify Research, medem a diversidade de consumo por *embeddings* sonoros e identificam um *trade-off* entre engajamento e diversidade — referência incontornável para o diálogo com os achados deste trabalho. A agenda mantém-se ativa: pesquisas recentes examinam o viés de popularidade em serviços comerciais (TURNBULL et al., 2022), a promoção (ou não) de música local pelos recomendadores (MATROSOVA et al., 2024) e os efeitos de escala sobre a hipótese da bolha de filtro (SHAKESPEARE; CHAREYRON; ROTH, 2025), situando esta investigação em uma discussão contemporânea e em curso.
 
 # 3 METODOLOGIA
 
@@ -177,7 +220,7 @@ Complementarmente à automação da curadoria, foi desenvolvida uma arquitetura 
 
 ### 3.1.1 Tratamento de Dados e Definição das Métricas de Auditoria
 
-Para transcender a análise puramente qualitativa do gosto musical, esta pesquisa implementou um *pipeline* de engenharia de dados em Python, focado na extração de indicadores matemáticos de diversidade e concentração. Os dados brutos coletados via API foram processados utilizando as bibliotecas `pandas` para estruturação tabular e `numpy` para operações vetoriais, garantindo a reprodutibilidade dos cálculos.
+Para transcender a análise puramente qualitativa do gosto musical, esta pesquisa implementou um *pipeline* de engenharia de dados em Python, focado na extração de indicadores matemáticos de diversidade e concentração. Os dados brutos coletados via API foram processados utilizando as bibliotecas `pandas` para estruturação tabular e `numpy` para operações vetoriais, garantindo a reprodutibilidade dos cálculos. Salvo indicação em contrário, todas as figuras e tabelas apresentadas neste trabalho são de **elaboração própria do autor (2026)**, a partir dos dados coletados via Spotify e enriquecidos com Last.fm e MusicBrainz.
 
 A fim de quantificar fenômenos subjetivos como "ecletismo", "bolha de filtro" e "viés de popularidade", foram adotadas quatro métricas estatísticas fundamentais, adaptadas da Teoria da Informação e da Economia da Cultura e em diálogo com a literatura de métricas de diversidade e novidade para sistemas de recomendação (VARGAS; CASTELLS, 2011):
 
@@ -606,7 +649,7 @@ A **cobertura empírica** alcançada foi de 100% das faixas com ao menos dados d
 
 Concluída a fase de validação dos *inputs* (Capítulo 3), o presente capítulo apresenta a análise empírica dos *outputs* algorítmicos coletados — as faixas que o Spotify recomendou aos quatro perfis sintéticos por meio dos *Daily Mixes*, após o período de incubação descrito na seção §3.4.1. O objetivo central deste capítulo é responder à pergunta condutora da pesquisa: **em que magnitude e direção o algoritmo de recomendação distorce o perfil declarado de cada usuário?**
 
-A análise é estruturada em quatro etapas: (i) apresentação descritiva dos *outputs* coletados; (ii) cálculo da Taxa de Overlap Interno (redundância dentro da bolha de cada persona); (iii) análise do Delta Algorítmico — comparação direta *Input vs. Output* das treze métricas centrais; e (iv) síntese e teste das quatro hipóteses formuladas no Capítulo 2.
+A análise é estruturada em quatro etapas: (i) apresentação descritiva dos *outputs* coletados; (ii) cálculo da Taxa de Overlap Interno (redundância dentro da bolha de cada persona); (iii) análise do Delta Algorítmico — comparação direta *Input vs. Output* das treze métricas centrais; e (iv) síntese e teste das quatro hipóteses formuladas por persona no Capítulo 3 (§3.2).
 
 ## 4.1 Apresentação dos Outputs Coletados (Daily Mixes)
 
@@ -795,11 +838,11 @@ Contudo, **essa convergência não é homogeneização de entropia, e sim expans
 
 #### Síntese: a bolha não se funde, alarga-se por dentro
 
-Os três níveis, considerados em conjunto, sustentam um achado mais forte que o originalmente hipotetizado: **o algoritmo não homogeneíza o gosto entre usuários**. Ele expande a riqueza interna de cada perfil (arrombando bolhas verticais, como a de Ricardo) e os aproxima tematicamente, mas mantém repertórios de artistas rigidamente disjuntos. O "Colapso de Contexto" anunciado nos objetivos (§2.1) ocorre apenas no eixo temático e no de *magnitude* de diversidade — **não no eixo de conteúdo**. A bolha não se rompe nem se funde com as demais: ela se alarga internamente enquanto suas paredes de conteúdo permanecem de pé.
+Os três níveis, considerados em conjunto, sustentam um achado mais forte que o originalmente hipotetizado: **o algoritmo não homogeneíza o gosto entre usuários**. Ele expande a riqueza interna de cada perfil (arrombando bolhas verticais, como a de Ricardo) e os aproxima tematicamente, mas mantém repertórios de artistas rigidamente disjuntos. O "Colapso de Contexto" anunciado nos objetivos (§1.2) ocorre apenas no eixo temático e no de *magnitude* de diversidade — **não no eixo de conteúdo**. A bolha não se rompe nem se funde com as demais: ela se alarga internamente enquanto suas paredes de conteúdo permanecem de pé.
 
 ## 4.6 Síntese dos Achados e Discussão
 
-A Tabela 4.6 consolida os achados centrais do estudo, mapeando-os contra as hipóteses formuladas no Capítulo 2:
+A Tabela 4.6 consolida os achados centrais do estudo, mapeando-os contra as hipóteses formuladas por persona no Capítulo 3 (§3.2):
 
 **Tabela 4.6 — Síntese dos Achados por Persona e Hipóteses Confirmadas**
 
