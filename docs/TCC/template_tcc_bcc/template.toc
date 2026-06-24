@@ -1,0 +1,56 @@
+\changetocdepth {4}
+\babel@toc {brazil}{}\relax 
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {1}\MakeTextUppercase []{Introdução}}{11}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Objetivo Geral}{13}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Objetivos Específicos}{13}{section.1.2}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {2}\MakeTextUppercase []{Referencial Teórico}}{14}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Governança algorítmica, caixa-preta e economia da atenção}{14}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Personalização e bolha de filtro: da hipótese à crítica}{14}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Viés de popularidade e a teoria da cauda longa}{15}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Diversidade da informação: métricas e suas armadilhas}{15}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Auditoria algorítmica: métodos e instrumentos}{16}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Estudos correlatos recentes}{16}{section.2.6}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {3}\MakeTextUppercase []{Metodologia}}{17}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Procedimento de Coleta e Preparação Técnica}{17}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Tratamento de Dados e Definição das Métricas de Auditoria}{18}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Síntese Estatística e Definição dos Indicadores Descritivos}{19}{subsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.2.1}Tratamento Estatístico Inferencial}{20}{subsubsection.3.1.2.1}%
+\contentsline {subsection}{\numberline {3.1.3}Adaptação Metodológica: Migração para Fontes Externas (Last.fm + MusicBrainz)}{21}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Arquitetura dos Agentes de Teste: Caracterização das Personas Sintéticas}{24}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Beatriz (A Consumidora Mainstream)}{24}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Daniel (O Foco Instrumental/Lo-fi)}{29}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Sofia (A Consumidora de Nicho)}{33}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}Ricardo (O Consumidor Nostálgico)}{38}{subsection.3.2.4}%
+\contentsline {section}{\numberline {3.3}Análise Comparativa e Validação dos Estímulos (Inputs)}{43}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Métricas de Diversidade e Entropia da Informação}{44}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Distribuição de Mercado (Cauda Longa)}{45}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Análise Visual Cruzada e Topologia dos Dados}{47}{subsection.3.3.3}%
+\contentsline {section}{\numberline {3.4}Síntese Metodológica e Limitações}{50}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Limitações Metodológicas e Achado Original}{51}{subsection.3.4.1}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Resultados: Análise dos Outputs e o Delta Algorítmico}}{53}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Apresentação dos Outputs Coletados (Daily Mixes)}{53}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Taxa de Overlap Interno: Redundância Intra-Persona}{54}{section.4.2}%
+\contentsline {section}{\numberline {4.3}O Delta Algorítmico --- Visão Geral}{55}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Análise Persona por Persona}{56}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Beatriz (Mainstream) --- O Grupo de Controle Validado}{56}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Daniel (Lo-fi) --- Confirmação do Viés de Popularidade}{58}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Sofia (Nicho) --- Viés do Hit dentro da Cauda Longa}{59}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}Ricardo (Nostálgico) --- Pulverização da Fidelidade Canônica}{60}{subsection.4.4.4}%
+\contentsline {section}{\numberline {4.5}Reconfiguração da Diversidade: Expansão de Riqueza com Manutenção de Silos}{63}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Síntese dos Achados e Discussão}{66}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Os Quatro Achados Centrais}{66}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Implicações Teóricas e Sociotécnicas}{67}{subsection.4.6.2}%
+\contentsline {subsection}{\numberline {4.6.3}Limitações Específicas dos Resultados deste Capítulo}{68}{subsection.4.6.3}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Considerações Finais}}{69}{chapter.5}%
+\vspace {\cftbeforechapterskip }
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\contentsline {chapter}{\MakeTextUppercase []{Refer\^encias}}{71}{section*.18}%
