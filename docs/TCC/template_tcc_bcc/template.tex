@@ -9,7 +9,7 @@ brazil]{facom-ufu-abntex2}
 \usepackage{graphicx}
 \graphicspath{{figuras/}{pictures/}{images/}{./}} % where to search for the images
 
-% --- Pacotes adicionais para este trabalho ---
+%, Pacotes adicionais para este trabalho, 
 \usepackage{amsmath}    % ambientes e comandos matemáticos
 \usepackage{amssymb}    % símbolos matemáticos
 \usepackage{float}      % posicionamento [H] de figuras/tabelas
@@ -20,17 +20,17 @@ brazil]{facom-ufu-abntex2}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 
-% --- Fonte (origem) padronizada de figuras e tabelas (padrão ABNT) ---
+%, Fonte (origem) padronizada de figuras e tabelas (padrão ABNT), 
 % (\fonte já é definido pela classe abntex2; usamos um nome próprio)
 \newcommand{\fontefig}[1]{%
   \par\nopagebreak\vspace{0.15cm}%
   {\centering\footnotesize Fonte: #1\par}%
 }
 
-% ---
+%, 
 % Dados da CAPA, FOLHA DE ROSTO e identificação do curso
 % (sobrescrevem os padrões da classe FACOM para o curso de Gestão da Informação)
-% ---
+%, 
 \instituicao{%
   Universidade Federal de Uberlândia -- UFU
   \par
@@ -65,10 +65,10 @@ Streaming: um Estudo Experimental sobre Vieses e Recomendação Musical no Spoti
 \imprimircapa
 \imprimirfolhaderosto
 
-% ---
+%, 
 % Folha de aprovação (preencher após a defesa; ou descomentar a linha abaixo
 % para incluir o PDF escaneado da folha assinada)
-% ---
+%, 
 % \includepdf{folhadeaprovacao_final.pdf}
 \begin{folhadeaprovacao}
 
@@ -102,7 +102,7 @@ Streaming: um Estudo Experimental sobre Vieses e Recomendação Musical no Spoti
   \end{center}
 
 \end{folhadeaprovacao}
-% ---
+%, 
 
 % As seções dedicatória, agradecimento e epígrafe são opcionais.
 % Descomente e preencha caso julgue pertinente.
@@ -121,9 +121,9 @@ Streaming: um Estudo Experimental sobre Vieses e Recomendação Musical no Spoti
 %	\begin{flushright}\textit{``Citação \ldots''}\end{flushright}
 %\end{epigrafe}
 
-% ---
+%, 
 % RESUMO em português
-% ---
+%, 
 \begin{resumo}
 Os sistemas de recomendação algorítmica consolidaram-se como principais
 mediadores entre a obra musical e o ouvinte, operando como caixas-pretas cujos
@@ -132,11 +132,11 @@ recomendação do Spotify sob a ótica da Gestão da Informação, investigando 
 curadoria automatizada favorece a diversidade cultural ou a homogeneização do
 gosto musical. Adotou-se a metodologia de auditoria de caixa-preta por
 agentes-sonda (\emph{sock puppet audit}), com quatro personas sintéticas de
-arquétipos contrastantes --- \emph{mainstream}, funcional/\emph{lo-fi},
-nostálgico e de nicho ---, comparando-se os estímulos declarados (\emph{input})
+arquétipos contrastantes, \emph{mainstream}, funcional/\emph{lo-fi},
+nostálgico e de nicho, comparando-se os estímulos declarados (\emph{input})
 com as recomendações geradas nos \emph{Daily Mixes} (\emph{output}). Diante da
-remoção progressiva de campos da \emph{Web API} do Spotify durante a pesquisa
---- fato tratado como meta-evidência da opacidade da plataforma ---, os dados
+remoção progressiva de campos da \emph{Web API} do Spotify durante a pesquisa,
+fato tratado como meta-evidência da opacidade da plataforma, os dados
 foram enriquecidos com as fontes externas Last.fm e MusicBrainz. Mensuraram-se a
 diversidade e a concentração por meio da Entropia de Shannon, da \emph{evenness}
 de Pielou, do Coeficiente de Gini, do Índice Herfindahl-Hirschman e do Índice de
@@ -160,9 +160,9 @@ distintos.
  Spotify. Diversidade musical. Viés de popularidade.
 \end{resumo}
 
-% ---
+%, 
 % ABSTRACT em inglês
-% ---
+%, 
 \begin{resumo}[Abstract]
  \begin{otherlanguage*}{english}
    Algorithmic recommender systems have become the main mediators between
@@ -171,11 +171,11 @@ distintos.
    from an Information Management perspective, investigating whether automated
    curation fosters cultural diversity or the homogenization of musical taste. A
    black-box, sock-puppet auditing methodology was adopted, using four synthetic
-   personas of contrasting archetypes --- mainstream, functional/lo-fi,
-   nostalgic, and niche --- comparing the declared stimuli (input) with the
+   personas of contrasting archetypes, mainstream, functional/lo-fi,
+   nostalgic, and niche, comparing the declared stimuli (input) with the
    recommendations generated in the Daily Mixes (output). Given the progressive
-   removal of fields from the Spotify Web API during the research --- treated
-   here as meta-evidence of the platform's opacity ---, the data were enriched
+   removal of fields from the Spotify Web API during the research, treated
+   here as meta-evidence of the platform's opacity, the data were enriched
    with the external sources Last.fm and MusicBrainz. Diversity and
    concentration were measured through Shannon entropy, Pielou's evenness, the
    Gini coefficient, the Herfindahl-Hirschman Index, and the Jaccard index, with
@@ -200,9 +200,9 @@ distintos.
  \end{otherlanguage*}
 \end{resumo}
 
-% ---
+%, 
 % Listas de ilustrações e tabelas
-% ---
+%, 
 \pdfbookmark[0]{\listfigurename}{lof}
 \listoffigures*
 \cleardoublepage
@@ -211,9 +211,9 @@ distintos.
 \listoftables*
 \cleardoublepage
 
-% ---
+%, 
 % Lista de abreviaturas e siglas
-% ---
+%, 
 \begin{siglas}
   \item[API] \emph{Application Programming Interface} (Interface de Programação de Aplicações)
   \item[FAGEN] Faculdade de Gestão e Negócios
@@ -230,9 +230,9 @@ distintos.
   \item[UFU] Universidade Federal de Uberlândia
 \end{siglas}
 
-% ---
+%, 
 % Sumário
-% ---
+%, 
 \pdfbookmark[0]{\contentsname}{toc}
 \tableofcontents*
 \cleardoublepage
@@ -302,7 +302,7 @@ bolhas de filtro é escassa e que o conceito, frequentemente, opera mais como
 pânico moral do que como fenômeno mensurado. Esta pesquisa posiciona-se
 justamente nesse debate, tomando a bolha de filtro não como pressuposto, mas
 como \textbf{hipótese a ser testada empiricamente} no domínio da recomendação
-musical --- onde, como se verá no Capítulo~\ref{cap:resultados}, os próprios
+musical, onde, como se verá no Capítulo~\ref{cap:resultados}, os próprios
 dados sugerem um comportamento mais sutil do que a metáfora clássica da bolha
 prevê (o algoritmo chega a \emph{arrombar} a bolha vertical do perfil
 nostálgico, em vez de reforçá-la).
@@ -323,9 +323,9 @@ mineração de dados.
 Dessa forma, o estudo utiliza Personas Sintéticas como objeto central de
 análise. Essas personas consistem em perfis de usuários cujos hábitos de consumo
 são simulados por algoritmos de curadoria controlada, construídos a partir da
-extração de metadados via API. As identidades sintéticas --- Beatriz
-(\emph{Mainstream}), Daniel (\emph{Lo-fi}), Ricardo (Nostálgico) e Sofia (Nicho)
---- funcionam como instrumentos de medição que isolam a variável algorítmica.
+extração de metadados via API. As identidades sintéticas, Beatriz
+(\emph{Mainstream}), Daniel (\emph{Lo-fi}), Ricardo (Nostálgico) e Sofia (Nicho),
+funcionam como instrumentos de medição que isolam a variável algorítmica.
 
 Ao analisar como o Spotify responde a essas quatro identidades musicais
 distintas, o estudo busca avaliar se o sistema respeita preferências musicais
@@ -372,10 +372,10 @@ cultural, na concentração de popularidade e na formação de bolhas de filtro
   de artistas independentes (Cauda Longa).
 
   \item Avaliar o fenômeno de Colapso de Contexto, investigando se as
-  recomendações para perfis distintos convergem entre si --- distinguindo a
+  recomendações para perfis distintos convergem entre si, distinguindo a
   convergência de \emph{conteúdo} (sobreposição de artistas, via Índice de
   Jaccard), de \emph{tema} (gêneros/\emph{tags}) e de \emph{magnitude} de
-  diversidade (Entropia de Shannon) --- em vez de pressupor uma homogeneização
+  diversidade (Entropia de Shannon), em vez de pressupor uma homogeneização
   única e indiferenciada.
 \end{itemize}
 
@@ -398,7 +398,7 @@ algorítmica}: a mediação, em larga escala, das decisões de consumo cultural 
 sistemas automatizados de recomendação. Esses sistemas operam como
 \textbf{caixas-pretas} (\emph{black boxes}), cujos critérios de seleção
 permanecem proprietários e opacos, gerando assimetria informacional entre a
-plataforma e o usuário --- e também entre a plataforma e o pesquisador.
+plataforma e o usuário, e também entre a plataforma e o pesquisador.
 \citeonline{eriksson2019spotify}, em \emph{Spotify Teardown}, evidenciam
 empiricamente essa opacidade e a resistência da plataforma ao escrutínio externo,
 justificando abordagens investigativas que operem ``de fora para dentro''.
@@ -408,7 +408,7 @@ qual o sucesso da plataforma depende da maximização da retenção do usuário.
 decorre uma tendência dos algoritmos a privilegiar conteúdos de baixo risco e
 alta aceitação estatística, instaurando um ciclo de retroalimentação
 (\emph{feedback loop}) em que o popular ganha visibilidade enquanto produções
-novas, experimentais ou de nicho tendem a ser marginalizadas --- pano de fundo
+novas, experimentais ou de nicho tendem a ser marginalizadas, pano de fundo
 para os vieses investigados neste trabalho.
 
 \section{Personalização e bolha de filtro: da hipótese à crítica}
@@ -445,8 +445,8 @@ mais equilibrados \cite{mehrotra2018towards}.
 No plano dos efeitos agregados, \citeonline{hosanagar2014will} investigam se os
 sistemas de recomendação fragmentam ou homogeneízam o consumo, encontrando
 evidências de que podem \textbf{aumentar a comunalidade} entre usuários. Tais
-achados situam a pergunta central deste trabalho --- se o algoritmo do Spotify
-aproxima ou afasta perfis distintos --- em uma tradição consolidada de pesquisa.
+achados situam a pergunta central deste trabalho, se o algoritmo do Spotify
+aproxima ou afasta perfis distintos, em uma tradição consolidada de pesquisa.
 
 \section{Diversidade da informação: métricas e suas armadilhas}
 
@@ -459,8 +459,8 @@ que normaliza a entropia pelo seu teto teórico; e, para um tratamento unificado
 das ordens de diversidade, à formalização de \citeonline{jost2006entropy}. A
 distinção é crucial: como alertam \citeonline{gotelli2001quantifying}, comparar
 riqueza entre amostras de tamanhos diferentes é inválido sem padronização
-(rarefação), sob pena de confundir efeito real com artefato de esforço amostral
---- armadilha diretamente relevante a esta auditoria.
+(rarefação), sob pena de confundir efeito real com artefato de esforço amostral,
+armadilha diretamente relevante a esta auditoria.
 
 Complementam o instrumental o \textbf{Coeficiente de Gini} (desigualdade de
 atenção entre artistas), o \textbf{Índice Herfindahl-Hirschman}
@@ -475,8 +475,8 @@ Teoria da Informação e a avaliação de recomendadores.
 A \textbf{auditoria algorítmica} investiga exogenamente o comportamento de
 sistemas opacos pela análise de seus \emph{outputs} sob estímulos controlados.
 \citeonline{sandvig2014auditing} propõem cinco desenhos de auditoria, entre os
-quais o \textbf{\emph{sock puppet audit}} --- agentes-sonda que se passam por
-usuários reais ---, desenho adotado neste estudo. Por operar sobre saídas
+quais o \textbf{\emph{sock puppet audit}}, agentes-sonda que se passam por
+usuários reais, desenho adotado neste estudo. Por operar sobre saídas
 ruidosas, esse paradigma exige rigor inferencial: a ferramenta AdFisher
 \cite{datta2015automated} recorre a testes de permutação justamente para
 assegurar a validade estatística de seus achados. Essas referências fundamentam
@@ -488,7 +488,7 @@ tanto o desenho experimental quanto o tratamento estatístico
 No domínio específico do \emph{streaming} musical,
 \citeonline{anderson2020algorithmic}, em estudo da própria Spotify Research,
 medem a diversidade de consumo por \emph{embeddings} sonoros e identificam um
-\emph{trade-off} entre engajamento e diversidade --- referência incontornável
+\emph{trade-off} entre engajamento e diversidade, referência incontornável
 para o diálogo com os achados deste trabalho. A agenda mantém-se ativa:
 pesquisas recentes examinam o viés de popularidade em serviços comerciais
 \cite{turnbull2022exploring}, a promoção (ou não) de música local pelos
@@ -540,7 +540,7 @@ análise de dados robusta para processar e auditar os resultados. O sistema
 integrou ferramentas de ciência de dados, como \texttt{pandas} para a
 estruturação tabular, e \texttt{matplotlib} e \texttt{seaborn} para a
 visualização gráfica. Mais do que apenas recolher listas de reprodução, o código
-foi programado para calcular métricas complexas de diversidade e concentração ---
+foi programado para calcular métricas complexas de diversidade e concentração, 
 incluindo a Entropia de Shannon, o Coeficiente de Gini e o Índice de Jaccard.
 Tais métricas permitem transformar a percepção subjetiva de gosto musical em
 dados quantitativos auditáveis, essenciais para a verificação de vieses
@@ -594,8 +594,8 @@ Métrica econômica utilizada para detectar monopólios de mercado
 gêneros musicais.
 \[ HHI = \sum_{i=1}^{N} s_i^2 \]
 onde $s_i$ é a participação (\% do total) de cada gênero musical na biblioteca.
-Diferentemente do HHI de mercado clássico --- cujo limiar de concentração se
-situa em torno de $0{,}25$ ---, aqui o índice é calculado sobre a distribuição de
+Diferentemente do HHI de mercado clássico, cujo limiar de concentração se
+situa em torno de $0{,}25$, aqui o índice é calculado sobre a distribuição de
 centenas de \emph{tags} explodidas por faixa, o que comprime sua escala por
 construção: os valores observados situam-se entre $0{,}02$ e $0{,}08$. A leitura
 é, portanto, \textbf{relativa} entre as personas (um HHI comparativamente mais
@@ -665,9 +665,9 @@ experimento.
 Dado que os produtos algorítmicos auditados são intrinsecamente ruidosos e que o
 desenho experimental opera com um número reduzido de agentes sintéticos
 ($n = 4$ personas), seguindo a tradição da auditoria de caixa-preta por
-agentes-sonda \cite{sandvig2014auditing} --- na qual a ferramenta AdFisher
+agentes-sonda \cite{sandvig2014auditing}, na qual a ferramenta AdFisher
 recorre a testes de permutação justamente porque a saída observada é estocástica
-\cite{datta2015automated} ---, adotou-se um tratamento inferencial complementar
+\cite{datta2015automated}, adotou-se um tratamento inferencial complementar
 às estimativas pontuais, implementado em
 \texttt{src/analysis/build\_significance.py} (semente aleatória fixa para
 reprodutibilidade). As ferramentas foram escolhidas conforme o nível de agregação
@@ -678,8 +678,8 @@ de cada métrica, evitando seu uso indevido:
   percentis} \cite{efron1993introduction} para as \textbf{medianas de audiência}
   (\emph{listeners} e \emph{playcount}), reamostrando-se as faixas com reposição
   por mil iterações. O \emph{bootstrap} com reposição não é aplicado às métricas
-  de forma (Shannon, Pielou, Gini, riqueza), pois nelas é enviesado para baixo
-  --- a essas reserva-se a rarefação.
+  de forma (Shannon, Pielou, Gini, riqueza), pois nelas é enviesado para baixo,
+a essas reserva-se a rarefação.
 
   \item \textbf{Teste de Mann-Whitney U} \cite{mann1947test} para comparar as
   distribuições \emph{track-level} de \emph{listeners} entre \emph{input} e
@@ -724,9 +724,9 @@ exercida por plataformas de \emph{streaming}.
   \emph{development}, o acesso programático às \emph{playlists} algorítmicas
   (\emph{Daily Mix}, \emph{Discover Weekly}, \emph{Release Radar}, \emph{Made For
   You}) e ao \emph{endpoint} \texttt{/recommendations}. Como contornar essa
-  restrição exigia autorização exclusiva via \emph{Extended Quota Mode} ---
+  restrição exigia autorização exclusiva via \emph{Extended Quota Mode}, 
   cujo processo de aprovação tem taxa de sucesso historicamente baixa para
-  projetos acadêmicos ---, adotou-se um \emph{workaround} manual: cada persona,
+  projetos acadêmicos, adotou-se um \emph{workaround} manual: cada persona,
   após o período de incubação algorítmica, copiou as faixas dos seis \emph{Daily
   Mixes} gerados pelo sistema para uma ``\emph{playlist} espelho'' de propriedade
   da própria conta, viabilizando a leitura via OAuth.
@@ -747,12 +747,12 @@ exercida por plataformas de \emph{streaming}.
   \texttt{/tracks}, \texttt{/albums} e \texttt{/search} para aplicações em
   \emph{Development Mode}. A confirmação foi obtida em testes controlados com
   \emph{tokens} OAuth de usuários \emph{Premium} e \emph{Free}, bem como com
-  \emph{Client Credentials}, todos retornando os mesmos campos vazios ---
+  \emph{Client Credentials}, todos retornando os mesmos campos vazios, 
   comprovando o caráter universal da restrição em nível de aplicação, não em
   nível de usuário ou plano.
 \end{enumerate}
 
-\textbf{Solução metodológica adotada --- fontes externas com mesma metodologia
+\textbf{Solução metodológica adotada, fontes externas com mesma metodologia
 para \emph{Input} e \emph{Output}.} A perda dos campos
 \texttt{track\_popularity}, \texttt{artist\_popularity},
 \texttt{artist\_followers} e \texttt{artist\_genres} comprometeria as métricas
@@ -763,14 +763,14 @@ pesquisa adotou um \emph{pipeline} de enriquecimento via \textbf{duas fontes
 externas consagradas}, aplicado consistentemente a ambos os conjuntos de dados:
 
 \begin{itemize}
-  \item \textbf{Last.fm} --- API gratuita que fornece, para cada artista e cada
+  \item \textbf{Last.fm}, API gratuita que fornece, para cada artista e cada
   faixa: número de \emph{listeners} únicos, total de \emph{plays} históricos
   cumulativos e \emph{top tags} atribuídas pela comunidade. O \emph{endpoint}
   \texttt{artist.getInfo} substituiu o cálculo de popularidade e alcance do
   artista; o \texttt{track.getInfo} substituiu o \texttt{track\_popularity} do
   Spotify.
 
-  \item \textbf{MusicBrainz} --- banco de dados aberto que fornece metadados
+  \item \textbf{MusicBrainz}, banco de dados aberto que fornece metadados
   ricos sobre artistas: gêneros (\emph{tags} \emph{crowdsourced}), país de
   origem, área geográfica, ano de início de carreira (\emph{life-span begin}),
   tipo de artista (\emph{Person}, \emph{Group}, \emph{Choir}, \emph{Orchestra}) e
@@ -793,8 +793,8 @@ Tabela~\ref{tab:correspondencia}.
 \texttt{artist\_popularity} (índice 0--100) & Last.fm \texttt{artist.playcount} & \emph{Plays} históricos cumulativos como \emph{proxy} de popularidade consagrada (não apenas atual). \\
 \texttt{artist\_followers} (contagem) & Last.fm \texttt{artist.listeners} & Ouvintes únicos como \emph{proxy} direto de base de fãs ativa. \\
 \texttt{artist\_genres} (lista Spotify) & MusicBrainz \texttt{tags} (com \emph{fallback} Last.fm) & \emph{Tags crowdsourced} de fonte aberta, comparáveis em granularidade. \\
-(não existia anteriormente) & MusicBrainz \texttt{life-span.begin} & Ano de início de carreira do artista --- métrica nova que separa ``legado'' de ``\emph{newcomers}''. \\
-(não existia anteriormente) & MusicBrainz \texttt{type} & Distinção solo (\emph{Person}) vs. coletivo (\emph{Group}) --- métrica nova de estrutura social do consumo. \\
+(não existia anteriormente) & MusicBrainz \texttt{life-span.begin} & Ano de início de carreira do artista, métrica nova que separa ``legado'' de ``\emph{newcomers}''. \\
+(não existia anteriormente) & MusicBrainz \texttt{type} & Distinção solo (\emph{Person}) vs. coletivo (\emph{Group}), métrica nova de estrutura social do consumo. \\
 \bottomrule
 \end{tabularx}
 \fontefig{Elaborado pelo autor (2026).}
@@ -806,7 +806,7 @@ Cauda Longa (\emph{Long Tail}) foram recalibrados via \textbf{percentis sobre um
 $+$ quatro \emph{outputs}, deduplicados por artista), substituindo os limiares
 absolutos baseados em \emph{followers} do Spotify (cujo intervalo de valores não
 é diretamente transferível para a escala de \emph{listeners} do Last.fm). Essa
-régua única --- idêntica para \emph{input} e \emph{output} --- aumenta a robustez
+régua única, idêntica para \emph{input} e \emph{output}, aumenta a robustez
 da classificação a mudanças de fonte e, sobretudo, garante que os \emph{tiers}
 sejam diretamente comparáveis entre estímulo e recomendação.
 
@@ -815,16 +815,16 @@ sejam diretamente comparáveis entre estímulo e recomendação.
 global por \texttt{primary\_artist\_name}, sem dupla-contagem entre personas). O
 enriquecimento alcançou \textbf{100\% das faixas} com ao menos dados do Last.fm;
 a cobertura simultânea das \emph{duas} fontes (Last.fm $+$ MusicBrainz) varia por
-persona --- de 86,7\% para Sofia (perfil \emph{underground}, menos catalogado no
-MusicBrainz) a 100\% para Beatriz e Ricardo no \emph{output} ---, o que constitui,
+persona, de 86,7\% para Sofia (perfil \emph{underground}, menos catalogado no
+MusicBrainz) a 100\% para Beatriz e Ricardo no \emph{output}, o que constitui,
 em si, indício do viés de cobertura discutido na Seção~\ref{sec:limitacoes}. Os
 resultados foram persistidos em \emph{cache} incremental para garantir
 reprodutibilidade.
 
 \textbf{Implicação epistemológica.} O fato de que o próprio instrumental técnico
 empregado em uma auditoria algorítmica tenha sido sistematicamente obstruído pela
-plataforma auditada --- \emph{durante} a execução da pesquisa, sem aviso público
-no caso da Onda 3 --- constitui \emph{meta-evidência} da assimetria informacional
+plataforma auditada, \emph{durante} a execução da pesquisa, sem aviso público
+no caso da Onda 3, constitui \emph{meta-evidência} da assimetria informacional
 entre plataformas de \emph{streaming} e atores externos (incluindo pesquisadores
 acadêmicos). Esta observação é retomada na Seção~\ref{sec:limitacoes} como achado
 central da pesquisa.
@@ -877,7 +877,7 @@ serendipidade (descoberta do inesperado).
 entrada confirma a aderência do perfil Beatriz ao arquétipo \emph{Mainstream}
 brasileiro contemporâneo. A biblioteca apresenta uma Mediana de \textbf{194 mil
 ouvintes únicos no Last.fm} por artista e uma \textbf{Mediana de Playcount
-Histórico de 3,4 milhões} de execuções por artista --- patamares característicos
+Histórico de 3,4 milhões} de execuções por artista, patamares característicos
 da zona de consagração comercial massiva. O viés de recência (do álbum) é
 extremo: \textbf{84,9\% das faixas pertencem à década de 2020}, com Ano Médio de
 Lançamento de 2023, corroborando o perfil de consumo imediatista e focado em
@@ -889,7 +889,7 @@ Em termos estruturais, a \emph{playlist} reflete o formato radiofônico padrão,
 com Duração Média de 3:20, alinhada com as produções comerciais otimizadas para
 \emph{streaming} e engajamento rápido. A análise de \textbf{estrutura social do
 consumo} (\texttt{mb\_artist\_type}) revela um equilíbrio entre artistas solo
-(61\% \emph{Person}) e bandas/duplas (37\% \emph{Group}) --- composição típica do
+(61\% \emph{Person}) e bandas/duplas (37\% \emph{Group}), composição típica do
 \emph{mainstream} brasileiro, onde duplas sertanejas coexistem com solistas
 \emph{pop}. A \textbf{Era de Carreira Mediana dos Artistas é 1993} (cobertura:
 51\%), refletindo presença de artistas consagrados como Henrique \& Juliano e
@@ -915,7 +915,7 @@ passiva, focado em \emph{hits} diversos em vez de discografias profundas.
 Listeners Mediano por Artista (Last.fm) & 194.228 & Zona de consagração massiva; artistas com base de fãs ativa de centenas de milhares. \\
 Playcount Mediano por Artista (Last.fm) & 3.434.708 & Histórico cumulativo robusto; evidência de validação comercial sustentada no tempo. \\
 Listeners Mediano por Track (Last.fm) & 51.879 & Faixas com alcance amplo, características de \emph{hits} radiofônicos. \\
-Entropia de Shannon (Artistas) & 6,03 (Alta) & Escuta horizontal pulverizada --- padrão ``tipo rádio'' (\emph{Grazing}), com baixa fidelidade a artistas específicos. \\
+Entropia de Shannon (Artistas) & 6,03 (Alta) & Escuta horizontal pulverizada, padrão ``tipo rádio'' (\emph{Grazing}), com baixa fidelidade a artistas específicos. \\
 Coeficiente de Gini & 0,42 (Médio) & Distribuição moderadamente desigual de faixas entre artistas; alguns favoritos sem monopolização. \\
 Riqueza (Artistas Únicos) & 94 & Alta variedade característica do consumo ``tipo rádio''. \\
 Era de Carreira Mediana & 1993 (cob.\ 51\%) & Mistura de artistas estabelecidos (sertanejo \emph{legacy}) com novidades virais. \\
@@ -1005,8 +1005,8 @@ funcional''.
 \textbf{Validação Quantitativa do Input (Linha de Base).} Os dados de entrada
 confirmam a construção de um perfil altamente especializado e, paradoxalmente,
 anônimo. A biblioteca de Daniel apresenta uma \textbf{Mediana de Listeners por
-Artista de 79,6 mil} (Last.fm) --- patamar característico da Cauda Longa do
-consumo musical --- combinada com uma \textbf{Mediana de Listeners por Track de
+Artista de 79,6 mil} (Last.fm), patamar característico da Cauda Longa do
+consumo musical, combinada com uma \textbf{Mediana de Listeners por Track de
 apenas 18,8 mil}. Esse contraste valida o fenômeno da Comoditização Musical: o
 usuário consome o ``gênero'' (\emph{Lo-fi Beats}), ignorando completamente quem é
 o autor da obra.
@@ -1023,7 +1023,7 @@ A análise de \emph{tags} revela um \textbf{\emph{mono-cluster} temático}: as
 marcas \texttt{lo-fi} (93 ocorrências), \texttt{hip hop} (83),
 \texttt{downtempo} (78) e \texttt{instrumental} (77) dominam massivamente. A
 predominância de \textbf{70\% artistas solo (\emph{Person})} confirma o
-ecossistema de \emph{bedroom producers} --- produtores independentes que operam
+ecossistema de \emph{bedroom producers}, produtores independentes que operam
 em isolamento, contribuindo individualmente para o catálogo \emph{lo-fi}
 industrial. A \textbf{Era de Carreira Mediana de 1987} (cobertura limitada: 20\%,
 refletindo a invisibilidade de produtores obscuros nos catálogos do MusicBrainz)
@@ -1041,10 +1041,10 @@ deve ser interpretada com cautela.
 Listeners Mediano por Artista (Last.fm) & 79.595 & Zona de Cauda Longa: base de fãs ativa baixa, mas \emph{plays} altos via consumo passivo. \\
 Playcount Mediano por Artista (Last.fm) & 348.630 & Histórico cumulativo modesto, característico da era \emph{streaming} funcional. \\
 Listeners Mediano por Track (Last.fm) & 18.824 & Faixas projetadas para \emph{background listening}, sem aspiração a \emph{hit} cultural. \\
-Entropia de Shannon (Artistas) & 6,27 (Máxima do estudo) & Pulverização Funcional; indiferença à autoria --- consome-se o ``gênero'', não o ``artista''. \\
+Entropia de Shannon (Artistas) & 6,27 (Máxima do estudo) & Pulverização Funcional; indiferença à autoria, consome-se o ``gênero'', não o ``artista''. \\
 Coeficiente de Gini & 0,37 (Baixo-Médio) & Pouca concentração; distribuição quase uniforme entre os 99 produtores. \\
 Riqueza (Artistas Únicos) & 99 (média 2,02 faixas/artista) & Consumo extremamente disperso. \\
-Era de Carreira Mediana & 1987 (cob.\ 20\%) & Cobertura limitada --- muitos produtores \emph{lo-fi} sem registro no MusicBrainz; baixa confiabilidade. \\
+Era de Carreira Mediana & 1987 (cob.\ 20\%) & Cobertura limitada, muitos produtores \emph{lo-fi} sem registro no MusicBrainz; baixa confiabilidade. \\
 Tipo de Artista (MB) & 70\% solo, 24\% grupo & Confirma ecossistema de \emph{bedroom producers} individuais. \\
 Recência Temporal (Álbum) & 98,5\% Anos 2020 & Produção Industrial/Efêmera; obsolescência rápida do catálogo. \\
 Tags Dominantes (mb+lastfm) & lo-fi, hip hop, downtempo, instrumental & Hiper-especialização cognitiva; bloqueio de vocais e dinâmicas intensas (\emph{Deep Work}). \\
@@ -1131,8 +1131,8 @@ a precisão em micro-gêneros e a sensibilidade a texturas sonoras complexas.
 \textbf{Validação Quantitativa do Input.} A análise dos metadados da biblioteca
 de Sofia confirma rigorosamente seu arquétipo de ``Arqueóloga Digital'' e
 consumidora \emph{underground}. A Mediana de Listeners por Track no Last.fm é de
-apenas \textbf{1.223} --- três ordens de magnitude abaixo de Beatriz (51.879) e
-quase 16 vezes menor que Daniel ---, evidenciando que a grande maioria de seu
+apenas \textbf{1.223}, três ordens de magnitude abaixo de Beatriz (51.879) e
+quase 16 vezes menor que Daniel, evidenciando que a grande maioria de seu
 consumo reside na obscuridade quase total do catálogo global. A Mediana de
 Listeners por Artista (59.042) também é a mais baixa do estudo, validando seu
 interesse pelo cenário independente.
@@ -1148,9 +1148,9 @@ Temporalmente, ela compartilha o viés de contemporaneidade (Ano Médio 2021, co
 77\% das faixas na década de 2020), mas com um propósito diferente: ela busca a
 vanguarda experimental atual, não os sucessos de rádio. A distribuição de
 \emph{tags} valida sua formação em design e gosto por atmosferas: há
-predominância de estilos baseados em textura e colagem sonora ---
+predominância de estilos baseados em textura e colagem sonora, 
 \texttt{shoegaze}, \texttt{plunderphonics}, \texttt{cloud rap}, \texttt{IDM},
-\texttt{lo-fi indie} --- gêneros complexos que exigem análise de conteúdo de
+\texttt{lo-fi indie}, gêneros complexos que exigem análise de conteúdo de
 áudio (timbre/ritmo) mais apurada do que a simples filtragem colaborativa. A
 composição \textbf{61\% solo, 39\% grupos} (MusicBrainz) reflete a predominância
 individual típica de cenas independentes contemporâneas.
@@ -1169,9 +1169,9 @@ Playcount Mediano por Artista (Last.fm) & 565.579 & Comunidades de nicho com fã
 Listeners Mediano por Track (Last.fm) & \textbf{1.223} & \textbf{Três ordens de magnitude abaixo do \emph{mainstream}}; consumo na obscuridade extrema do catálogo global. \\
 Entropia de Shannon (Artistas) & 4,43 (Baixa) & Consumo Imersivo/Vertical; forte oposição à escuta passiva. \\
 Coeficiente de Gini & 0,36 & Distribuição com algumas favoritas claras (S.Maharba, Eterna, Patch+ com 15+ faixas cada). \\
-Riqueza (Artistas Únicos) & 27 (média 7,41 faixas/artista) & Escuta focada em discografia profunda --- \emph{active listening}. \\
+Riqueza (Artistas Únicos) & 27 (média 7,41 faixas/artista) & Escuta focada em discografia profunda, \emph{active listening}. \\
 Era de Carreira Mediana & 1984 (cob.\ 41\%) & Cena experimental com mistura de pioneiros (anos 80--90) e contemporâneos. \\
-Tipo de Artista (MB) & 61\% solo, 39\% grupo & Predominância de projetos individuais --- característico de cenas independentes. \\
+Tipo de Artista (MB) & 61\% solo, 39\% grupo & Predominância de projetos individuais, característico de cenas independentes. \\
 Recência Temporal (Álbum) & 77,0\% Anos 2020 & Vanguarda contemporânea; busca do alternativo no tempo presente. \\
 Tags Dominantes (mb+lastfm) & shoegaze, plunderphonics, cloud rap, IDM, lo-fi indie & Curadoria estético-textural; gêneros de alta complexidade tímbrica. \\
 HHI de Tags & 0,024 (Mais baixo do estudo) & Maior diversidade tímbrica/conceitual entre as personas. \\
@@ -1257,8 +1257,8 @@ descoberta.
 
 \textbf{Validação Quantitativa do Input.} A análise dos metadados valida
 robustamente o arquétipo do ouvinte ``Saudosista e Leal''. A biblioteca exibe a
-\textbf{Mediana de Listeners por Artista mais alta do estudo} --- \textbf{4,4
-milhões} no Last.fm --- e uma \textbf{Mediana de Playcount Histórico cumulativo
+\textbf{Mediana de Listeners por Artista mais alta do estudo}, \textbf{4,4
+milhões} no Last.fm, e uma \textbf{Mediana de Playcount Histórico cumulativo
 de 144,5 milhões}, evidenciando que Ricardo consome ``Lendas da Música'' e
 ``Gigantes do Estádio'' (Metallica, Queen, Rolling Stones, Beatles). A
 \textbf{Mediana de Listeners por Track de 311 mil} corrobora que mesmo as faixas
@@ -1268,13 +1268,13 @@ O indicador mais forte de seu comportamento de ``escuta de álbum'' (em oposiç�
 escuta de \emph{playlist}) é a \textbf{Concentração de Artistas}: com apenas
 \textbf{18 artistas únicos para 200 músicas} (média 11,11 faixas/artista),
 Ricardo apresenta a \textbf{menor entropia de Shannon do estudo (4,10) e Gini de
-0,18} (mínimo de desigualdade --- todos os 18 artistas têm peso comparável). Isso
+0,18} (mínimo de desigualdade, todos os 18 artistas têm peso comparável). Isso
 confirma que ele não consome apenas os \emph{greatest hits}, mas mergulha na
 discografia profunda de seus ídolos (ex.: 16 faixas de Djavan e Metallica).
 
 Temporalmente, o \emph{input} é deslocado para o século passado, com Ano Médio de
 Lançamento de 1985 e mais de 81\% das faixas concentradas entre as décadas de 70,
-80 e 90. A análise de \textbf{Era de Carreira no MusicBrainz} (cobertura 100\% ---
+80 e 90. A análise de \textbf{Era de Carreira no MusicBrainz} (cobertura 100\%, 
 todos os 18 artistas têm registro completo) confirma com \textbf{mediana de 1965}
 que a seleção concentra-se em artistas que iniciaram carreira na ``Era de Ouro''
 da indústria fonográfica. \textbf{66,7\% dos artistas são bandas (\emph{Group})},
@@ -1293,11 +1293,11 @@ quase 9 minutos.
 \textbf{Indicador} & \textbf{Valor Obtido} & \textbf{Interpretação Científica} \\
 \midrule
 Listeners Mediano por Artista (Last.fm) & \textbf{4.412.516} & Zona de consagração histórica; o mais alto do estudo. Lendas globais com milhões de fãs. \\
-Playcount Mediano por Artista (Last.fm) & \textbf{144.558.091} & Histórico cumulativo enorme --- décadas de \emph{plays} acumulados. Validação canônica plena. \\
+Playcount Mediano por Artista (Last.fm) & \textbf{144.558.091} & Histórico cumulativo enorme, décadas de \emph{plays} acumulados. Validação canônica plena. \\
 Listeners Mediano por Track (Last.fm) & 311.105 & \emph{Singles} consagrados; todas as faixas têm exposição internacional sustentada. \\
 Entropia de Shannon (Artistas) & \textbf{4,10 (Mínima do estudo)} & Baixa \textbf{riqueza} (poucos artistas), não concentração: a \emph{evenness} de Pielou (0,98) confirma distribuição uniforme. \\
-Coeficiente de Gini & \textbf{0,18 (Mínimo do estudo)} & Distribuição quase uniforme entre os 18 artistas --- todos com 8--16 faixas. \\
-Riqueza (Artistas Únicos) & \textbf{18 (média 11,11 faixas/artista)} & \emph{Album-Oriented Rock} --- escuta de discografia, não de \emph{playlist}. \\
+Coeficiente de Gini & \textbf{0,18 (Mínimo do estudo)} & Distribuição quase uniforme entre os 18 artistas, todos com 8--16 faixas. \\
+Riqueza (Artistas Únicos) & \textbf{18 (média 11,11 faixas/artista)} & \emph{Album-Oriented Rock}, escuta de discografia, não de \emph{playlist}. \\
 Era de Carreira Mediana (MB) & \textbf{1965 (cob.\ 100\%)} & Era de Ouro da indústria fonográfica; cobertura integral confirma artistas plenamente documentados. \\
 Tipo de Artista (MB) & \textbf{66,7\% grupo, 33,3\% solo} & Predominância de bandas, refletindo o \emph{band format} do rock clássico. \\
 Recência Temporal (Álbum) & Ano Médio 1985 ($>$81\% entre 70s--90s) & Cristalização temporal; viés de nostalgia ativo. \\
@@ -1371,7 +1371,7 @@ Esta validação estabelece a \textbf{Linha de Base} (\emph{Baseline}) do
 experimento. A confirmação de que não há sobreposição significativa entre os
 conjuntos de dados iniciais é pré-requisito para a inferência causal futura:
 qualquer convergência (ou divergência) observada nas recomendações
-(\emph{Outputs}) --- seja de conteúdo, de tema ou de magnitude de diversidade ---
+(\emph{Outputs}), seja de conteúdo, de tema ou de magnitude de diversidade, 
 poderá ser atribuída à interferência do algoritmo, e não à similaridade original
 dos usuários.
 
@@ -1410,7 +1410,7 @@ praticamente plana (0,92--0,98) em todas as personas. Isso significa que as
 grandes diferenças de Entropia de Shannon entre os perfis (4,10 a 6,27)
 \textbf{não decorrem de diferenças de uniformidade, mas de diferenças de riqueza}
 ($S$): Ricardo tem Shannon baixa porque consome \emph{poucos} artistas (18), não
-porque os distribui de forma desigual --- ao contrário, sua distribuição é a mais
+porque os distribui de forma desigual, ao contrário, sua distribuição é a mais
 uniforme do estudo. Essa distinção entre riqueza e uniformidade é central para a
 leitura correta do Capítulo~\ref{cap:resultados}, onde se demonstra que a
 ``convergência'' da Shannon nos \emph{outputs} é, na verdade, \textbf{expansão de
@@ -1425,8 +1425,8 @@ distribuição de Pareto. Os limiares de classificação foram \textbf{calibrado
 percentis sobre um \emph{pool} único} que combina os oito conjuntos do estudo
 (quatro \emph{inputs} $+$ quatro \emph{outputs}, deduplicados por artista: 557
 artistas), resultando em \textbf{P25 $=$ 65.376} e \textbf{P75 $=$ 474.962}
-\emph{listeners} no Last.fm. Essa \textbf{régua única} --- idêntica para
-\emph{input} e \emph{output} --- substitui os limiares absolutos baseados em
+\emph{listeners} no Last.fm. Essa \textbf{régua única}, idêntica para
+\emph{input} e \emph{output}, substitui os limiares absolutos baseados em
 \emph{followers} do Spotify (deprecados em 02/2026) e torna os \emph{tiers}
 diretamente comparáveis entre estímulo e recomendação; calibrá-los separadamente
 por \emph{source} produziria classificações incomparáveis.
@@ -1534,8 +1534,8 @@ escuta.
 
 A estrutura metodológica aqui apresentada estabelece um ambiente controlado e
 auditável para a investigação dos algoritmos de recomendação. A validação
-estatística dos \emph{inputs} confirma que as quatro personas sintéticas ---
-Beatriz, Daniel, Sofia e Ricardo --- constituem instrumentos de medição
+estatística dos \emph{inputs} confirma que as quatro personas sintéticas, 
+Beatriz, Daniel, Sofia e Ricardo, constituem instrumentos de medição
 calibrados, representando vetores de comportamento distintos e isolados.
 
 As métricas de diversidade (Shannon), desigualdade (Gini) e similaridade
@@ -1561,7 +1561,7 @@ apenas com base em \emph{likes} e \emph{follows} declarados pelo usuário. A
 geração desses produtos exige um histórico mínimo de \textbf{escuta efetiva},
 funcionando como sinal implícito de validação. Para satisfazer este
 pré-requisito, conduziu-se aproximadamente \textbf{40 horas de escuta no modo
-``Aleatório Inteligente'' (\emph{Smart Shuffle})} por conta-persona ---
+``Aleatório Inteligente'' (\emph{Smart Shuffle})} por conta-persona, 
 totalizando $\sim$160 horas de incubação somadas. A escolha do \emph{Smart
 Shuffle} (em detrimento do \emph{shuffle} puro) é deliberada: este modo intercala
 faixas curtidas com sugestões algorítmicas, garantindo registro de interação
@@ -1572,7 +1572,7 @@ algorítmica musical. Estudos futuros que tentem replicar este \emph{pipeline} s
 a etapa de incubação ativa \textbf{não conseguirão coletar os \emph{outputs}
 algorítmicos}.
 
-\textbf{B) Achado Central --- Obstrução Progressiva da API como Meta-Evidência.}
+\textbf{B) Achado Central, Obstrução Progressiva da API como Meta-Evidência.}
 Durante o período de execução desta pesquisa (2025--2026), a Spotify Web API
 sofreu \textbf{três ondas progressivas e parcialmente não-anunciadas de
 restrição}, conforme detalhado na Seção~\ref{sec:adaptacao}: a Onda 1 (Nov/2024)
@@ -1585,7 +1585,7 @@ sistematicamente os campos \texttt{popularity}, \texttt{followers} e
 \texttt{genres}. A natureza progressiva, parcialmente não-anunciada e unilateral
 dessas restrições \textbf{constitui em si um achado científico relevante}: ela
 ilustra empiricamente o argumento central da Introdução sobre a \textbf{opacidade
-e a governança algorítmica} das plataformas de \emph{streaming} --- o próprio
+e a governança algorítmica} das plataformas de \emph{streaming}, o próprio
 instrumental técnico necessário à auditoria foi sendo obstruído \emph{durante} a
 execução do experimento. Esta observação configura-se como \textbf{meta-evidência}
 da assimetria informacional entre plataformas e atores externos, alinhando-se ao
@@ -1593,11 +1593,11 @@ método etnográfico-experimental de \citeonline{eriksson2019spotify} em
 \emph{Spotify Teardown}, que já denunciava a resistência da plataforma ao
 escrutínio independente.
 
-\textbf{C) Resposta Metodológica --- \emph{Apples-to-Apples} via Fontes Externas.}
+\textbf{C) Resposta Metodológica, \emph{Apples-to-Apples} via Fontes Externas.}
 Para preservar o rigor e a comparabilidade \emph{Input vs. Output}, adotou-se a
 substituição das métricas comprometidas por dados de \textbf{fontes externas
 consagradas} (Last.fm $+$ MusicBrainz), aplicadas consistentemente aos dois lados
-da auditoria. Esta solução transforma a limitação em oportunidade --- a pesquisa
+da auditoria. Esta solução transforma a limitação em oportunidade, a pesquisa
 passa a se ancorar em três bases de dados independentes (Spotify para
 \emph{tracks}/álbuns/datas; Last.fm para audiência/gêneros; MusicBrainz para
 \emph{life-span}/tipo/região), aumentando a triangulação metodológica.
@@ -1636,7 +1636,7 @@ passa a se ancorar em três bases de dados independentes (Spotify para
 
 Concluída a fase de validação dos \emph{inputs}
 (Capítulo~\ref{cap:metodologia}), o presente capítulo apresenta a análise
-empírica dos \emph{outputs} algorítmicos coletados --- as faixas que o Spotify
+empírica dos \emph{outputs} algorítmicos coletados, as faixas que o Spotify
 recomendou aos quatro perfis sintéticos por meio dos \emph{Daily Mixes}, após o
 período de incubação descrito na Seção~\ref{sec:limitacoes}. O objetivo central
 deste capítulo é responder à pergunta condutora da pesquisa: \textbf{em que
@@ -1645,8 +1645,8 @@ cada usuário?}
 
 A análise é estruturada em quatro etapas: (i) apresentação descritiva dos
 \emph{outputs} coletados; (ii) cálculo da Taxa de \emph{Overlap} Interno
-(redundância dentro da bolha de cada persona); (iii) análise do Delta Algorítmico
---- comparação direta \emph{Input vs. Output} das treze métricas centrais; e (iv)
+(redundância dentro da bolha de cada persona); (iii) análise do Delta Algorítmico,
+comparação direta \emph{Input vs. Output} das treze métricas centrais; e (iv)
 síntese e teste das quatro hipóteses formuladas por persona no
 Capítulo~\ref{cap:metodologia}.
 
@@ -1655,7 +1655,7 @@ Capítulo~\ref{cap:metodologia}.
 Após o período de incubação algorítmica ($\sim$40 horas de escuta efetiva por
 persona, em modo \emph{Smart Shuffle}), o sistema do Spotify gerou seis
 \emph{Daily Mixes} para cada conta. Estas \emph{playlists} foram copiadas
-manualmente para \emph{playlists} espelho de propriedade de cada persona ---
+manualmente para \emph{playlists} espelho de propriedade de cada persona, 
 \emph{workaround} necessário em virtude da Onda 1 de restrição da API
 (Seção~\ref{sec:adaptacao}). Durante o procedimento de cópia, faixas duplicadas
 entre os seis \emph{mixes} foram automaticamente filtradas pelo próprio cliente
@@ -1681,7 +1681,7 @@ Sofia   & 264 & 200 & $+32{,}0\%$ & 90  & 86,7\% \\
 \end{table}
 
 \textbf{Observação.} O tamanho dos \emph{outputs} é sistematicamente maior que o
-dos \emph{inputs} (200 faixas) --- efeito direto dos seis \emph{Daily Mixes}
+dos \emph{inputs} (200 faixas), efeito direto dos seis \emph{Daily Mixes}
 contendo aproximadamente 50 faixas cada ($\sim$300 faixas brutas, das quais
 6--12\% são duplicatas removidas). 100\% das faixas obtiveram ao menos dados do
 Last.fm; a coluna de cobertura reporta a presença \emph{simultânea} das duas
@@ -1710,7 +1710,7 @@ a taxa, mais redundante é o conjunto de \emph{clusters}.
 Daniel  & 281 & 19 & \textbf{6,33\%}  & Variedade alta dentro do nicho \emph{lo-fi} (muito material disponível). \\
 Beatriz & 276 & 24 & 8,00\%  & Variedade moderada (catálogo brasileiro \emph{mainstream} amplo). \\
 Ricardo & 268 & 32 & 10,67\% & Redundância média (catálogo clássico tem repertório finito de ``lendas''). \\
-Sofia   & 264 & 36 & \textbf{12,00\%} & Maior redundância --- bolha mais estreita. \\
+Sofia   & 264 & 36 & \textbf{12,00\%} & Maior redundância, bolha mais estreita. \\
 \bottomrule
 \end{tabularx}
 \fontefig{Elaborado pelo autor (2026).}
@@ -1722,7 +1722,7 @@ diversidade no \emph{input} declarado (27 artistas únicos contra 99 de Daniel),
 algoritmo tende a repetir faixas entre \emph{clusters}. Esta leitura deve ser
 tomada como \textbf{indicador exploratório, e não como achado consolidado}, por
 duas limitações estruturais: (i) a métrica é uma transformação determinística e
-decrescente do número de faixas únicas --- fixado o \emph{pool} em 300,
+decrescente do número de faixas únicas, fixado o \emph{pool} em 300,
 $(300-N)/300$ não acrescenta informação independente do próprio $N$; e (ii) a
 deduplicação entre os seis \emph{Daily Mixes} foi feita automaticamente pelo
 cliente do Spotify \emph{antes} da contagem, de modo que o valor bruto do
@@ -1731,7 +1731,7 @@ cliente do Spotify \emph{antes} da contagem, de modo que o valor bruto do
 de filtro'' a partir deste indicador, reservando-se a evidência de estreitamento
 às métricas de Jaccard \emph{cross-persona} (Seção~\ref{sec:diversidade-output}).
 
-\section{O Delta Algorítmico --- Visão Geral}
+\section{O Delta Algorítmico: Visão Geral}
 
 O \emph{Delta Algorítmico} é o resultado quantitativo central deste estudo: a
 diferença entre o valor de cada métrica no \emph{Output} (recomendações
@@ -1788,7 +1788,7 @@ reportam-se intervalos de confiança de 95\% por \emph{bootstrap} e, quando se
 comparam distribuições \emph{track-level}, o $p$-valor de Mann-Whitney U. Por
 exemplo: Daniel, \emph{listeners}/artista $79.595 \rightarrow 184.082$
 ($\mathbf{+131{,}3\%}$), IC95\% \emph{input} [64.290; 111.322] vs.\ \emph{output}
-[146.972; 221.535] --- sem sobreposição; Sofia, \emph{listeners}/\emph{track}
+[146.972; 221.535], sem sobreposição; Sofia, \emph{listeners}/\emph{track}
 $1.223 \rightarrow 6.178$ ($\mathbf{+405{,}2\%}$), Mann-Whitney
 $p \approx 1{,}3 \times 10^{-16}$; Ricardo, \emph{listeners}/\emph{track}
 $311.105 \rightarrow 660.893$ ($\mathbf{+112\%}$), $p \approx 2{,}1 \times
@@ -1804,14 +1804,14 @@ dimensões.
 
 \section{Análise Persona por Persona}
 
-\subsection{Beatriz (Mainstream) --- O Grupo de Controle Validado}
+\subsection{Beatriz (Mainstream): O Grupo de Controle Validado}
 
 A persona Beatriz, projetada como controle \emph{mainstream} brasileiro, exibe os
 menores deltas entre as quatro personas. As métricas críticas variam dentro de
 margens estreitas: Shannon \emph{entropy} $+7{,}9\%$, \emph{listeners} por artista
 $+6{,}3\%$, percentuais de tipo de artista praticamente inalterados (variação
 $<$3\%). A Figura~\ref{fig:kde-listeners} (KDE de \emph{listeners} por artista)
-mostra que as duas distribuições --- \emph{input} e \emph{output} --- quase se
+mostra que as duas distribuições, \emph{input} e \emph{output}, quase se
 sobrepõem para Beatriz, com leve deslocamento à direita no \emph{output}.
 
 \begin{figure}[H]
@@ -1834,7 +1834,7 @@ termos de \emph{tags}, observa-se manutenção da concentração temática (sert
 brazil, pop). A composição solo/grupo mantém o equilíbrio do \emph{input}
 ($\sim$60/40).
 
-\textbf{Conclusão para Beatriz.} O algoritmo ``comportou-se bem'' --- não há
+\textbf{Conclusão para Beatriz.} O algoritmo ``comportou-se bem'', não há
 distorção significativa do perfil declarado. Esta conclusão é metodologicamente
 importante: valida o instrumental de medição. Caso Beatriz também apresentasse
 grandes deltas, seria difícil isolar viés algorítmico de ruído experimental. A
@@ -1842,7 +1842,7 @@ baixa interferência sobre o perfil \emph{mainstream} \textbf{reforça a
 confiabilidade dos achados nas demais personas}, onde os deltas são marcadamente
 maiores.
 
-\subsection{Daniel (Lo-fi) --- Confirmação do Viés de Popularidade}
+\subsection{Daniel (Lo-fi): Confirmação do Viés de Popularidade}
 
 A persona Daniel, projetada como consumidor funcional de \emph{lo-fi beats}
 (perfil de Cauda Longa funcional), revela o achado mais nítido sobre \textbf{viés
@@ -1894,14 +1894,14 @@ aumento de \% solo ($+24{,}7\%$), que se apoia sobre base amostral maior
 
 \textbf{Conclusão para Daniel.} Confirma-se a \textbf{hipótese de Contaminação
 \emph{Pop}}. O algoritmo, ao buscar manter Daniel engajado, recomenda artistas
-mais conhecidos dentro do nicho \emph{lo-fi}/instrumental --- produtores que
+mais conhecidos dentro do nicho \emph{lo-fi}/instrumental, produtores que
 migraram do anonimato para a ``elite do nicho'', evidenciando que a ``Zona de
 Conforto Algorítmico'' desloca o perfil em direção ao centro de gravidade da
 popularidade, mesmo dentro de um \emph{cluster} funcional/comoditizado. Este
 resultado é coerente com a literatura sobre \emph{popularity bias} em recomendação
 musical \cite{bauer2019global,kowald2020unfairness}.
 
-\subsection{Sofia (Nicho) --- Viés do Hit dentro da Cauda Longa}
+\subsection{Sofia (Nicho): Viés do Hit dentro da Cauda Longa}
 
 A persona Sofia, projetada como consumidora \emph{underground}/experimental,
 apresenta o achado mais sutil e revelador do estudo. A análise das três principais
@@ -1943,7 +1943,7 @@ estável, a composição interna da bolha mudou drasticamente.
 para 90 artistas únicos) sugere que o algoritmo \textbf{fragmentou o consumo
 profundo de Sofia}: em vez de deixá-la imersa em discografias completas
 (S.Maharba, Eterna, Patch+, com 15+ faixas cada no \emph{input}), abriu o leque
-para artistas adicionais com poucas faixas cada --- comportamento típico de
+para artistas adicionais com poucas faixas cada, comportamento típico de
 ``\emph{playlist} exploratória'' ao invés de ``escuta de álbum''.
 
 \textbf{Conclusão para Sofia.} O algoritmo aplica um \textbf{viés de \emph{hit}
@@ -1953,10 +1953,10 @@ declarado de ``obras completas''. Adicionalmente, fragmenta o consumo vertical
 (poucos artistas, muitas faixas cada) em direção ao consumo horizontal (muitos
 artistas, poucas faixas cada). Este achado refina a hipótese inicial: a
 ``gentrificação do nicho'' não acontece no eixo \emph{artista} (como
-hipotetizado), mas no eixo \emph{faixa} --- uma forma mais sutil de viés que
+hipotetizado), mas no eixo \emph{faixa}, uma forma mais sutil de viés que
 apenas a granularidade \emph{track-level} da fonte Last.fm permitiu capturar.
 
-\subsection{Ricardo (Nostálgico) --- Pulverização da Fidelidade Canônica}
+\subsection{Ricardo (Nostálgico): Pulverização da Fidelidade Canônica}
 
 A persona Ricardo, projetada como consumidor saudosista (\emph{Album-Oriented
 Rock} $+$ MPB clássica, 18 artistas com 11,11 faixas/artista em média), exibe os
@@ -1970,7 +1970,7 @@ entropia); e Coeficiente de Gini $0{,}18 \rightarrow 0{,}37$
 Estes números indicam uma \textbf{pulverização sistemática da fidelidade
 canônica} declarada por Ricardo. Ao invés de respeitar o comportamento de
 ``escuta de discografia profunda'' (mergulho vertical em poucos ídolos
-consagrados), o algoritmo expandiu o leque de artistas em sete vezes ---
+consagrados), o algoritmo expandiu o leque de artistas em sete vezes, 
 recomendando muitos artistas novos com poucas faixas cada, em vez de mais faixas
 dos mesmos 18 artistas que Ricardo já declarou consumir. A
 Figura~\ref{fig:tags} ilustra a transformação no \emph{Top} 10 de \emph{tags}.
@@ -1992,7 +1992,7 @@ Surpreendentemente, os \emph{listeners} e \emph{playcount} medianos por artista
 \textbf{caem} ($-33{,}6\%$ e $-59{,}4\%$, respectivamente). Isso decorre
 matematicamente da expansão do leque: os 18 artistas originais de Ricardo
 (Metallica, Beatles, Queen, etc.) têm milhões de \emph{listeners}; os 108 novos
-artistas introduzidos pelo algoritmo são em média menos consagrados --- abaixando
+artistas introduzidos pelo algoritmo são em média menos consagrados, abaixando
 a mediana global, mesmo que cada um individualmente seja popular.
 
 A análise da \textbf{Era de Carreira} revela um deslocamento sutil mas
@@ -2006,7 +2006,7 @@ dos anos 1970 e 80.
 
 \textbf{Conclusão para Ricardo.} Confirma-se a hipótese de \textbf{violação ativa
 do ``\emph{Legacy Control}''}. O algoritmo \textbf{NÃO respeita o comportamento de
-fidelidade canônica} --- ao contrário, força a substituição de ``discografia
+fidelidade canônica}, ao contrário, força a substituição de ``discografia
 profunda'' por ``exploração horizontal de artistas similares''. Este achado tem
 implicações cruciais para o argumento sobre \emph{bolha de filtro}: contraria a
 expectativa intuitiva de que perfis ultra-concentrados ficariam ``presos'' em
@@ -2018,7 +2018,7 @@ horizontalidade comum}.
 \label{sec:diversidade-output}
 
 A análise integrada das quatro personas revela o \textbf{achado central deste
-estudo} --- mais sutil e mais robusto do que a hipótese inicial de um ``colapso
+estudo}, mais sutil e mais robusto do que a hipótese inicial de um ``colapso
 de contexto'' entendido como fusão dos perfis. Quando se decompõe a noção de
 ``convergência'' em três níveis distintos (conteúdo, tema e magnitude de
 diversidade), os dados \textbf{refutam a homogeneização de conteúdo} e revelam um
@@ -2026,22 +2026,22 @@ fenômeno estratificado: o algoritmo expande a riqueza interna de cada perfil e 
 aproxima \emph{tematicamente}, mas mantém os repertórios de artistas rigidamente
 separados.
 
-\subsection*{Nível 1 --- Conteúdo (artistas): silos preservados, não colapso}
+\subsection*{Nível 1: Conteúdo (artistas): silos preservados, não colapso}
 
 A métrica direta da convergência entre personas é o Índice de Jaccard
 \emph{cross-persona} sobre os conjuntos de artistas. O resultado é inequívoco: o
 Jaccard médio dos seis pares é \textbf{exatamente 0,000 tanto no \emph{input}
-quanto no \emph{output}} --- os quatro conjuntos de artistas recomendados são
+quanto no \emph{output}}, os quatro conjuntos de artistas recomendados são
 integralmente disjuntos (união de 452 artistas, idêntica à soma dos tamanhos). Um
 teste de permutação (rótulos de persona reembaralhados, mil reamostragens,
 correção de \citeonline{phipson2010permutation}) demonstra que essa separação é
 \textbf{significativamente maior do que a esperada ao acaso}: dado o tamanho dos
 conjuntos, esperar-se-ia um Jaccard de 0,142 (IC 95\% [0,125; 0,161]) por mero
 sorteio, contra 0,000 observado ($p < 0{,}001$). Em vez de fundir os perfis, o
-algoritmo preserva --- e estatisticamente acentua --- silos de repertório
+algoritmo preserva, e estatisticamente acentua, silos de repertório
 distintos.
 
-\subsection*{Nível 2 --- Tema (gêneros/tags): convergência parcial}
+\subsection*{Nível 2: Tema (gêneros/tags): convergência parcial}
 
 No nível temático, o quadro se inverte parcialmente: o Jaccard médio de
 \emph{tags} sobe de \textbf{0,128 (\emph{input}) para 0,154 (\emph{output})}, com
@@ -2068,10 +2068,10 @@ Gêneros/tags (tema) & 0,128 & 0,154 & 0,201 [0,182; 0,220] & Convergência tem�
 \fontefig{Elaborado pelo autor (2026).}
 \end{table}
 
-\subsection*{Nível 3 --- Magnitude da diversidade: convergência por expansão de riqueza}
+\subsection*{Nível 3: Magnitude da diversidade: convergência por expansão de riqueza}
 
 Há, de fato, convergência da Entropia de Shannon para um patamar comum
-($\sim$6,5), antes dispersa entre 4,10 e 6,27 --- uma redução de $\sim$75\% na
+($\sim$6,5), antes dispersa entre 4,10 e 6,27, uma redução de $\sim$75\% na
 amplitude entre personas. A Figura~\ref{fig:bar-shannon} e a
 Tabela~\ref{tab:shannon} sintetizam o fenômeno.
 
@@ -2106,7 +2106,7 @@ Sofia   & 4,43 & 6,07 & $\mathbf{+37{,}1\%}$ & $0{,}93 \rightarrow 0{,}93$ \\
 
 Contudo, \textbf{essa convergência não é homogeneização de entropia, e sim
 expansão de riqueza de catálogo}. A evidência é dupla. Primeiro, a \emph{evenness}
-de Pielou permanece praticamente constante (0,92--0,98) --- para Ricardo, ela
+de Pielou permanece praticamente constante (0,92--0,98), para Ricardo, ela
 inclusive \emph{cai} levemente ($0{,}98 \rightarrow 0{,}95$) enquanto a Shannon
 dispara, prova de que o ganho vem do número de artistas ($18 \rightarrow 126$,
 $+600\%$), não de maior uniformidade. Segundo, o controle por \textbf{rarefação}
@@ -2126,8 +2126,8 @@ originalmente hipotetizado: \textbf{o algoritmo não homogeneíza o gosto entre
 usuários}. Ele expande a riqueza interna de cada perfil (arrombando bolhas
 verticais, como a de Ricardo) e os aproxima tematicamente, mas mantém repertórios
 de artistas rigidamente disjuntos. O ``Colapso de Contexto'' anunciado nos
-objetivos ocorre apenas no eixo temático e no de \emph{magnitude} de diversidade
---- não no eixo de conteúdo. A bolha não se rompe nem se funde com as demais: ela
+objetivos ocorre apenas no eixo temático e no de \emph{magnitude} de diversidade,
+não no eixo de conteúdo. A bolha não se rompe nem se funde com as demais: ela
 se alarga internamente enquanto suas paredes de conteúdo permanecem de pé.
 
 \section{Síntese dos Achados e Discussão}
@@ -2147,7 +2147,7 @@ contra as hipóteses formuladas por persona no Capítulo~\ref{cap:metodologia}.
 Beatriz & \emph{Feedback loop} positivo blindando contra nicho & Mudanças tímidas, perfil \emph{mainstream} preservado & Baixa ($\sim$5--8\%) & Confirmada \\
 Daniel & Contaminação \emph{Pop} dentro do nicho funcional & \emph{Listeners} $+131\%$, \emph{playcount} $+263\%$, \% Solo $+25\%$ & Alta ($\sim$131--263\%) & Confirmada \\
 Sofia & Gentrificação do nicho de Cauda Longa & Viés do \emph{hit track-level} ($+405\%$), fragmentação vertical & Extrema (eixo \emph{track}) & Confirmada e refinada \\
-Ricardo & Estagnamento de descoberta (\emph{loop} temporal) & Pulverização ($+600\%$) --- oposto da hipótese & Extrema (diversidade) & Refutada e substituída \\
+Ricardo & Estagnamento de descoberta (\emph{loop} temporal) & Pulverização ($+600\%$), oposto da hipótese & Extrema (diversidade) & Refutada e substituída \\
 \bottomrule
 \end{tabularx}
 \fontefig{Elaborado pelo autor (2026).}
@@ -2166,8 +2166,8 @@ profundidade do que respeitá-la.
 
 \textbf{1. Expansão de Riqueza com Manutenção de Silos.} O Spotify converge a
 \emph{magnitude} de diversidade dos perfis para uma faixa estreita de Shannon
-($\sim$6,5 \emph{bits}), mas --- como provam a \emph{evenness} de Pielou plana e a
-rarefação --- isso é expansão de riqueza de catálogo, não homogeneização de
+($\sim$6,5 \emph{bits}), mas, como provam a \emph{evenness} de Pielou plana e a
+rarefação, isso é expansão de riqueza de catálogo, não homogeneização de
 entropia. Crucialmente, no nível de conteúdo não há convergência alguma: o
 Jaccard \emph{cross-persona} de artistas é 0,000, mais segregado que o acaso
 ($p < 0{,}001$). O algoritmo aproxima os perfis tematicamente (Jaccard de
@@ -2198,12 +2198,12 @@ pesquisa: o algoritmo do Spotify, longe de ser um espelho neutro do gosto
 declarado, opera como \textbf{um prisma com geometria conhecida}. Sua geometria
 privilegia (i) horizontalidade sobre verticalidade, (ii) artistas medianos sobre
 extremos (\emph{superstars} ou \emph{underground} absolutos), e (iii) faixas
-reconhecíveis sobre \emph{deep cuts} --- em coerência com o modelo de negócio da
+reconhecíveis sobre \emph{deep cuts}, em coerência com o modelo de negócio da
 Economia da Atenção.
 
-A Onda 3 da restrição da API --- que removeu silenciosamente os campos
+A Onda 3 da restrição da API, que removeu silenciosamente os campos
 \texttt{popularity}, \texttt{followers} e \texttt{genres} durante a execução desta
-pesquisa --- corrobora institucionalmente o argumento: a plataforma opera para
+pesquisa, corrobora institucionalmente o argumento: a plataforma opera para
 preservar opacidade sobre exatamente as variáveis que permitem auditá-la
 externamente. Esta meta-evidência confere robustez epistemológica adicional aos
 achados quantitativos.
@@ -2211,21 +2211,21 @@ achados quantitativos.
 A Cauda Longa, central na literatura de economia digital
 \cite{anderson2006longtail}, revela-se acessível apenas parcialmente: o algoritmo
 permite ao usuário \emph{visitar} artistas de nicho, mas o conduz pelos
-\emph{singles} consagrados desses artistas --- uma forma de ``Cauda Longa
+\emph{singles} consagrados desses artistas, uma forma de ``Cauda Longa
 Curada''. Para o pesquisador interessado em diversidade cultural, não basta
 perguntar \emph{se} o algoritmo recomenda nicho; é preciso perguntar \emph{como}
-ele recomenda nicho --- preocupação que dialoga com a literatura de \emph{fairness}
+ele recomenda nicho, preocupação que dialoga com a literatura de \emph{fairness}
 para fornecedores e a defesa de \emph{marketplaces} equilibrados
 \cite{mehrotra2018towards}.
 
 \textbf{Diálogo com a literatura.} \citeonline{anderson2020algorithmic} reportam
 que a personalização tende a \emph{reduzir} a diversidade de consumo medida por
-\emph{embeddings} (proximidade sonora) --- aparente contradição com a elevação de
+\emph{embeddings} (proximidade sonora), aparente contradição com a elevação de
 diversidade aqui observada. Os resultados são, porém, compatíveis quando se
 distingue a \emph{riqueza de artistas} (que sobe, por expansão de catálogo) da
 \emph{proximidade no espaço sonoro} (que pode convergir). O resultado também
 ressoa com \citeonline{hosanagar2014will}, que observam que sistemas de
-recomendação podem \emph{aumentar} a comunalidade entre usuários --- aqui, essa
+recomendação podem \emph{aumentar} a comunalidade entre usuários, aqui, essa
 comunalidade aparece no nível temático (Jaccard de \emph{tags} $\uparrow$), mas
 não no de conteúdo (Jaccard de artistas $= 0$). Por fim, trabalhos recentes de
 auditoria e \emph{fairness} em \emph{streaming} musical
@@ -2248,7 +2248,7 @@ pontos específicos merecem registro:
 \end{itemize}
 
 Apesar dessas limitações, a triangulação metodológica adotada (Shannon, Gini,
-HHI, \emph{Listeners}, \emph{Playcount}, Era de Carreira, Tipo de Artista --- sete
+HHI, \emph{Listeners}, \emph{Playcount}, Era de Carreira, Tipo de Artista, sete
 famílias de métricas independentes) e o uso de duas fontes externas validadas
 (Last.fm $+$ MusicBrainz) conferem ao conjunto de achados uma robustez que
 justifica os resultados aqui apresentados como \textbf{evidência empírica forte e
@@ -2263,8 +2263,8 @@ Este trabalho teve como objetivo geral auditar o comportamento do sistema de
 recomendação do Spotify, por meio de uma metodologia de caixa-preta com personas
 sintéticas, a fim de mensurar o impacto da curadoria algorítmica sobre a
 diversidade cultural. O conjunto de evidências reunido permite responder
-afirmativamente à pergunta condutora --- o algoritmo interfere de modo sistemático
-e mensurável sobre o gosto declarado ---, mas exige refinar a forma como essa
+afirmativamente à pergunta condutora, o algoritmo interfere de modo sistemático
+e mensurável sobre o gosto declarado, mas exige refinar a forma como essa
 interferência é compreendida.
 
 Quanto aos objetivos específicos, todos foram cumpridos. Primeiro, os quatro
@@ -2276,8 +2276,8 @@ ortogonalidade da linha de base (\emph{cold start}). Terceiro, os metadados das
 recomendações (\emph{Daily Mixes}) foram coletados e processados, contornando-se a
 obstrução progressiva da \emph{Web API} por meio de \emph{playlists} espelho e do
 enriquecimento via Last.fm e MusicBrainz. Quarto, a diversidade e a concentração
-foram mensuradas por um conjunto triangulado de indicadores --- Entropia de
-Shannon, \emph{evenness} de Pielou, Coeficiente de Gini, HHI e Jaccard ---,
+foram mensuradas por um conjunto triangulado de indicadores, Entropia de
+Shannon, \emph{evenness} de Pielou, Coeficiente de Gini, HHI e Jaccard,
 acompanhados de tratamento estatístico inferencial.
 
 O achado central revelou-se mais sutil do que a hipótese inicial de um ``colapso
@@ -2288,8 +2288,8 @@ de forma estatisticamente mais segregada do que o acaso ($p < 0{,}001$); no nív
 \textbf{temático}, há convergência parcial de gêneros (Jaccard de \emph{tags} de
 0,128 para 0,154); e no nível da \textbf{magnitude da diversidade}, a aparente
 convergência da Entropia de Shannon é, na realidade, expansão de riqueza de
-catálogo --- comprovada pela \emph{evenness} de Pielou praticamente constante e
-pela análise de rarefação ---, e não homogeneização de entropia. Assim, o
+catálogo, comprovada pela \emph{evenness} de Pielou praticamente constante e
+pela análise de rarefação, e não homogeneização de entropia. Assim, o
 algoritmo não homogeneíza o gosto entre usuários: ele alarga internamente a bolha
 de cada perfil e os aproxima tematicamente, mas preserva paredes de conteúdo
 distintas.
@@ -2300,7 +2300,7 @@ algorítmica'' que desloca perfis em direção a um patamar médio de popularida
 respeitando a cauda longa no eixo do artista, força as faixas mais expostas no
 eixo da obra (Sofia, $+405\%$ de ouvintes por faixa). De modo contraintuitivo, o
 perfil de fidelidade canônica (Ricardo) teve sua bolha vertical arrombada, com
-expansão de 18 para 126 artistas --- o oposto do estagnamento temporal
+expansão de 18 para 126 artistas, o oposto do estagnamento temporal
 hipotetizado.
 
 Como contribuições, o trabalho (i) oferece evidência empírica, inferencialmente
@@ -2309,7 +2309,7 @@ brasileiro; (ii) demonstra a importância metodológica de separar \emph{riqueza
 de \emph{uniformidade} e \emph{conteúdo} de \emph{tema} na medição de
 diversidade, evitando conclusões equivocadas a partir da Entropia de Shannon
 bruta; e (iii) documenta, como meta-evidência, a obstrução progressiva e
-unilateral da \emph{Web API} durante a própria execução da auditoria ---
+unilateral da \emph{Web API} durante a própria execução da auditoria, 
 ilustração concreta da opacidade e da assimetria informacional que motivam, sob a
 ótica da Gestão da Informação, a agenda de auditoria algorítmica.
 
@@ -2327,8 +2327,8 @@ diversidade baseadas em \emph{embeddings} sonoros, que permitiriam o diálogo
 direto com a literatura da própria indústria; e a investigação de mecanismos de
 transparência e auditabilidade que reduzam a assimetria informacional aqui
 evidenciada. Em síntese, mais do que perguntar \emph{se} o algoritmo recomenda
-nicho, esta pesquisa demonstra a importância de perguntar \emph{como} ele o faz
---- distinção decisiva para o debate sobre diversidade cultural na era da
+nicho, esta pesquisa demonstra a importância de perguntar \emph{como} ele o faz,
+distinção decisiva para o debate sobre diversidade cultural na era da
 governança algorítmica.
 
 % ----------------------------------------------------------

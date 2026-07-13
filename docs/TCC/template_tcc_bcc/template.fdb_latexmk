@@ -1,20 +1,20 @@
 # Fdb version 4
-["bibtex template"] 1782261081.41278 "template.aux" "template.bbl" "template" 1782261090.2236 0
+["bibtex template"] 1783397838.50071 "template.aux" "template.bbl" "template" 1783397854.59852 0
   "./referencias.bib" 1782257401.59438 9036 ce89a357ec6dce359ee690b903be1d88 ""
   "/usr/local/texlive/2026/texmf-dist/bibtex/bib/abntex2/abntex2-options.bib" 1357081713 5396 4eb260dac60f150ae608d45252853090 ""
   "/usr/local/texlive/2026/texmf-dist/bibtex/bst/abntex2/abntex2-alf.bst" 1543183680 60064 0819ac8568f9a482510a46e3a8a6f605 ""
-  "template.aux" 1782261089.08988 58841 b085f48dd7f2ed10b20f28205d7dd91b "pdflatex"
+  "template.aux" 1783397852.77785 58716 aa91814fb06ed6c19a229a07584aa6c8 "pdflatex"
   (generated)
   "template.bbl"
   "template.blg"
   (rewritten before read)
-["makeindex template.idx"] 1782261064.08996 "template.idx" "template.ind" "template" 1782261090.21622 0
-  "template.idx" 1782261083.17409 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+["makeindex template.idx"] 1783397806.28404 "template.idx" "template.ind" "template" 1783397854.58785 0
+  "template.idx" 1783397841.68638 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
   (generated)
   "template.ilg"
   "template.ind"
   (rewritten before read)
-["pdflatex"] 1782261081.60205 "template.tex" "template.pdf" "template" 1782261090.23249 0
+["pdflatex"] 1783397838.82006 "template.tex" "template.pdf" "template" 1783397854.61355 0
   "/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc" 1254269338 2375 baa924870cfb487815765f9094cf3728 ""
   "/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc" 1202520719 3486 c7eadf5dcc57b3b2d11736679f6636ba ""
   "/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc" 1202520719 2405 5dcf2c1b967ee25cc46c58cd52244aed ""
@@ -240,14 +240,14 @@
   "figuras/sofia_4_lorenz.png" 1782259693.2942 40265 964067a21df068b5e0c4630791a07af6 ""
   "figuras/sofia_5_popfollow.png" 1782259693.33284 107396 dc7191175e7342188bc7fd4aac2d29d0 ""
   "figuras/sofia_6_duracao.png" 1782259693.36818 40614 56cf0bae876a032ab62f8d517a5ea594 ""
-  "template.aux" 1782261089.08988 58841 b085f48dd7f2ed10b20f28205d7dd91b "pdflatex"
-  "template.bbl" 1782261081.61186 7624 c96c9bb344d0e605420831d56a679f29 "bibtex template"
-  "template.brf" 1782261089.12582 3068 2f7877c78f65c9dde8a208dedb133074 "pdflatex"
-  "template.ind" 1782261063.97252 0 d41d8cd98f00b204e9800998ecf8427e "makeindex template.idx"
-  "template.lof" 1782261089.13533 5110 300f629fbfaa18f877f126e2cbadb8e2 "pdflatex"
-  "template.lot" 1782261089.13587 1734 a9640dc3e64428e8275c1606fcc6c9d7 "pdflatex"
-  "template.tex" 1782259505.86791 131826 d5edbec3246be0c03da0ec5c15bcbf64 ""
-  "template.toc" 1782261089.13642 5802 35b464550bd51274241a55e07a241a29 "pdflatex"
+  "template.aux" 1783397852.77785 58716 aa91814fb06ed6c19a229a07584aa6c8 "pdflatex"
+  "template.bbl" 1783397838.6884 7624 c96c9bb344d0e605420831d56a679f29 "bibtex template"
+  "template.brf" 1783397852.84206 3068 2f7877c78f65c9dde8a208dedb133074 "pdflatex"
+  "template.ind" 1783397806.42416 0 d41d8cd98f00b204e9800998ecf8427e "makeindex template.idx"
+  "template.lof" 1783397852.85736 5110 300f629fbfaa18f877f126e2cbadb8e2 "pdflatex"
+  "template.lot" 1783397852.859 1734 a9640dc3e64428e8275c1606fcc6c9d7 "pdflatex"
+  "template.tex" 1783397561.4877 133752 eb157e701c4805c12e7cd81ba44eb3e0 ""
+  "template.toc" 1783397852.86036 5787 a65c884965083af2d364344d87e61968 "pdflatex"
   (generated)
   "template.aux"
   "template.brf"

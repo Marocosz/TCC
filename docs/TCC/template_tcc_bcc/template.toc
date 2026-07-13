@@ -38,12 +38,12 @@
 \contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Resultados: Análise dos Outputs e o Delta Algorítmico}}{53}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Apresentação dos Outputs Coletados (Daily Mixes)}{53}{section.4.1}%
 \contentsline {section}{\numberline {4.2}Taxa de Overlap Interno: Redundância Intra-Persona}{54}{section.4.2}%
-\contentsline {section}{\numberline {4.3}O Delta Algorítmico --- Visão Geral}{55}{section.4.3}%
+\contentsline {section}{\numberline {4.3}O Delta Algorítmico: Visão Geral}{55}{section.4.3}%
 \contentsline {section}{\numberline {4.4}Análise Persona por Persona}{56}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Beatriz (Mainstream) --- O Grupo de Controle Validado}{56}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Daniel (Lo-fi) --- Confirmação do Viés de Popularidade}{58}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Sofia (Nicho) --- Viés do Hit dentro da Cauda Longa}{59}{subsection.4.4.3}%
-\contentsline {subsection}{\numberline {4.4.4}Ricardo (Nostálgico) --- Pulverização da Fidelidade Canônica}{60}{subsection.4.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Beatriz (Mainstream): O Grupo de Controle Validado}{56}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Daniel (Lo-fi): Confirmação do Viés de Popularidade}{58}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Sofia (Nicho): Viés do Hit dentro da Cauda Longa}{59}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}Ricardo (Nostálgico): Pulverização da Fidelidade Canônica}{60}{subsection.4.4.4}%
 \contentsline {section}{\numberline {4.5}Reconfiguração da Diversidade: Expansão de Riqueza com Manutenção de Silos}{63}{section.4.5}%
 \contentsline {section}{\numberline {4.6}Síntese dos Achados e Discussão}{66}{section.4.6}%
 \contentsline {subsection}{\numberline {4.6.1}Os Quatro Achados Centrais}{66}{subsection.4.6.1}%
