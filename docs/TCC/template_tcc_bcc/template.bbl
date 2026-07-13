@@ -36,6 +36,11 @@
 \textbf{Proceedings on Privacy Enhancing Technologies}, v.~2015, n.~1, p.
   92--112, 2015.}
 
+\bibitem[Davenport e Beck 2001]{davenport2001attention}
+\abntrefinfo{Davenport e Beck}{DAVENPORT; BECK}{2001}
+{DAVENPORT, T.~H.; BECK, J.~C. \textbf{The Attention Economy: Understanding the
+  New Currency of Business}. Boston: Harvard Business School Press, 2001.}
+
 \bibitem[Efron e Tibshirani 1993]{efron1993introduction}
 \abntrefinfo{Efron e Tibshirani}{EFRON; TIBSHIRANI}{1993}
 {EFRON, B.; TIBSHIRANI, R.~J. \textbf{An Introduction to the Bootstrap}. New
@@ -146,6 +151,17 @@ ISBN 978-0-412-04231-7.}
 \abntrefinfo{Shannon}{SHANNON}{1948}
 {SHANNON, C.~E. A mathematical theory of communication.
 \textbf{Bell System Technical Journal}, v.~27, n.~3, p. 379--423, 7 1948.}
+
+\bibitem[Simon 1971]{simon1971designing}
+\abntrefinfo{Simon}{SIMON}{1971}
+{SIMON, H.~A. Designing organizations for an information-rich world. In:
+  GREENBERGER, M. (Ed.). \textbf{Computers, Communications, and the Public
+  Interest}. Baltimore: Johns Hopkins Press, 1971. p. 37--72.}
+
+\bibitem[Thaler e Sunstein 2008]{thaler2008nudge}
+\abntrefinfo{Thaler e Sunstein}{THALER; SUNSTEIN}{2008}
+{THALER, R.~H.; SUNSTEIN, C.~R. \textbf{Nudge: Improving Decisions About
+  Health, Wealth, and Happiness}. New Haven: Yale University Press, 2008.}
 
 \bibitem[Turnbull et al. 2022]{turnbull2022exploring}
 \abntrefinfo{Turnbull et al.}{TURNBULL et al.}{2022}

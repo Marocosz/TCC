@@ -295,6 +295,7 @@ INPUT ./template.toc
 INPUT ./template.toc
 INPUT template.toc
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmss10.tfm
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmssbo10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmri10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/lm/ts1lmr.fd
@@ -484,6 +485,12 @@ INPUT template.brf
 INPUT ./template.brf
 INPUT ./template.brf
 OUTPUT template.brf
+INPUT ./apendice_a.tex
+INPUT ./apendice_a.tex
+INPUT ./apendice_a.tex
+INPUT ./apendice_a.tex
+INPUT apendice_a.tex
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmsso17.tfm
 OUTPUT template.lof
 OUTPUT template.lot
 OUTPUT template.toc
@@ -505,7 +512,9 @@ INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri12.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmss10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmss12.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmss17.pfb
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmssbo10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmssbx10.pfb
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsso17.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy8.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtk10.pfb
