@@ -79,13 +79,19 @@ def gerar_graficos(persona, csv_path, output_folder, source_label):
     persona_title = persona.capitalize()
 
     # GRAFICO 1: Listeners por Track (escala log)
+    # A mediana ANOTADA usa a serie completa (idem build_summaries.py e as
+    # tabelas do texto): faixas sem correspondencia no Last.fm entram como 0 e
+    # NAO sao descartadas do calculo. Apenas o histograma em escala log precisa
+    # do subconjunto > 0, ja que log(0) e indefinido. Manter as duas coisas
+    # separadas evita que a legenda da figura divirja da Tabela por Persona.
     print("   1. Listeners por Track (Last.fm)")
     plt.figure(figsize=(10, 6))
-    track_l = df["lastfm_track_listeners"].replace(0, pd.NA).dropna()
-    if not track_l.empty:
-        sns.histplot(track_l, kde=True, bins=25, color="teal", log_scale=True)
-        plt.axvline(track_l.median(), color="red", linestyle="--",
-                    label=f"Mediana: {track_l.median():,.0f}")
+    track_median = df["lastfm_track_listeners"].median()
+    track_positive = df["lastfm_track_listeners"].replace(0, pd.NA).dropna()
+    if not track_positive.empty:
+        sns.histplot(track_positive, kde=True, bins=25, color="teal", log_scale=True)
+        plt.axvline(track_median, color="red", linestyle="--",
+                    label=f"Mediana: {track_median:,.0f}")
         plt.legend()
     plt.title(f"Insight 1: Listeners por Track no Last.fm ({persona_title})", fontsize=15)
     plt.xlabel("Listeners (escala log)")
@@ -132,14 +138,17 @@ def gerar_graficos(persona, csv_path, output_folder, source_label):
     plt.close()
 
     # GRAFICO 5: Quadrante de Fama (Listeners × Playcount)
+    # As medianas ANOTADAS nos eixos usam TODOS os artistas unicos (idem
+    # build_summaries.py e as tabelas), inclusive os sem dado no Last.fm (0).
+    # O scatter em escala log, por outro lado, so consegue plotar os pontos > 0.
     print("   5. Quadrante de Fama (Listeners × Playcount)")
-    df_artists = df.drop_duplicates(subset=["primary_artist_name"]).copy()
-    df_artists = df_artists[(df_artists["lastfm_listeners"] > 0) &
-                             (df_artists["lastfm_playcount"] > 0)]
+    df_unique = df.drop_duplicates(subset=["primary_artist_name"]).copy()
+    median_l = df_unique["lastfm_listeners"].median()
+    median_p = df_unique["lastfm_playcount"].median()
+    df_artists = df_unique[(df_unique["lastfm_listeners"] > 0) &
+                           (df_unique["lastfm_playcount"] > 0)]
     plt.figure(figsize=(12, 8))
     if not df_artists.empty:
-        median_l = df_artists["lastfm_listeners"].median()
-        median_p = df_artists["lastfm_playcount"].median()
         g = sns.scatterplot(data=df_artists, x="lastfm_listeners", y="lastfm_playcount",
                              s=80, alpha=0.7, color="crimson")
         g.set_xscale("log")
