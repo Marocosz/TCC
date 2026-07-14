@@ -196,7 +196,10 @@ def main():
                 "Input": round(iv, 4) if not pd.isna(iv) else None,
                 "Output": round(ov, 4) if not pd.isna(ov) else None,
                 "Delta_Absoluto": round(delta_abs, 4) if delta_abs is not None else None,
-                "Delta_Percentual": round(delta_pct, 2) if delta_pct is not None else None,
+                # 4 casas evitam arredondamento duplo: o heatmap (fmt=".1f") e as
+                # tabelas do texto arredondam a 1 casa a partir do valor cheio, e
+                # nao de um valor ja arredondado a 2 casas (que divergia em .x5).
+                "Delta_Percentual": round(delta_pct, 4) if delta_pct is not None else None,
             })
             iv_s = f"{iv:.3f}" if not pd.isna(iv) else "NA"
             ov_s = f"{ov:.3f}" if not pd.isna(ov) else "NA"

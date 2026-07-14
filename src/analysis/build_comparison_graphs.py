@@ -76,9 +76,14 @@ def get_genre_string(row):
 
 
 def graf_1_heatmap_delta(pivot_df):
-    """Heatmap geral do delta percentual por métrica × persona."""
+    """Heatmap geral do delta percentual por métrica × persona.
+
+    Exclui n_faixas: é indicador de VOLUME de coleta (fixado pelo desenho
+    amostral), não de distorção distribucional. Mantém as 13 métricas de
+    distorção, alinhando o painel à Tabela de Delta Algorítmico do texto.
+    """
     print("  1. Heatmap Delta Percentual")
-    df = pivot_df.set_index("Metrica")
+    df = pivot_df.set_index("Metrica").drop(index="n_faixas", errors="ignore")
     fig, ax = plt.subplots(figsize=(11, 9))
     sns.heatmap(df, annot=True, fmt=".1f", cmap="RdBu_r", center=0,
                 cbar_kws={"label": "Delta % (Output - Input)"}, ax=ax,
