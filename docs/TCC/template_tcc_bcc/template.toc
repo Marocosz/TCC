@@ -34,32 +34,35 @@
 \contentsline {subsection}{\numberline {3.3.3}Análise Visual Cruzada e Topologia dos Dados}{47}{subsection.3.3.3}%
 \contentsline {section}{\numberline {3.4}Síntese Metodológica e Limitações}{50}{section.3.4}%
 \contentsline {subsection}{\numberline {3.4.1}Limitações Metodológicas e Achado Original}{51}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Considerações Éticas}{52}{subsection.3.4.2}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Resultados: Análise dos Outputs e o Delta Algorítmico}}{53}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Apresentação dos Outputs Coletados (Daily Mixes)}{53}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Taxa de Overlap Interno: Redundância Intra-Persona}{54}{section.4.2}%
-\contentsline {section}{\numberline {4.3}O Delta Algorítmico: Visão Geral}{55}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Análise Persona por Persona}{57}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Beatriz (Mainstream): O Grupo de Controle Validado}{57}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Daniel (Lo-fi): Confirmação do Viés de Popularidade}{58}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Sofia (Nicho): Viés do Hit dentro da Cauda Longa}{59}{subsection.4.4.3}%
-\contentsline {subsection}{\numberline {4.4.4}Ricardo (Nostálgico): Pulverização da Fidelidade Canônica}{61}{subsection.4.4.4}%
-\contentsline {section}{\numberline {4.5}Reconfiguração da Diversidade: Expansão de Riqueza com Manutenção de Silos}{63}{section.4.5}%
-\contentsline {section}{\numberline {4.6}Síntese dos Achados e Discussão}{66}{section.4.6}%
-\contentsline {subsection}{\numberline {4.6.1}Os Quatro Achados Centrais}{67}{subsection.4.6.1}%
-\contentsline {subsection}{\numberline {4.6.2}Implicações Teóricas e Sociotécnicas}{67}{subsection.4.6.2}%
-\contentsline {subsection}{\numberline {4.6.3}Limitações Específicas dos Resultados deste Capítulo}{69}{subsection.4.6.3}%
+\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Resultados: Análise dos Outputs e o Delta Algorítmico}}{54}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Apresentação dos Outputs Coletados (Daily Mixes)}{54}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Taxa de Overlap Interno: Redundância Intra-Persona}{55}{section.4.2}%
+\contentsline {section}{\numberline {4.3}O Delta Algorítmico: Visão Geral}{56}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Análise Persona por Persona}{58}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Beatriz (Mainstream): O Grupo de Controle Validado}{58}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Daniel (Lo-fi): Confirmação do Viés de Popularidade}{59}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Sofia (Nicho): Viés do Hit dentro da Cauda Longa}{60}{subsection.4.4.3}%
+\contentsline {subsection}{\numberline {4.4.4}Ricardo (Nostálgico): Pulverização da Fidelidade Canônica}{62}{subsection.4.4.4}%
+\contentsline {section}{\numberline {4.5}Reconfiguração da Diversidade: Expansão de Riqueza com Manutenção de Silos}{64}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Síntese dos Achados e Discussão}{67}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Os Quatro Achados Centrais}{68}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Implicações Teóricas e Sociotécnicas}{69}{subsection.4.6.2}%
+\contentsline {subsection}{\numberline {4.6.3}Limitações Específicas dos Resultados deste Capítulo}{70}{subsection.4.6.3}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Considerações Finais}}{70}{chapter.5}%
+\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Considerações Finais}}{71}{chapter.5}%
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\contentsline {chapter}{Declaração de Uso de Ferramentas de Inteligência Artificial}{74}{chapter*.16}%
 \vspace {\cftbeforechapterskip }
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\contentsline {chapter}{\MakeTextUppercase []{Refer\^encias}}{73}{section*.18}%
+\contentsline {chapter}{\MakeTextUppercase []{Refer\^encias}}{75}{section*.20}%
 \renewcommand *{\cftappendixname }{AP\^ENDICE \space }
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \cftinsert {A}
-\contentsline {appendix}{\chapternumberline {A}\MakeTextUppercase []{Listas de Artistas por Persona (\emph {Input} e \emph {Output})}}{76}{appendix.A}%
-\contentsline {section}{A.1 Beatriz (Mainstream)}{76}{section*.19}%
-\contentsline {section}{A.2 Daniel (Lo-fi/Funcional)}{77}{section*.20}%
-\contentsline {section}{A.3 Ricardo (Nostalgico)}{78}{section*.21}%
-\contentsline {section}{A.4 Sofia (Nicho)}{78}{section*.22}%
+\contentsline {appendix}{\chapternumberline {A}\MakeTextUppercase []{Listas de Artistas por Persona (\emph {Input} e \emph {Output})}}{78}{appendix.A}%
+\contentsline {section}{A.1 Beatriz (Mainstream)}{78}{section*.21}%
+\contentsline {section}{A.2 Daniel (Lo-fi/Funcional)}{79}{section*.22}%
+\contentsline {section}{A.3 Ricardo (Nostálgico)}{80}{section*.23}%
+\contentsline {section}{A.4 Sofia (Nicho)}{80}{section*.24}%

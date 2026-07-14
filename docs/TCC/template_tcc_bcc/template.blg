@@ -9,8 +9,8 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: abntex2-options.bib
 Database file #2: referencias.bib
 Reallocated singl_function (elt_size=4) to 100 items from 50.
@@ -18,48 +18,48 @@ Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
 Reallocated global_strs (elt_size=200001) to 20 items from 10.
 Reallocated glb_str_end (elt_size=4) to 20 items from 10.
 +---------------------------------------------------------+
-| Estilo bibliográfico abntex2-alf.bst versão v-1.9.7           |
+| Estilo bibliográfico abntex2-alf.bst versão v<VERSION>           |
 | Em caso de dúvidas ou problemas com este estilo procure |
 | http://www.abntex.net.br/                               |
 +---------------------------------------------------------+
-You've used 32 entries,
-            6714 wiz_defined-function locations,
-            1372 strings with 14722 characters,
-and the built_in function-call counts, 26013 in all, are:
-= -- 2029
-> -- 942
-< -- 51
-+ -- 414
-- -- 281
-* -- 1866
-:= -- 3411
-add.period$ -- 98
-call.type$ -- 32
-change.case$ -- 326
-chr.to.int$ -- 69
-cite$ -- 28
-duplicate$ -- 1357
-empty$ -- 1937
-format.name$ -- 1390
-if$ -- 6227
+You've used 33 entries,
+            6774 wiz_defined-function locations,
+            1387 strings with 14910 characters,
+and the built_in function-call counts, 27064 in all, are:
+= -- 2117
+> -- 994
+< -- 52
++ -- 436
+- -- 296
+* -- 1950
+:= -- 3546
+add.period$ -- 102
+call.type$ -- 33
+change.case$ -- 289
+chr.to.int$ -- 73
+cite$ -- 29
+duplicate$ -- 1406
+empty$ -- 2010
+format.name$ -- 1460
+if$ -- 6484
 int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 572
-newline$ -- 135
-num.names$ -- 141
-pop$ -- 712
+missing$ -- 594
+newline$ -- 139
+num.names$ -- 146
+pop$ -- 748
 preamble$ -- 1
-purify$ -- 124
+purify$ -- 129
 quote$ -- 0
-skip$ -- 1508
+skip$ -- 1605
 stack$ -- 1
-substring$ -- 996
-swap$ -- 660
+substring$ -- 1017
+swap$ -- 681
 text.length$ -- 38
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 5
 warning$ -- 0
-while$ -- 211
+while$ -- 217
 width$ -- 0
-write$ -- 447
+write$ -- 462

@@ -27,10 +27,10 @@
 \contentsline {figure}{\numberline {26}{\ignorespaces Mapeamento da Economia da Atenção: popularidade vs.\ alcance, por persona (input).}}{48}{figure.3.26}%
 \contentsline {figure}{\numberline {27}{\ignorespaces Cronologia do consumo: distribuição temporal das faixas por persona (KDE, input).}}{49}{figure.3.27}%
 \contentsline {figure}{\numberline {28}{\ignorespaces Concentração de artistas: Curva de Lorenz comparada entre personas (input).}}{50}{figure.3.28}%
-\contentsline {figure}{\numberline {29}{\ignorespaces Heatmap do Delta Algorítmico Percentual.}}{55}{figure.4.29}%
-\contentsline {figure}{\numberline {30}{\ignorespaces Distribuição de \emph {Listeners} por Artista (Last.fm), em escala logarítmica, \emph {Input} vs.\ \emph {Output}.}}{57}{figure.4.30}%
-\contentsline {figure}{\numberline {31}{\ignorespaces Mediana de \emph {Listeners} por Artista, em escala logarítmica, \emph {Input} vs.\ \emph {Output}.}}{58}{figure.4.31}%
-\contentsline {figure}{\numberline {32}{\ignorespaces Distribuição percentual de Solo (\emph {Person}) vs.\ Grupo (\emph {Group}) entre artistas únicos.}}{59}{figure.4.32}%
-\contentsline {figure}{\numberline {33}{\ignorespaces Distribuição temporal das faixas por persona (KDE, sobreposição \emph {Input}/\emph {Output}).}}{60}{figure.4.33}%
-\contentsline {figure}{\numberline {34}{\ignorespaces \emph {Top} 10 \emph {Tags} por Persona, lado a lado: \emph {Input} (azul) vs.\ \emph {Output} (vermelho).}}{62}{figure.4.34}%
-\contentsline {figure}{\numberline {35}{\ignorespaces Shannon \emph {Entropy} de Artistas, \emph {Input} (azul) vs.\ \emph {Output} (vermelho), com delta \% anotado.}}{65}{figure.4.35}%
+\contentsline {figure}{\numberline {29}{\ignorespaces Heatmap do Delta Algorítmico Percentual.}}{56}{figure.4.29}%
+\contentsline {figure}{\numberline {30}{\ignorespaces Distribuição de \emph {Listeners} por Artista (Last.fm), em escala logarítmica, \emph {Input} vs.\ \emph {Output}.}}{58}{figure.4.30}%
+\contentsline {figure}{\numberline {31}{\ignorespaces Mediana de \emph {Listeners} por Artista, em escala logarítmica, \emph {Input} vs.\ \emph {Output}.}}{59}{figure.4.31}%
+\contentsline {figure}{\numberline {32}{\ignorespaces Distribuição percentual de Solo (\emph {Person}) vs.\ Grupo (\emph {Group}) entre artistas únicos.}}{60}{figure.4.32}%
+\contentsline {figure}{\numberline {33}{\ignorespaces Distribuição temporal das faixas por persona (KDE, sobreposição \emph {Input}/\emph {Output}).}}{61}{figure.4.33}%
+\contentsline {figure}{\numberline {34}{\ignorespaces \emph {Top} 10 \emph {Tags} por Persona, lado a lado: \emph {Input} (azul) vs.\ \emph {Output} (vermelho).}}{63}{figure.4.34}%
+\contentsline {figure}{\numberline {35}{\ignorespaces Shannon \emph {Entropy} de Artistas, \emph {Input} (azul) vs.\ \emph {Output} (vermelho), com delta \% anotado.}}{66}{figure.4.35}%

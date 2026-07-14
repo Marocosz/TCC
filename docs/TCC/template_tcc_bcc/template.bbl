@@ -3,101 +3,101 @@
 \setlength{\labelsep}{0pt}\begin{thebibliography}{}
 \providecommand{\abntrefinfo}[3]{}
 \providecommand{\abntbstabout}[1]{}
-\abntbstabout{v-1.9.7 }
+\abntbstabout{v<VERSION> }
 
-\bibitem[Anderson et al. 2020]{anderson2020algorithmic}
-\abntrefinfo{Anderson et al.}{ANDERSON et al.}{2020}
+\bibitem[Anderson \textit{et al.} 2020]{anderson2020algorithmic}
+\abntrefinfo{Anderson \textit{et al.}}{Anderson \textit{et al.}}{2020}
 {ANDERSON, A.; MAYSTRE, L.; ANDERSON, I.; MEHROTRA, R.; LALMAS, M. Algorithmic
   effects on the diversity of consumption on spotify. In:  \textbf{Proceedings
   of The Web Conference 2020 (WWW '20)}. New York: Association for Computing
   Machinery, 2020. p. 2155--2165.}
 
 \bibitem[Anderson 2006]{anderson2006longtail}
-\abntrefinfo{Anderson}{ANDERSON}{2006}
+\abntrefinfo{Anderson}{Anderson}{2006}
 {ANDERSON, C. \textbf{The Long Tail: why the future of business is selling less
   of more}. New York: Hyperion, 2006.}
 
 \bibitem[Bauer e Schedl 2019]{bauer2019global}
-\abntrefinfo{Bauer e Schedl}{BAUER; SCHEDL}{2019}
+\abntrefinfo{Bauer e Schedl}{Bauer; Schedl}{2019}
 {BAUER, C.; SCHEDL, M. Global and country-specific mainstreaminess measures:
   definitions, analysis, and usage for improving personalized music
   recommendation systems.
 \textbf{PLoS ONE}, v.~14, n.~6, p. e0217389, 2019.}
 
 \bibitem[Bruns 2019]{bruns2019filter}
-\abntrefinfo{Bruns}{BRUNS}{2019}
+\abntrefinfo{Bruns}{Bruns}{2019}
 {BRUNS, A. Filter bubble.
 \textbf{Internet Policy Review}, v.~8, n.~4, 2019.}
 
 \bibitem[Datta, Tschantz e Datta 2015]{datta2015automated}
-\abntrefinfo{Datta, Tschantz e Datta}{DATTA; TSCHANTZ; DATTA}{2015}
+\abntrefinfo{Datta, Tschantz e Datta}{Datta; Tschantz; Datta}{2015}
 {DATTA, A.; TSCHANTZ, M.~C.; DATTA, A. Automated experiments on ad privacy
   settings: A tale of opacity, choice, and discrimination.
 \textbf{Proceedings on Privacy Enhancing Technologies}, v.~2015, n.~1, p.
   92--112, 2015.}
 
 \bibitem[Davenport e Beck 2001]{davenport2001attention}
-\abntrefinfo{Davenport e Beck}{DAVENPORT; BECK}{2001}
+\abntrefinfo{Davenport e Beck}{Davenport; Beck}{2001}
 {DAVENPORT, T.~H.; BECK, J.~C. \textbf{The Attention Economy: Understanding the
   New Currency of Business}. Boston: Harvard Business School Press, 2001.}
 
 \bibitem[Efron e Tibshirani 1993]{efron1993introduction}
-\abntrefinfo{Efron e Tibshirani}{EFRON; TIBSHIRANI}{1993}
+\abntrefinfo{Efron e Tibshirani}{Efron; Tibshirani}{1993}
 {EFRON, B.; TIBSHIRANI, R.~J. \textbf{An Introduction to the Bootstrap}. New
   York: Chapman \& Hall/CRC, 1993.  (Monographs on Statistics and Applied
   Probability, 57).
 ISBN 978-0-412-04231-7.}
 
-\bibitem[Eriksson et al. 2019]{eriksson2019spotify}
-\abntrefinfo{Eriksson et al.}{ERIKSSON et al.}{2019}
+\bibitem[Eriksson \textit{et al.} 2019]{eriksson2019spotify}
+\abntrefinfo{Eriksson \textit{et al.}}{Eriksson \textit{et al.}}{2019}
 {ERIKSSON, M.; FLEISCHER, R.; JOHANSSON, A.; SNICKARS, P.; VONDERAU, P.
   \textbf{Spotify Teardown: inside the black box of streaming music}.
   Cambridge, MA: MIT Press, 2019.}
 
 \bibitem[Gil 1991]{gil1991como}
-\abntrefinfo{Gil}{GIL}{1991}
+\abntrefinfo{Gil}{Gil}{1991}
 {GIL, A.~C. \textbf{Como elaborar projetos de pesquisa}. S{\~a}o Paulo: Atlas,
   1991.}
 
 \bibitem[Gotelli e Colwell 2001]{gotelli2001quantifying}
-\abntrefinfo{Gotelli e Colwell}{GOTELLI; COLWELL}{2001}
+\abntrefinfo{Gotelli e Colwell}{Gotelli; Colwell}{2001}
 {GOTELLI, N.~J.; COLWELL, R.~K. Quantifying biodiversity: procedures and
   pitfalls in the measurement and comparison of species richness.
 \textbf{Ecology Letters}, v.~4, n.~4, p. 379--391, 2001.}
 
-\bibitem[Hosanagar et al. 2014]{hosanagar2014will}
-\abntrefinfo{Hosanagar et al.}{HOSANAGAR et al.}{2014}
+\bibitem[Hosanagar \textit{et al.} 2014]{hosanagar2014will}
+\abntrefinfo{Hosanagar \textit{et al.}}{Hosanagar \textit{et al.}}{2014}
 {HOSANAGAR, K.; FLEDER, D.; LEE, D.; BUJA, A. Will the global village fracture
   into tribes? recommender systems and their effects on consumer fragmentation.
 \textbf{Management Science}, v.~60, n.~4, p. 805--823, 2014.}
 
 \bibitem[Jost 2006]{jost2006entropy}
-\abntrefinfo{Jost}{JOST}{2006}
+\abntrefinfo{Jost}{Jost}{2006}
 {JOST, L. Entropy and diversity.
 \textbf{Oikos}, v.~113, n.~2, p. 363--375, 2006.}
 
 \bibitem[Kowald, Schedl e Lex 2020]{kowald2020unfairness}
-\abntrefinfo{Kowald, Schedl e Lex}{KOWALD; SCHEDL; LEX}{2020}
+\abntrefinfo{Kowald, Schedl e Lex}{Kowald; Schedl; Lex}{2020}
 {KOWALD, D.; SCHEDL, M.; LEX, E. The unfairness of popularity bias in music
   recommendation: A reproducibility study. In:  \textbf{Advances in Information
   Retrieval: 42nd European Conference on IR Research (ECIR 2020)}. Cham:
   Springer, 2020.  (Lecture Notes in Computer Science, v. 12036), p. 35--42.}
 
 \bibitem[Mann e Whitney 1947]{mann1947test}
-\abntrefinfo{Mann e Whitney}{MANN; WHITNEY}{1947}
+\abntrefinfo{Mann e Whitney}{Mann; Whitney}{1947}
 {MANN, H.~B.; WHITNEY, D.~R. On a test of whether one of two random variables
   is stochastically larger than the other.
 \textbf{The Annals of Mathematical Statistics}, v.~18, n.~1, p. 50--60, 1947.}
 
-\bibitem[Matrosova et al. 2024]{matrosova2024recommender}
-\abntrefinfo{Matrosova et al.}{MATROSOVA et al.}{2024}
+\bibitem[Matrosova \textit{et al.} 2024]{matrosova2024recommender}
+\abntrefinfo{Matrosova \textit{et al.}}{Matrosova \textit{et al.}}{2024}
 {MATROSOVA, K.; MAREY, L.; SALHA-GALVAN, G.; LOUAIL, T.; BODINI, O.;
   MOUSSALLAM, M. Do recommender systems promote local music? a reproducibility
   study using music streaming data.
 \textbf{arXiv:2408.16430}, 2024.}
 
-\bibitem[Mehrotra et al. 2018]{mehrotra2018towards}
-\abntrefinfo{Mehrotra et al.}{MEHROTRA et al.}{2018}
+\bibitem[Mehrotra \textit{et al.} 2018]{mehrotra2018towards}
+\abntrefinfo{Mehrotra \textit{et al.}}{Mehrotra \textit{et al.}}{2018}
 {MEHROTRA, R.; MCINERNEY, J.; BOUCHARD, H.; LALMAS, M.; DIAZ, F. Towards a fair
   marketplace: Counterfactual evaluation of the trade-off between relevance,
   fairness \& satisfaction in recommendation systems. In:  \textbf{Proceedings
@@ -106,35 +106,40 @@ ISBN 978-0-412-04231-7.}
   p. 2243--2251.}
 
 \bibitem[Pariser 2011]{pariser2011filter}
-\abntrefinfo{Pariser}{PARISER}{2011}
+\abntrefinfo{Pariser}{Pariser}{2011}
 {PARISER, E. \textbf{The filter bubble: what the internet is hiding from you}.
   New York: Penguin Press, 2011.}
 
 \bibitem[Phipson e Smyth 2010]{phipson2010permutation}
-\abntrefinfo{Phipson e Smyth}{PHIPSON; SMYTH}{2010}
+\abntrefinfo{Phipson e Smyth}{Phipson; Smyth}{2010}
 {PHIPSON, B.; SMYTH, G.~K. Permutation p-values should never be zero:
   Calculating exact p-values when permutations are randomly drawn.
 \textbf{Statistical Applications in Genetics and Molecular Biology}, v.~9,
   n.~1, p. Article 39, 2010.}
 
 \bibitem[Pielou 1966]{pielou1966measurement}
-\abntrefinfo{Pielou}{PIELOU}{1966}
+\abntrefinfo{Pielou}{Pielou}{1966}
 {PIELOU, E.~C. The measurement of diversity in different types of biological
   collections.
 \textbf{Journal of Theoretical Biology}, v.~13, p. 131--144, 1966.}
 
 \bibitem[Rhoades 1993]{rhoades1993herfindahl}
-\abntrefinfo{Rhoades}{RHOADES}{1993}
+\abntrefinfo{Rhoades}{Rhoades}{1993}
 {RHOADES, S.~A. The herfindahl-hirschman index.
 \textbf{Federal Reserve Bulletin}, v.~79, n.~3, p. 188--189, 3 1993.}
 
+\bibitem[Ricci, Rokach e Shapira 2022]{ricci2022recommender}
+\abntrefinfo{Ricci, Rokach e Shapira}{Ricci; Rokach; Shapira}{2022}
+{RICCI, F.; ROKACH, L.; SHAPIRA, B. (Ed.). \textbf{Recommender Systems
+  Handbook}. 3. ed. New York: Springer, 2022.}
+
 \bibitem[Ross 2007]{ross2007rest}
-\abntrefinfo{Ross}{ROSS}{2007}
+\abntrefinfo{Ross}{Ross}{2007}
 {ROSS, A. \textbf{The Rest Is Noise: listening to the twentieth century}. New
   York: Farrar, Straus and Giroux, 2007.}
 
-\bibitem[Sandvig et al. 2014]{sandvig2014auditing}
-\abntrefinfo{Sandvig et al.}{SANDVIG et al.}{2014}
+\bibitem[Sandvig \textit{et al.} 2014]{sandvig2014auditing}
+\abntrefinfo{Sandvig \textit{et al.}}{Sandvig \textit{et al.}}{2014}
 {SANDVIG, C.; HAMILTON, K.; KARAHALIOS, K.; LANGBORT, C. \textbf{Auditing
   Algorithms: Research Methods for Detecting Discrimination on Internet
   Platforms}. 2014. Data and Discrimination: Converting Critical Concerns into
@@ -142,36 +147,36 @@ ISBN 978-0-412-04231-7.}
   Encontro Anual da International Communication Association (ICA), Seattle.}
 
 \bibitem[Shakespeare, Chareyron e Roth 2025]{shakespeare2025reframing}
-\abntrefinfo{Shakespeare, Chareyron e Roth}{SHAKESPEARE; CHAREYRON; ROTH}{2025}
+\abntrefinfo{Shakespeare, Chareyron e Roth}{Shakespeare; Chareyron; Roth}{2025}
 {SHAKESPEARE, D.; CHAREYRON, V.; ROTH, C. Reframing the filter bubble through
   diverse scale effects in online music consumption.
 \textbf{Scientific Reports}, v.~15, p. art. 4071, 2025.}
 
 \bibitem[Shannon 1948]{shannon1948mathematical}
-\abntrefinfo{Shannon}{SHANNON}{1948}
+\abntrefinfo{Shannon}{Shannon}{1948}
 {SHANNON, C.~E. A mathematical theory of communication.
 \textbf{Bell System Technical Journal}, v.~27, n.~3, p. 379--423, 7 1948.}
 
 \bibitem[Simon 1971]{simon1971designing}
-\abntrefinfo{Simon}{SIMON}{1971}
+\abntrefinfo{Simon}{Simon}{1971}
 {SIMON, H.~A. Designing organizations for an information-rich world. In:
   GREENBERGER, M. (Ed.). \textbf{Computers, Communications, and the Public
   Interest}. Baltimore: Johns Hopkins Press, 1971. p. 37--72.}
 
 \bibitem[Thaler e Sunstein 2008]{thaler2008nudge}
-\abntrefinfo{Thaler e Sunstein}{THALER; SUNSTEIN}{2008}
+\abntrefinfo{Thaler e Sunstein}{Thaler; Sunstein}{2008}
 {THALER, R.~H.; SUNSTEIN, C.~R. \textbf{Nudge: Improving Decisions About
   Health, Wealth, and Happiness}. New Haven: Yale University Press, 2008.}
 
-\bibitem[Turnbull et al. 2022]{turnbull2022exploring}
-\abntrefinfo{Turnbull et al.}{TURNBULL et al.}{2022}
+\bibitem[Turnbull \textit{et al.} 2022]{turnbull2022exploring}
+\abntrefinfo{Turnbull \textit{et al.}}{Turnbull \textit{et al.}}{2022}
 {TURNBULL, D.~R.; MCQUILLAN, S.; CRABTREE, V.; HUNTER, J.; ZHANG, S. Exploring
   popularity bias in music recommendation models and commercial streaming
   services.
 \textbf{arXiv:2208.09517}, 2022.}
 
 \bibitem[Vargas e Castells 2011]{vargas2011rank}
-\abntrefinfo{Vargas e Castells}{VARGAS; CASTELLS}{2011}
+\abntrefinfo{Vargas e Castells}{Vargas; Castells}{2011}
 {VARGAS, S.; CASTELLS, P. Rank and relevance in novelty and diversity metrics
   for recommender systems. In:  \textbf{Proceedings of the 5th ACM Conference
   on Recommender Systems (RecSys '11)}. New York: Association for Computing
