@@ -96,4 +96,4 @@ Each persona has a dedicated Spotify account (credentials in `.env`), its own pl
 
 ## Code Conventions
 
-Block-level comments are preferred over line-by-line comments. Comments should explain business rules and non-obvious logic, not restate the code. (See `prompt.txt` for full documentation guidelines.)
+Block-level comments are preferred over line-by-line comments. Comments should explain business rules and non-obvious logic, not restate the code.

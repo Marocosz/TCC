@@ -9,7 +9,7 @@ Objetivo:
 Métricas:
     1. HHI (Herfindahl-Hirschman) sobre tags/gêneros (mb_tags || lastfm_tags).
     2. Long Tail Tiers via PERCENTIL DENTRO DO CONJUNTO UNIFICADO (4 personas
-       da mesma source). Decisão 5.2 do PLANO_REFATORACAO.md:
+       da mesma source):
        - Top 25% Listeners (Last.fm) → Superstars
        - Meio (25%-75%)              → Médios
        - Bottom 25%                  → Cauda Longa

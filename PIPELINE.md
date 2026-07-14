@@ -1,6 +1,6 @@
 # Pipeline de Execução: Auditoria Algorítmica Spotify
 
-> **Versão 2.0** — atualizado em 2026-04-28 após refatoração completa para fontes externas (Last.fm + MusicBrainz). Ver [PLANO_REFATORACAO.md](PLANO_REFATORACAO.md) e [PROGRESSO.md §2.7](PROGRESSO.md) para o contexto.
+> **Versão 2.0** — atualizado em 2026-04-28 após refatoração completa para fontes externas (Last.fm + MusicBrainz).
 
 Este pipeline descreve a ordem lógica e técnica de execução dos scripts para a realização da auditoria de "caixa-preta". O fluxo garante a neutralidade inicial das contas, a ingestão controlada de dados e a extração + enriquecimento dos resultados a partir de fontes externas (após restrições da Spotify Web API em 2024-2026).
 

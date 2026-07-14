@@ -38,8 +38,6 @@ CONVENÇÕES DE METRICA (após Spotify Fev/2026):
     - lastfm_playcount        (popularidade histórica; substitui artist_popularity)
     - lastfm_track_listeners  (alcance da faixa; substitui track_popularity)
     - mb_tags || lastfm_tags  (gêneros; substitui artist_genres)
-
-Ver PROGRESSO.md §7 e PLANO_REFATORACAO.md para detalhes.
 """
 
 import os
