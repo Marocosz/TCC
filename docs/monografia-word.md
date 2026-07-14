@@ -112,6 +112,8 @@ Para a automação da interação com estas contas, utilizou-se o portal Spotify
 
 Complementarmente à automação da curadoria, foi desenvolvida uma arquitetura de análise de dados robusta para processar e auditar os resultados. O sistema integrou ferramentas de ciência de dados, como pandas para a estruturação tabular, e matplotlib e seaborn para a visualização gráfica. Mais do que apenas recolher listas de reprodução, o código foi programado para calcular métricas complexas de diversidade e concentração - incluindo a Entropia de Shannon, o Coeficiente de Gini e o Índice de Jaccard. Tais métricas permitem transformar a percepção subjetiva de gosto musical em dados quantitativos auditáveis, essenciais para a verificação de vieses algorítmicos.
 
+Em conformidade com os princípios de ciência aberta e de reprodutibilidade, a totalidade do código-fonte desenvolvido, dos dados coletados e dos *scripts* de análise estatística encontra-se disponível publicamente em repositório de acesso aberto (OLIVEIRA JÚNIOR, 2026).
+
 ### 3.1.1 Tratamento de Dados e Definição das Métricas de Auditoria
 
 Para transcender a análise puramente qualitativa do gosto musical, esta pesquisa implementou um *pipeline* de engenharia de dados em Python, focado na extração de indicadores matemáticos de diversidade e concentração. Os dados brutos coletados via API foram processados utilizando as bibliotecas `pandas` para estruturação tabular e `numpy` para operações vetoriais, garantindo a reprodutibilidade dos cálculos. Salvo indicação em contrário, todas as figuras e tabelas apresentadas neste trabalho são de **elaboração própria do autor (2026)**, a partir dos dados coletados via Spotify e enriquecidos com Last.fm e MusicBrainz.
@@ -864,6 +866,8 @@ MANN, Henry B.; WHITNEY, Donald R. On a Test of Whether one of Two Random Variab
 MATROSOVA, Kristina; MAREY, Lilian; SALHA-GALVAN, Guillaume; LOUAIL, Thomas; BODINI, Olivier; MOUSSALLAM, Manuel. Do recommender systems promote local music? A reproducibility study using music streaming data. arXiv:2408.16430, 2024. DOI: 10.48550/arXiv.2408.16430.
 
 MEHROTRA, Rishabh; McINERNEY, James; BOUCHARD, Hugues; LALMAS, Mounia; DIAZ, Fernando. Towards a Fair Marketplace: Counterfactual Evaluation of the Trade-off between Relevance, Fairness & Satisfaction in Recommendation Systems. In: PROCEEDINGS OF THE 27TH ACM INTERNATIONAL CONFERENCE ON INFORMATION AND KNOWLEDGE MANAGEMENT (CIKM '18), 2018, Torino. New York: Association for Computing Machinery, 2018. p. 2243-2251. DOI: 10.1145/3269206.3272027.
+
+OLIVEIRA JÚNIOR, Marcos Rodrigues. Auditoria Algorítmica do Spotify: código-fonte, dados e scripts de análise. Uberlândia: [s.n.], 2026. Repositório GitHub. Disponível em: https://github.com/Marocosz/TCC. Acesso em: 14 jul. 2026.
 
 PARISER, Eli. The filter bubble: what the internet is hiding from you. New York: Penguin Press, 2011.
 
