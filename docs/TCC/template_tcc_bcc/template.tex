@@ -156,8 +156,8 @@ distintos.
  \vspace{\onelineskip}
 
  \noindent
- \textbf{Palavras-chave}: Auditoria algorítmica. Sistemas de recomendação.
- Spotify. Diversidade musical. Viés de popularidade.
+ \textbf{Palavras-chave}: Auditoria algorítmica; Sistemas de recomendação;
+ Spotify; Diversidade musical; Viés de popularidade.
 \end{resumo}
 
 %, 
@@ -195,8 +195,8 @@ distintos.
    \vspace{\onelineskip}
 
    \noindent
-   \textbf{Keywords}: Algorithm auditing. Recommender systems. Spotify. Music
-   diversity. Popularity bias.
+   \textbf{Keywords}: Algorithm auditing; Recommender systems; Spotify; Music
+   diversity; Popularity bias.
  \end{otherlanguage*}
 \end{resumo}
 
@@ -261,7 +261,7 @@ automatizada que hoje atuam como os principais filtros entre a obra musical e o
 ouvinte. Nesse cenário, observa-se a substituição progressiva da curadoria
 humana por sistemas complexos de Inteligência Artificial, fundamentados em
 técnicas como Filtragem Colaborativa, Processamento de Linguagem Natural (NLP) e
-Redes Neurais. Essas arquiteturas permitem processar grandes volumes de dados,
+Redes Neurais~\cite{ricci2022recommender}. Essas arquiteturas permitem processar grandes volumes de dados,
 viabilizando a personalização de experiências sonoras em larga escala.
 
 Sob a ótica da Gestão da Informação, essa transição caracteriza a ascensão da
@@ -306,7 +306,7 @@ justamente nesse debate, tomando a bolha de filtro não como pressuposto, mas
 como \textbf{hipótese a ser testada empiricamente} no domínio da recomendação
 musical, onde, como se verá no Capítulo~\ref{cap:resultados}, os próprios
 dados sugerem um comportamento mais sutil do que a metáfora clássica da bolha
-prevê (o algoritmo chega a \emph{arrombar} a bolha vertical do perfil
+prevê (o algoritmo chega a \emph{romper} a bolha vertical do perfil
 nostálgico, em vez de reforçá-la).
 
 Nesse contexto, torna-se fundamental a realização de Auditorias Algorítmicas,
@@ -1562,7 +1562,7 @@ Sofia & 3,7\% & 40,7\% & \textbf{55,6\%} & Consumidora Subcultural; majoritariam
 
 \textbf{Análise.} O contraste entre Ricardo (94,4\% \emph{Superstars}) e Sofia
 (55,6\% Cauda Longa) cria o cenário ideal para auditar o viés econômico:
-permitirá verificar se o algoritmo tenta forçar uma ``gentrificação'' do gosto de
+permitirá verificar se o algoritmo tenta forçar uma gentrificação do gosto de
 Sofia, empurrando-a em direção à média de mercado para maximizar a retenção. O
 uso de uma régua única (\emph{input} $+$ \emph{output}) também garante que
 qualquer deslocamento de \emph{tier} observado no Capítulo~\ref{cap:resultados}
@@ -1748,6 +1748,26 @@ passa a se ancorar em três bases de dados independentes (Spotify para
   28/04/2026) para minimizar variabilidade.
 \end{itemize}
 
+\subsection{Considerações Éticas}
+
+O desenho por agentes-sonda (\emph{sock puppet audit}) opera contas sintéticas
+sobre uma plataforma comercial, técnica consagrada na literatura de auditoria
+algorítmica \cite{sandvig2014auditing}, ainda que tensione os termos de serviço da
+plataforma. Três pontos delimitam seu enquadramento ético. Primeiro, \textbf{não
+há sujeitos humanos envolvidos}: as quatro personas são artefatos de
+\emph{software}, sem coleta de dados pessoais de terceiros, o que dispensa a
+submissão a Comitê de Ética em Pesquisa (CEP) --- cujo escopo se restringe a
+pesquisas com seres humanos. Segundo, a \textbf{interação teve volume mínimo e foi
+inócua}: restringiu-se ao estritamente necessário para incubar as recomendações
+(a escuta de incubação descrita no item A acima), sem qualquer dano, sobrecarga ou
+manipulação de outros usuários, artistas ou do funcionamento do serviço, e sem
+acesso a credenciais alheias ou redistribuição de dados. Terceiro, o método
+ampara-se na \textbf{tradição de auditoria de interesse público}:
+\citeonline{sandvig2014auditing} sistematizam o uso de contas sintéticas
+justamente para tornar audíveis sistemas opacos de relevância social,
+enquadramento em que a tensão com os termos de serviço é reconhecida como inerente
+e proporcional ao interesse público da investigação.
+
 % ==========================================================
 \chapter{Resultados: Análise dos Outputs e o Delta Algorítmico}
 \label{cap:resultados}
@@ -1856,7 +1876,11 @@ O \emph{Delta Algorítmico} é o resultado quantitativo central deste estudo: a
 diferença entre o valor de cada métrica no \emph{Output} (recomendações
 algorítmicas) e no \emph{Input} (perfil declarado pelo usuário), expresso em
 variação percentual. A Figura~\ref{fig:heatmap} condensa os deltas de
-\textbf{treze métricas $\times$ quatro personas} em uma única visualização.
+\textbf{treze métricas $\times$ quatro personas} em uma única visualização.\footnote{O
+número de faixas (\emph{n.\ de Faixas}) não integra este painel nem a
+Tabela~\ref{tab:delta}: é um indicador de \emph{volume} de coleta, fixado pelo
+desenho amostral, e não de distorção distribucional. A riqueza de artistas
+(\emph{n.\ Artistas Únicos}, $S$) é mantida por medir diversidade, não volume.}
 
 \begin{figure}[H]
 \centering
@@ -1880,8 +1904,9 @@ magnitude da variação. A Tabela~\ref{tab:delta} sintetiza os deltas percentuai
 \textbf{Métrica} & \textbf{Beatriz} & \textbf{Daniel} & \textbf{Ricardo} & \textbf{Sofia} \\
 \midrule
 Shannon (Artistas)            & $+7{,}9\%$  & $+4{,}0\%$            & $\mathbf{+61{,}4\%}$  & $\mathbf{+37{,}1\%}$ \\
+\emph{Evenness} de Pielou     & $+2{,}3\%$  & $+0{,}7\%$            & $-3{,}5\%$            & $+0{,}4\%$ \\
 Gini (Artistas)               & $-5{,}8\%$  & $+0{,}2\%$            & $\mathbf{+110{,}8\%}$ & $+17{,}3\%$ \\
-HHI (Tags)                    & $-5{,}5\%$  & $\mathbf{+48{,}2\%}$  & $-10{,}5\%$           & $-22{,}8\%$ \\
+HHI (Tags)                    & $-5{,}5\%$  & $\mathbf{+48{,}2\%}$  & $-10{,}4\%$           & $-22{,}8\%$ \\
 Listeners Mediano (Artista)   & $+6{,}3\%$  & $\mathbf{+131{,}3\%}$ & $-33{,}6\%$           & $-18{,}0\%$ \\
 Playcount Mediano (Artista)   & $+30{,}6\%$ & $\mathbf{+263{,}2\%}$ & $-59{,}4\%$           & $-30{,}4\%$ \\
 Listeners Mediano (Track)     & $-22{,}5\%$ & $-23{,}6\%$           & $+112{,}4\%$         & $\mathbf{+405{,}2\%}$ \\
@@ -2090,7 +2115,7 @@ declarado por \emph{deep cuts} e discografia profunda. Adicionalmente, fragmenta
 o consumo vertical
 (poucos artistas, muitas faixas cada) em direção ao consumo horizontal (muitos
 artistas, poucas faixas cada). Este achado refina a hipótese inicial: a
-``gentrificação do nicho'' não acontece no eixo \emph{artista} (como
+gentrificação do nicho não acontece no eixo \emph{artista} (como
 hipotetizado), mas no eixo \emph{faixa}, uma forma mais sutil de viés que
 apenas a granularidade \emph{track-level} da fonte Last.fm permitiu capturar.
 
@@ -2128,8 +2153,8 @@ temático.
 
 Surpreendentemente, os \emph{listeners} e \emph{playcount} medianos por artista
 \textbf{caem} ($-33{,}6\%$ e $-59{,}4\%$, respectivamente). Isso decorre
-matematicamente da expansão do leque: os 18 artistas originais de Ricardo
-(Metallica, Beatles, Queen, etc.) têm milhões de \emph{listeners}; os 108 novos
+matematicamente da expansão do leque: os artistas originais de Ricardo
+(Metallica, Beatles, Queen, etc.) têm milhões de \emph{listeners}; os 109 novos
 artistas introduzidos pelo algoritmo são em média menos consagrados, abaixando
 a mediana global, mesmo que cada um individualmente seja popular.
 
@@ -2150,7 +2175,13 @@ implicações cruciais para o argumento sobre \emph{bolha de filtro}: contraria 
 expectativa intuitiva de que perfis ultra-concentrados ficariam ``presos'' em
 \emph{loops} temporais. Na prática, o algoritmo faz o oposto: \textbf{arromba a
 bolha vertical, fragmenta o gosto consolidado e empurra o usuário em direção a uma
-horizontalidade comum}. Vale registrar que esse resultado, embora refute a
+horizontalidade comum}. Um detalhe concreto dá a medida dessa fragmentação: dos
+18 ídolos declarados por Ricardo no \emph{input}, 17 reaparecem no \emph{output},
+mas \textbf{Elton John --- um dos artistas explicitamente semeados --- é
+descartado} pelo algoritmo. Dos 126 artistas recomendados, portanto, 109 são
+inteiramente novos (e não 108, número que a reaparição integral do \emph{input}
+implicaria): a expansão horizontal chega a sacrificar um ídolo canônico
+declarado. Vale registrar que esse resultado, embora refute a
 hipótese \emph{local} de estagnamento, é plenamente coerente com a mesma
 \textbf{gravidade de popularidade} observada nas demais personas: o extremo
 superior de Ricardo (audiência na casa dos milhões) é puxado \emph{para baixo}
@@ -2278,7 +2309,7 @@ do ganho era mero artefato amostral.
 
 Os três níveis, considerados em conjunto, sustentam um achado mais forte que o
 originalmente hipotetizado: \textbf{o algoritmo não homogeneíza o gosto entre
-usuários}. Ele expande a riqueza interna de cada perfil (arrombando bolhas
+usuários}. Ele expande a riqueza interna de cada perfil (rompendo bolhas
 verticais, como a de Ricardo) e os aproxima tematicamente, mas mantém repertórios
 de artistas rigidamente disjuntos. O ``Colapso de Contexto'' anunciado nos
 objetivos ocorre apenas no eixo temático e no de \emph{magnitude} de diversidade,
@@ -2310,8 +2341,8 @@ Ricardo & Estagnamento de descoberta (\emph{loop} temporal) & Pulverização ($+
 
 A hipótese de Ricardo merece destaque: o estudo havia antecipado que o algoritmo
 poderia ``ficar preso'' em recomendações de eras passadas, gerando estagnamento de
-descoberta. O resultado empírico aponta o oposto: o algoritmo arromba ativamente a
-bolha vertical, introduzindo 108 novos artistas ($+600\%$) e modernizando
+descoberta. O resultado empírico aponta o oposto: o algoritmo rompe ativamente a
+bolha vertical, introduzindo 109 novos artistas ($+600\%$) e modernizando
 sutilmente a janela temporal ($+5$ anos na carreira mediana). Este achado é
 cientificamente mais valioso do que a hipótese original, pois revela uma
 \textbf{direcionalidade não-óbvia} do viés: o algoritmo prefere fragmentar
@@ -2452,10 +2483,12 @@ seus usuários.
 \chapter{Considerações Finais}
 % ==========================================================
 
-Este trabalho teve como objetivo geral auditar o comportamento do sistema de
-recomendação do Spotify, por meio de uma metodologia de caixa-preta com personas
-sintéticas, a fim de mensurar o impacto da curadoria algorítmica sobre a
-diversidade cultural. O conjunto de evidências reunido permite responder
+Este trabalho teve como objetivo geral auditar o comportamento dos sistemas de
+recomendação algorítmica da plataforma Spotify, utilizando a metodologia de
+\emph{Black-Box Auditing} com personas sintéticas, a fim de mensurar
+quantitativamente o impacto das lógicas de curadoria automatizada na diversidade
+cultural, na concentração de popularidade e na formação de bolhas de filtro
+(\emph{filter bubbles}). O conjunto de evidências reunido permite responder
 afirmativamente à pergunta condutora, o algoritmo interfere de modo sistemático
 e mensurável sobre o gosto declarado, mas exige refinar a forma como essa
 interferência é compreendida.
@@ -2471,7 +2504,13 @@ obstrução progressiva da \emph{Web API} por meio de \emph{playlists} espelho e
 enriquecimento via Last.fm e MusicBrainz. Quarto, a diversidade e a concentração
 foram mensuradas por um conjunto triangulado de indicadores, Entropia de
 Shannon, \emph{evenness} de Pielou, Coeficiente de Gini, HHI e Jaccard,
-acompanhados de tratamento estatístico inferencial.
+acompanhados de tratamento estatístico inferencial. Quinto, o viés de
+popularidade e econômico foi analisado, evidenciando-se tanto a ``gravidade''
+que desloca os perfis rumo a um patamar médio de popularidade quanto o viés de
+\emph{hit} que gentrifica a cauda longa no eixo da obra. Sexto, avaliou-se o
+fenômeno de Colapso de Contexto, decompondo-se a convergência em três níveis ---
+conteúdo, tema e magnitude de diversidade ---, o que permitiu refutar a hipótese
+de uma fusão única e indiferenciada dos perfis.
 
 O achado central revelou-se mais sutil do que a hipótese inicial de um ``colapso
 de contexto'' entendido como fusão dos perfis. Decomposta a noção de convergência
@@ -2492,7 +2531,7 @@ algorítmica'' que desloca perfis em direção a um patamar médio de popularida
 (Daniel, $+131\%$ de ouvintes por artista) e um viés de \emph{hit} que, mesmo
 respeitando a cauda longa no eixo do artista, força as faixas mais expostas no
 eixo da obra (Sofia, $+405\%$ de ouvintes por faixa). De modo contraintuitivo, o
-perfil de fidelidade canônica (Ricardo) teve sua bolha vertical arrombada, com
+perfil de fidelidade canônica (Ricardo) teve sua bolha vertical fragmentada, com
 expansão de 18 para 126 artistas, o oposto do estagnamento temporal
 hipotetizado.
 
@@ -2549,6 +2588,24 @@ evidenciada. Em síntese, mais do que perguntar \emph{se} o algoritmo recomenda
 nicho, esta pesquisa demonstra a importância de perguntar \emph{como} ele o faz,
 distinção decisiva para o debate sobre diversidade cultural na era da
 governança algorítmica.
+
+% ----------------------------------------------------------
+% DECLARAÇÃO DE USO DE IA (após as Considerações Finais)
+% ----------------------------------------------------------
+\chapter*{Declaração de Uso de Ferramentas de Inteligência Artificial}
+\addcontentsline{toc}{chapter}{Declaração de Uso de Ferramentas de Inteligência Artificial}
+
+Em atenção às diretrizes institucionais --- e em coerência com o próprio objeto
+deste trabalho ---, declara-se que ferramentas de Inteligência Artificial baseadas
+em modelos de linguagem, em especial o assistente Claude (Anthropic), foram
+utilizadas como apoio instrumental em etapas específicas da pesquisa: auxílio no
+desenvolvimento e na revisão do \emph{código} do \emph{pipeline} de coleta e
+análise; apoio à \emph{revisão} de texto e à padronização de formatação; e suporte
+à \emph{diagramação} de tabelas e figuras. As ferramentas foram empregadas de forma
+supervisionada e não substituíram a concepção da pesquisa, a coleta e a análise dos
+dados, a interpretação dos resultados ou o julgamento crítico do autor. A
+responsabilidade integral pelo conteúdo, pelos resultados e pelas conclusões aqui
+apresentados é do autor, que revisou e validou todo o material.
 
 % ----------------------------------------------------------
 % ELEMENTOS PÓS-TEXTUAIS
