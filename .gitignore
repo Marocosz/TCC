@@ -187,3 +187,9 @@ RESPOSTAS_BANCA_PRE_DEFESA.md
 REVISAO_TECNICA_TCC.md
 prompt.txt
 analise-final/
+
+# Configuracoes de IDE (locais)
+.idea/
+
+# Artefatos antigos de desenvolvimento (mantidos so localmente)
+old_itens/
